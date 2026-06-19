@@ -13,7 +13,6 @@ const base = import.meta.env.BASE_URL;
 const url = (p) => `${base}${p}`.replace(/\/{2,}/g, '/');
 const asset = (p) => /^https?:\/\//.test(p) ? p : `${base}${p}`.replace(/\/{2,}/g, '/');
 const imgs = [mini.data.imagem, ...(mini.data.galeria ?? [])];
-const dataFmt = mini.data.data.toLocaleDateString('pt-BR', { year: 'numeric', month: 'long' });
 ---
 <Layout titulo={`${mini.data.titulo} — Klipel Studio`} descricao={mini.data.descricao}>
   <section class="container py-5">
