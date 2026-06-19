@@ -1,49 +1,129 @@
 ---
+
 import { getCollection } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 
 export async function getStaticPaths() {
-  const minis = await getCollection('minis');
-  return minis.map((m) => ({ params: { slug: m.slug }, props: { mini: m } }));
+const minis = await getCollection('minis');
+
+return minis.map((m) => ({
+params: { slug: m.slug },
+props: { mini: m }
+}));
 }
 
 const { mini } = Astro.props;
+
 const { Content } = await mini.render();
+
 const base = import.meta.env.BASE_URL;
-const url = (p) => `${base}${p}`.replace(/\/{2,}/g, '/');
-const asset = (p) => /^https?:\/\//.test(p) ? p : `${base}${p}`.replace(/\/{2,}/g, '/');
-const imgs = [mini.data.imagem, ...(mini.data.galeria ?? [])];
----
-<Layout titulo={`${mini.data.titulo} — Klipel Studio`} descricao={mini.data.descricao}>
+
+const url = (p) =>
+`${base}${p}`.replace(//{2,}/g, '/');
+
+const asset = (p) =>
+/^https?:///.test(p)
+? p
+: `${base}${p}`.replace(//{2,}/g, '/');
+
+const imgs = [
+mini.data.imagem,
+...(mini.data.galeria ?? [])
+];
+--
+
+<Layout
+titulo={`${mini.data.titulo} — Klipel Studio`}
+descricao={mini.data.descricao}
+
+>
+
   <section class="container py-5">
-    <a href={url('/galeria')} class="btn btn-sm btn-outline-dark mb-4">← Voltar à galeria</a>
-    <div class="row g-5">
-      <div class="col-lg-6">
-        <img src={asset(mini.data.imagem)} class="img-fluid rounded shadow-sm w-100" alt={mini.data.titulo} />
-        {imgs.length > 1 && (
-          <div class="row g-2 mt-2">
-            {imgs.map((src) => (
-              <div class="col-3">
-                <img src={asset(src)} class="img-fluid rounded border" alt={mini.data.titulo} loading="lazy" />
-              </div>
-            ))}
+
+```
+<a
+  href={url('/galeria')}
+  class="btn btn-sm btn-outline-dark mb-4"
+>
+  ← Voltar à galeria
+</a>
+
+<div class="row g-5">
+
+  <div class="col-lg-6">
+
+    <img
+      src={asset(mini.data.imagem)}
+      class="img-fluid rounded shadow-sm w-100"
+      alt={mini.data.titulo}
+    />
+
+    {imgs.length > 1 && (
+      <div class="row g-2 mt-2">
+        {imgs.map((src) => (
+          <div class="col-3">
+            <img
+              src={asset(src)}
+              class="img-fluid rounded border"
+              alt={mini.data.titulo}
+              loading="lazy"
+            />
           </div>
-        )}
+        ))}
       </div>
-      <div class="col-lg-6">
-        <h1 class="h2">{mini.data.titulo}</h1>
-        <div class="d-flex flex-wrap gap-2 my-3">
-          <span class="badge text-bg-dark">{mini.data.categoria}</span>
-          <span class="badge text-bg-secondary">{mini.data.escala}</span>
-          <span class="badge text-bg-secondary">{mini.data.material}</span>
-        </div>
-        <p class="lead">{mini.data.descricao}</p>
-        <article class="mt-4">
-          <Content />
-        </article>
-        <p class="text-muted small mt-4">Criada em {dataFmt}</p>
-        <a href={url('/contato')} class="btn btn-warning mt-2">Encomendar peça semelhante</a>
-      </div>
+    )}
+
+  </div>
+
+  <div class="col-lg-6">
+
+    <h1 class="h2">
+      {mini.data.titulo}
+    </h1>
+
+    <div class="d-flex flex-wrap gap-2 my-3">
+
+      {mini.data.classes?.map((c) => (
+        <span class="badge text-bg-dark">
+          {c}
+        </span>
+      ))}
+
+      {mini.data.racas?.map((r) => (
+        <span class="badge text-bg-secondary">
+          {r}
+        </span>
+      ))}
+
+      {mini.data.cenarios?.map((c) => (
+        <span class="badge text-bg-warning">
+          {c}
+        </span>
+      ))}
+
     </div>
+
+    {mini.data.descricao && (
+      <p class="lead">
+        {mini.data.descricao}
+      </p>
+    )}
+
+    <article class="mt-4">
+      <Content />
+    </article>
+
+    <a
+      href={url('/contato')}
+      class="btn btn-warning mt-4"
+    >
+      Encomendar peça semelhante
+    </a>
+
+  </div>
+
+</div>
+```
+
   </section>
 </Layout>
