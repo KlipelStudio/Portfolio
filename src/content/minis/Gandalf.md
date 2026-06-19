@@ -1,10 +1,10 @@
 ---
-titulo: "Guerreiro Anão"
+titulo: "Gandalf"
 
-imagem: "/img/guerreiro-anao.jpg"
+imagem: "/img/Gandalf.jpg"
 
 classe: "Guerreiro"
-raca: "Anão"
+raca: "Maiar"
 cenario: "Montanha"
 
 destaque: true
