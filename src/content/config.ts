@@ -7,11 +7,11 @@ const minis = defineCollection({
     titulo: z.string(),
     imagem: z.string(),            // caminho relativo a /public, ex: /img/goblin.jpg
     
-    classe: z.string(),
-    raca: z.string(),
-    cenario: z.string(),
+    classes: z.array(z.string()).optional(),
+    racas: z.array(z.string()).optional(),
+    cenarios: z.array(z.string()).optional(),
 
-    destaque: z.boolean().default(false),
+    destaque: z.boolean().optional(),
     galeria: z.array(z.string()).optional(),
   }),
 });
