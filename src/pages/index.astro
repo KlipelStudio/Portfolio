@@ -6,11 +6,15 @@ import MiniCard from '../components/MiniCard.astro';
 const base = import.meta.env.BASE_URL;
 const url = (p) => `${base}${p}`.replace(/\/{2,}/g, '/');
 
-const minis = (await getCollection('minis')).sort(
-  (a, b) => b.data.data.valueOf() - a.data.data.valueOf()
-);
-const destaques = minis.filter((m) => m.data.destaque).slice(0, 6);
-const vitrine = destaques.length ? destaques : minis.slice(0, 6);
+const minis = await getCollection('minis');
+
+const destaques = minis.filter(
+  (m) => m.data.destaque === true
+).slice(0,6);
+
+const vitrine = destaques.length
+  ? destaques
+  : minis.slice(0,6);
 ---
 <Layout titulo="Klipel Studio — Miniaturas para Aventureiros">
   <section class="hero text-light py-5" style="background-color: var(--kl-dark);">
