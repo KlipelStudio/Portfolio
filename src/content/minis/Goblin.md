@@ -3,7 +3,7 @@ titulo: "Goblin"
 
 imagem: "/img/Goblin.jpg"
 
-raca: ["Monstro"]
+racas: ["Monstro"]
 
 destaque: true
 ---
