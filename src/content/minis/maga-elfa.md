@@ -1,11 +1,12 @@
 ---
-titulo: "Lyrandel, Maga Elfa"
-descricao: "Conjuradora arcana cercada por runas flutuantes de energia."
-imagem: "https://placehold.co/800x600/1a1410/c9a45c?text=Maga+Elfa"
-categoria: "Aventureiros"
-escala: "32mm"
-material: "Resina 8K"
-data: 2026-06-01
+titulo: "Guerreiro Anão"
+
+imagem: "/img/guerreiro-anao.jpg"
+
+classe: "Guerreiro"
+raca: "Anão"
+cenario: "Montanha"
+
 destaque: true
 ---
 
