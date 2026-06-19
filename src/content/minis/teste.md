@@ -1,7 +1,7 @@
 ---
 titulo: "teSte"
 descricao: "Frase curta de descrição."
-imagem: "[/img/foto.jpg](https://imgur.com/a/jbDD59p)"
+imagem: "(https://imgur.com/a/jbDD59p)"
 categoria: "Guereiro"   # vira filtro na galeria
 escala: "32mm"
 material: "Resina"
