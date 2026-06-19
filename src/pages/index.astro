@@ -20,10 +20,19 @@ const vitrine = destaques.length ? destaques : minis.slice(0, 6);
         Esculturas artesanais de heróis, vilões e monstros para dar vida às suas
         mesas de RPG. Pintura sob medida e modelos exclusivos.
       </p>
-      <div class="d-flex justify-content-center gap-3 mt-4">
-        <a href={url('/galeria')} class="btn btn-warning btn-lg px-4">Ver galeria</a>
-        <a href={url('/contato')} class="btn btn-outline-light btn-lg px-4">Encomendar</a>
-      </div>
+      <div class="d-flex justify-content-center gap-3 mt-4 flex-wrap">
+  <a href={url('/classes')} class="btn btn-warning btn-lg px-4">
+    Classes & Estilos
+  </a>
+
+  <a href={url('/racas')} class="btn btn-outline-light btn-lg px-4">
+    Raças & Tipos
+  </a>
+
+  <a href={url('/cenarios')} class="btn btn-outline-light btn-lg px-4">
+    Cenários & Objetos
+  </a>
+</div>
     </div>
   </section>
 
