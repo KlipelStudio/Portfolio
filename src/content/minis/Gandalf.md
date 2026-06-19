@@ -3,16 +3,11 @@ titulo: "Gandalf"
 
 imagem: "/img/Gandalf.jpg"
 
-classe: "Guerreiro"
-raca: "Maiar"
-cenario: "Montanha"
+classes: ["Guerreiro", "Mago"]
+racas: "Maiar"
+cenarios: "Montanha"
 
 destaque: true
 ---
 
-Thrain carrega as cicatrizes de incontáveis incursões nas profundezas. A peça
-destaca a textura da cota de malha e os entalhes rúnicos do machado.
-
-- **Pose:** ataque heroico
-- **Base:** pedra rachada 32mm
-- **Pintura:** non-metallic metal (NMM) opcional
+Multi classe
