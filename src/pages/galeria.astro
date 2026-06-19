@@ -1,0 +1,52 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+import MiniCard from '../components/MiniCard.astro';
+
+const minis = (await getCollection('minis')).sort(
+  (a, b) => b.data.data.valueOf() - a.data.data.valueOf()
+);
+const categorias = [...new Set(minis.map((m) => m.data.categoria))].sort();
+---
+<Layout titulo="Galeria — Klipel Studio" descricao="Galeria completa de miniaturas artesanais.">
+  <section class="container py-5">
+    <h1 class="h2 mb-4">Galeria</h1>
+
+    {categorias.length > 1 && (
+      <div class="mb-4 d-flex flex-wrap gap-2">
+        <button class="btn btn-sm btn-dark filtro active" data-cat="todas">Todas</button>
+        {categorias.map((c) => (
+          <button class="btn btn-sm btn-outline-dark filtro" data-cat={c}>{c}</button>
+        ))}
+      </div>
+    )}
+
+    {minis.length === 0 ? (
+      <p class="text-muted">Nenhuma miniatura cadastrada ainda.</p>
+    ) : (
+      <div class="row g-4" id="grid">
+        {minis.map((m) => (
+          <div class="col-12 col-sm-6 col-lg-4 item-mini" data-cat={m.data.categoria}>
+            <MiniCard mini={m} />
+          </div>
+        ))}
+      </div>
+    )}
+  </section>
+
+  <script is:inline>
+    document.querySelectorAll('.filtro').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const cat = btn.dataset.cat;
+        document.querySelectorAll('.filtro').forEach((b) => {
+          b.classList.toggle('btn-dark', b === btn);
+          b.classList.toggle('active', b === btn);
+          b.classList.toggle('btn-outline-dark', b !== btn);
+        });
+        document.querySelectorAll('.item-mini').forEach((el) => {
+          el.style.display = cat === 'todas' || el.dataset.cat === cat ? '' : 'none';
+        });
+      });
+    });
+  </script>
+</Layout>

@@ -1,0 +1,31 @@
+---
+import Layout from '../layouts/Layout.astro';
+// Ajuste os contatos abaixo:
+const email = 'contato@klipelstudio.com';
+const instagram = 'klipelstudio';
+const whatsapp = '5500000000000'; // formato internacional, só dígitos
+---
+<Layout titulo="Contato — Klipel Studio" descricao="Entre em contato para encomendas e orçamentos.">
+  <section class="container py-5" style="max-width: 640px;">
+    <h1 class="h2 mb-3">Contato &amp; encomendas</h1>
+    <p class="text-muted">
+      Quer uma miniatura exclusiva ou um orçamento? Fale comigo por qualquer
+      canal abaixo.
+    </p>
+
+    <div class="list-group mt-4">
+      <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+         href={`mailto:${email}`}>
+        <span>✉️ E-mail</span><span class="text-muted">{email}</span>
+      </a>
+      <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+         href={`https://instagram.com/${instagram}`} target="_blank" rel="noopener">
+        <span>📸 Instagram</span><span class="text-muted">@{instagram}</span>
+      </a>
+      <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+         href={`https://wa.me/${whatsapp}`} target="_blank" rel="noopener">
+        <span>💬 WhatsApp</span><span class="text-muted">Enviar mensagem</span>
+      </a>
+    </div>
+  </section>
+</Layout>
