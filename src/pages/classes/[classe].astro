@@ -1,1 +1,26 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import MiniCard from '../../components/MiniCard.astro';
+import { getCollection } from 'astro:content';
 
+const { classe } = Astro.params;
+
+const minis = (await getCollection('minis')).filter(
+  (m) =>
+    m.data.classe.toLowerCase() === classe.toLowerCase()
+);
+---
+
+<Layout titulo={classe}>
+  <section class="container py-5">
+    <h1 class="mb-4">{classe}</h1>
+
+    <div class="row g-4">
+      {minis.map((m) => (
+        <div class="col-md-4">
+          <MiniCard mini={m} />
+        </div>
+      ))}
+    </div>
+  </section>
+</Layout>
