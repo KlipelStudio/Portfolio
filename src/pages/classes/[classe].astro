@@ -1,26 +1,66 @@
 ---
-import Layout from '../../layouts/Layout.astro';
-import MiniCard from '../../components/MiniCard.astro';
 import { getCollection } from 'astro:content';
 
-const { classe } = Astro.params;
+export async function getStaticPaths() {
+  const minis = await getCollection('minis');
 
-const minis = (await getCollection('minis')).filter(
-  (m) =>
-    m.data.classe.toLowerCase() === classe.toLowerCase()
-);
+  const classes = [
+    ...new Set(
+      minis.flatMap(m => m.data.classes || [])
+    )
+  ];
+
+  return classes.map(classe => ({
+    params: {
+      classe: classe.toLowerCase()
+    },
+    props: {
+      classe
+    }
+  }));
+}
+
+const { classe } = Astro.props;
+
+const minis = (await getCollection('minis'))
+  .filter(m =>
+    m.data.classes?.some(
+      c => c.toLowerCase() === classe.toLowerCase()
+    )
+  );
 ---
 
-<Layout titulo={classe}>
-  <section class="container py-5">
-    <h1 class="mb-4">{classe}</h1>
+<h1>{classe}</h1>
 
-    <div class="row g-4">
-      {minis.map((m) => (
-        <div class="col-md-4">
-          <MiniCard mini={m} />
-        </div>
-      ))}
-    </div>
-  </section>
-</Layout>
+<div class="grid">
+  {minis.map(mini => (
+    <article class="card">
+      <img
+        src={mini.data.imagem}
+        alt={mini.data.titulo}
+      />
+
+      <h2>{mini.data.titulo}</h2>
+
+      <p>{mini.data.descricao}</p>
+    </article>
+  ))}
+</div>
+
+<style>
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+  gap:20px;
+}
+
+.card{
+  border:1px solid #333;
+  padding:15px;
+  border-radius:12px;
+}
+
+img{
+  width:100%;
+}
+</style>
