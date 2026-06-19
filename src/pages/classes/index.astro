@@ -1,0 +1,25 @@
+---
+import { getCollection } from 'astro:content';
+
+const minis = await getCollection('minis');
+
+const classes = [
+  ...new Set(
+    minis.flatMap(m => m.data.classes || [])
+  )
+];
+---
+
+<h1>Classes</h1>
+
+<ul>
+{
+classes.map(classe => (
+<li>
+<a href={`/classes/${classe.toLowerCase()}`}>
+{classe}
+</a>
+</li>
+))
+}
+</ul>
