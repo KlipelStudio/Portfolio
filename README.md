@@ -1,7 +1,5 @@
 # Klipel Studio — Portfólio
 
-Site portfólio de miniaturas artesanais para RPG. Feito com **Astro** + **Bootstrap** (CDN), conteúdo em **Markdown**, deploy automático no **GitHub Pages**.
-
 ## Estrutura
 
 ```
