@@ -23,9 +23,10 @@ jobs:
         uses: actions/checkout@v4
       - name: Build Astro
         uses: withastro/action@v3
+        with:
+          package-manager: npm@latest
         # path: .          # raiz do repo (padrao)
         # node-version: 20 # padrao
-        # package-manager: npm
 
   deploy:
     needs: build
