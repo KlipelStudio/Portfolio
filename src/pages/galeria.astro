@@ -4,33 +4,33 @@ import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
 import MiniCard from '../components/MiniCard.astro';
 
-const minis=await getCollection('minis');
+const minis = await getCollection('minis');
 
-const classes=[
-...[...new Set(
+const classes = [
+...new Set(
 minis.flatMap(
-m=>m.data.classes||[]
+m => m.data.classes || []
 )
-)].sort()
-];
+)
+].sort();
 
-const racas=[
-...[...new Set(
+const racas = [
+...new Set(
 minis.flatMap(
-m=>m.data.racas||[]
+m => m.data.racas || []
 )
-)].sort()
-];
+)
+].sort();
 
-const cenarios=[
-...[...new Set(
+const cenarios = [
+...new Set(
 minis.flatMap(
-m=>m.data.cenarios||[]
+m => m.data.cenarios || []
 )
-)].sort()
-];
+)
+].sort();
 
-## const POR_PAGINA=100;
+## const POR_PAGINA = 100;
 
 <Layout titulo="Galeria">
 
@@ -44,14 +44,17 @@ m=>m.data.cenarios||[]
 Galeria
 </h4>
 
-<div class="mb-4">
+<div class="mb-3">
 
 <button
-class="btn btn-warning btn-sm w-100 filtro-todos"
+class="btn btn-warning btn-sm w-100"
+id="todos"
 
 >
 
-Todos </button>
+Todos
+
+</button>
 
 </div>
 
@@ -62,7 +65,7 @@ Classes
 <div class="d-flex flex-column gap-1 mb-4">
 
 {
-classes.map(c=>(
+classes.map(c => (
 
 <button
 class="btn btn-outline-dark btn-sm filtro-classe w-100"
@@ -86,7 +89,7 @@ Raças
 <div class="d-flex flex-column gap-1 mb-4">
 
 {
-racas.map(r=>(
+racas.map(r => (
 
 <button
 class="btn btn-outline-dark btn-sm filtro-raca w-100"
@@ -110,7 +113,7 @@ Cenários
 <div class="d-flex flex-column gap-1">
 
 {
-cenarios.map(c=>(
+cenarios.map(c => (
 
 <button
 class="btn btn-outline-dark btn-sm filtro-cenario w-100"
@@ -143,17 +146,17 @@ minis.map((m,index)=>(
 class="col-6 col-md-4 col-lg-custom mini"
 data-index={index}
 data-classes={JSON.stringify(
-m.data.classes||[]
+m.data.classes || []
 )}
 data-racas={JSON.stringify(
-m.data.racas||[]
+m.data.racas || []
 )}
 data-cenarios={JSON.stringify(
-m.data.cenarios||[]
+m.data.cenarios || []
 )}
 >
 
-<MiniCard mini={m}/>
+<MiniCard mini={m} />
 
 </div>
 
@@ -177,61 +180,64 @@ id="paginacao"
 
 <script is:inline>
 
-let paginaAtual=1;
+let paginaAtual = 1;
 
-let classesAtivas=[];
-let racasAtivas=[];
-let cenariosAtivos=[];
+let classesAtivas = [];
+let racasAtivas = [];
+let cenariosAtivos = [];
 
-const POR_PAGINA=100;
+const POR_PAGINA = 100;
 
-const minis=[
+const minis = [
 ...document.querySelectorAll(".mini")
 ];
 
+const botaoTodos =
+document.querySelector("#todos");
+
 function atualizar(){
 
-const filtrados=
+const filtrados =
 
 minis.filter(el=>{
 
-const classes=
+const classes =
 JSON.parse(
-el.dataset.classes||"[]"
+el.dataset.classes || "[]"
 );
 
-const racas=
+const racas =
 JSON.parse(
-el.dataset.racas||"[]"
+el.dataset.racas || "[]"
 );
 
-const cenarios=
+const cenarios =
 JSON.parse(
-el.dataset.cenarios||"[]"
+el.dataset.cenarios || "[]"
 );
 
-const classeOk=
+const classeOk =
 classesAtivas.length===0
 ||
 classesAtivas.some(
 c=>classes.includes(c)
 );
 
-const racaOk=
+const racaOk =
 racasAtivas.length===0
 ||
 racasAtivas.some(
 r=>racas.includes(r)
 );
 
-const cenarioOk=
-cenariosAtivas.length===0
+const cenarioOk =
+cenariosAtivos.length===0
 ||
-cenariosAtivas.some(
+cenariosAtivos.some(
 c=>cenarios.includes(c)
 );
 
-return(
+return (
 classeOk
 &&
 racaOk
@@ -245,21 +251,17 @@ minis.forEach(
 m=>m.style.display="none"
 );
 
-const inicio=
+const inicio =
 (paginaAtual-1)
 *
 POR_PAGINA;
 
-const fim=
-inicio
-+
+const fim =
+inicio +
 POR_PAGINA;
 
 filtrados
-.slice(
-inicio,
-fim
-)
+.slice(inicio,fim)
 .forEach(el=>{
 
 el.style.display="";
@@ -274,17 +276,17 @@ filtrados.length
 
 function criarPaginacao(total){
 
-const paginas=
+const paginas =
 Math.ceil(
-total/POR_PAGINA
+total / POR_PAGINA
 );
 
-const container=
+const container =
 document.querySelector(
 "#paginacao"
 );
 
-container.innerHTML="";
+container.innerHTML = "";
 
 for(
 let i=1;
@@ -292,21 +294,21 @@ i<=paginas;
 i++
 ){
 
-const btn=
+const btn =
 document.createElement(
 "button"
 );
 
-btn.innerText=i;
+btn.innerText = i;
 
-btn.className=
+btn.className =
 i===paginaAtual
 ?
 "btn btn-warning btn-sm"
 :
 "btn btn-outline-dark btn-sm";
 
-btn.onclick=()=>{
+btn.onclick = ()=>{
 
 paginaAtual=i;
 
@@ -320,11 +322,11 @@ container.append(btn);
 
 }
 
-function limparTodos(){
+function resetarTodos(){
 
 classesAtivas=[];
 racasAtivas=[];
-cenariosAtivas=[];
+cenariosAtivos=[];
 
 document
 .querySelectorAll(
@@ -342,15 +344,11 @@ btn.classList.add(
 
 });
 
-document
-.querySelector(".filtro-todos")
-.classList.remove(
+botaoTodos.classList.remove(
 "btn-outline-dark"
 );
 
-document
-.querySelector(".filtro-todos")
-.classList.add(
+botaoTodos.classList.add(
 "btn-warning"
 );
 
@@ -360,39 +358,22 @@ atualizar();
 
 }
 
-document
-.querySelector(".filtro-todos")
-.addEventListener(
+botaoTodos.addEventListener(
 "click",
-limparTodos
+resetarTodos
 );
 
-function configurarGrupo(
-selector,
-dataset,
-lista
+function alternarFiltro(
+valor,
+lista,
+botao
 ){
 
-document
-.querySelectorAll(selector)
-.forEach(btn=>{
-
-btn.addEventListener(
-"click",
-()=>{
-
-const valor=
-btn.dataset[dataset];
-
-document
-.querySelector(".filtro-todos")
-.classList.remove(
+botaoTodos.classList.remove(
 "btn-warning"
 );
 
-document
-.querySelector(".filtro-todos")
-.classList.add(
+botaoTodos.classList.add(
 "btn-outline-dark"
 );
 
@@ -405,11 +386,11 @@ lista.indexOf(valor),
 1
 );
 
-btn.classList.remove(
+botao.classList.remove(
 "btn-warning"
 );
 
-btn.classList.add(
+botao.classList.add(
 "btn-outline-dark"
 );
 
@@ -417,11 +398,11 @@ btn.classList.add(
 
 lista.push(valor);
 
-btn.classList.remove(
+botao.classList.remove(
 "btn-outline-dark"
 );
 
-btn.classList.add(
+botao.classList.add(
 "btn-warning"
 );
 
@@ -431,29 +412,67 @@ paginaAtual=1;
 
 atualizar();
 
-});
-
-});
-
 }
 
-configurarGrupo(
-".filtro-classe",
-"classe",
-classesAtivas
+document
+.querySelectorAll(
+".filtro-classe"
+)
+.forEach(btn=>{
+
+btn.addEventListener(
+"click",
+()=>{
+
+alternarFiltro(
+btn.dataset.classe,
+classesAtivas,
+btn
 );
 
-configurarGrupo(
-".filtro-raca",
-"raca",
-racasAtivas
+});
+
+});
+
+document
+.querySelectorAll(
+".filtro-raca"
+)
+.forEach(btn=>{
+
+btn.addEventListener(
+"click",
+()=>{
+
+alternarFiltro(
+btn.dataset.raca,
+racasAtivas,
+btn
 );
 
-configurarGrupo(
-".filtro-cenario",
-"cenario",
-cenariosAtivas
+});
+
+});
+
+document
+.querySelectorAll(
+".filtro-cenario"
+)
+.forEach(btn=>{
+
+btn.addEventListener(
+"click",
+()=>{
+
+alternarFiltro(
+btn.dataset.cenario,
+cenariosAtivos,
+btn
 );
+
+});
+
+});
 
 atualizar();
 
