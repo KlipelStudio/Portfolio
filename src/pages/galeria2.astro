@@ -270,7 +270,7 @@ document.createElement(
 );
 
 tag.className=
-`tag-filtro ${tipo}`;
+`tag-filtro tag-${tipo}`;
 
 tag.innerHTML=`
 <span>${item}</span>
@@ -612,24 +612,36 @@ white-space:nowrap;
 
 /* mesmas cores das badges do card */
 
-.tag-filtro.classe{
+.tag-filtro.tag-classe{
 
-background:#212529;
-color:white;
+background:#212529 !important;
+color:white !important;
 
-}
-
-.tag-filtro.raca{
-
-background:#ffc107;
-color:black;
+display:inline-flex !important;
+align-items:center;
+justify-content:center;
 
 }
 
-.tag-filtro.cenario{
+.tag-filtro.tag-raca{
 
-background:#6c757d;
-color:white;
+background:#ffc107 !important;
+color:black !important;
+
+display:inline-flex !important;
+align-items:center;
+justify-content:center;
+
+}
+
+.tag-filtro.tag-cenario{
+
+background:#6c757d !important;
+color:white !important;
+
+display:inline-flex !important;
+align-items:center;
+justify-content:center;
 
 }
 
@@ -662,10 +674,8 @@ line-height:1;
 
 }
 
-.tag-filtro.raca .x{
-
+.tag-filtro.tag-raca .x{
 background:rgba(0,0,0,.15);
-
 }
 
 .x:hover{
