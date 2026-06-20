@@ -1,19 +1,22 @@
 ---
+
 import { getCollection } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 import MiniCard from '../../components/MiniCard.astro';
 
-const minis = await getCollection('minis');
+const minis=(await getCollection('minis'))
+.filter(m=>m.data.classes?.length);
 
-const classes = [
-  "Todos",
-  ...[...new Set(
-    minis.flatMap(
-      m => m.data.classes || []
-    )
-  )].sort()
+const classes=[
+"Todos",
+...[...new Set(
+minis.flatMap(
+m=>m.data.classes||[]
+)
+)].sort()
 ];
----
+
+## const POR_PAGINA=100;
 
 <Layout titulo="Classes & Estilos">
 
@@ -21,25 +24,23 @@ const classes = [
 
 <div class="row">
 
-<div class="col-lg-3">
+<div class="col-lg-2">
 
-<h2 class="mb-4">
+<h4 class="mb-3">
 Classes & Estilos
-</h2>
+</h4>
 
-<div
-class="d-flex flex-column gap-2"
-id="filtros"
->
+<div class="d-flex flex-column gap-1">
 
 {
-classes.map((c,index)=>(
+classes.map(c=>(
 
-<div class={c==="Todos" ? "mb-3" : ""}>
+<div class={c==="Todos"?"mb-3":""}>
 
 <button
 class:list={[
 "btn",
+"btn-sm",
 c==="Todos"
 ?"btn-warning"
 :"btn-outline-dark",
@@ -47,8 +48,11 @@ c==="Todos"
 "w-100"
 ]}
 data-classe={c}
+
 >
+
 {c}
+
 </button>
 
 </div>
@@ -60,18 +64,19 @@ data-classe={c}
 
 </div>
 
-<div class="col-lg-9">
+<div class="col-lg-10">
 
 <div
-class="row g-4"
+class="row g-3"
 id="grid"
 >
 
 {
-minis.map(m=>(
+minis.map((m,index)=>(
 
 <div
-class="col-12 col-md-6 mini"
+class="col-6 col-md-4 col-lg-custom mini"
+data-index={index}
 data-classes={JSON.stringify(
 m.data.classes||[]
 )}
@@ -86,6 +91,13 @@ m.data.classes||[]
 
 </div>
 
+<div
+class="d-flex justify-content-center gap-2 mt-5"
+id="paginacao"
+>
+
+</div>
+
 </div>
 
 </div>
@@ -95,18 +107,139 @@ m.data.classes||[]
 <script is:inline>
 
 let ativos=[];
+let paginaAtual=1;
+
+const POR_PAGINA=100;
 
 const filtros=
 document.querySelectorAll(".filtro");
 
+const botaoTodos=
+document.querySelector(
+'[data-classe="Todos"]'
+);
+
+const minis=
+[
+...document.querySelectorAll(
+".mini"
+)
+];
+
+function atualizar(){
+
+const filtrados=
+
+minis.filter(el=>{
+
+const classes=
+JSON.parse(
+el.dataset.classes||"[]"
+);
+
+return (
+ativos.length===0
+||
+ativos.some(
+c=>classes.includes(c)
+)
+);
+
+});
+
+minis.forEach(
+m=>m.style.display="none"
+);
+
+const inicio=
+(paginaAtual-1)
+*
+POR_PAGINA;
+
+const fim=
+inicio
++
+POR_PAGINA;
+
+filtrados
+.slice(
+inicio,
+fim
+)
+.forEach(el=>{
+
+el.style.display="";
+
+});
+
+criarPaginacao(
+filtrados.length
+);
+
+}
+
+function criarPaginacao(total){
+
+const paginas=
+Math.ceil(
+total/POR_PAGINA
+);
+
+const container=
+document.querySelector(
+"#paginacao"
+);
+
+container.innerHTML="";
+
+for(
+let i=1;
+i<=paginas;
+i++
+){
+
+const btn=
+document.createElement(
+"button"
+);
+
+btn.innerText=i;
+
+btn.className=
+i===paginaAtual
+?
+"btn btn-warning btn-sm"
+:
+"btn btn-outline-dark btn-sm";
+
+btn.onclick=()=>{
+
+paginaAtual=i;
+
+atualizar();
+
+};
+
+container.append(btn);
+
+}
+
+}
+
 filtros.forEach(btn=>{
 
-btn.addEventListener("click",()=>{
+btn.addEventListener(
+"click",
+()=>{
 
 const valor=
 btn.dataset.classe;
 
-if(valor==="Todos"){
+paginaAtual=1;
+
+if(
+valor==="Todos"
+){
 
 ativos=[];
 
@@ -132,15 +265,11 @@ btn.classList.add(
 
 }else{
 
-document
-.querySelector('[data-classe="Todos"]')
-.classList.remove(
+botaoTodos.classList.remove(
 "btn-warning"
 );
 
-document
-.querySelector('[data-classe="Todos"]')
-.classList.add(
+botaoTodos.classList.add(
 "btn-outline-dark"
 );
 
@@ -150,7 +279,7 @@ ativos.includes(valor)
 
 ativos=
 ativos.filter(
-v=>v!==valor
+x=>x!==valor
 );
 
 btn.classList.remove(
@@ -177,37 +306,41 @@ btn.classList.add(
 
 }
 
-document
-.querySelectorAll(".mini")
-.forEach(el=>{
+atualizar();
 
-const classes=
-JSON.parse(
-el.dataset.classes
-);
+});
 
-if(
-ativos.length===0
-||
-ativos.some(
-a=>classes.includes(a)
-)
-){
+});
 
-el.style.display="";
+atualizar();
 
-}else{
+</script>
 
-el.style.display="none";
+<style>
+
+.filtro{
+font-size:.75rem;
+padding:.2rem .4rem;
+}
+
+.col-lg-custom{
+width:20%;
+}
+
+.mini img{
+width:100%;
+aspect-ratio:1/1;
+object-fit:cover;
+}
+
+@media(max-width:992px){
+
+.col-lg-custom{
+width:auto;
+}
 
 }
 
-});
-
-});
-
-});
-
-</script>
+</style>
 
 </Layout>
