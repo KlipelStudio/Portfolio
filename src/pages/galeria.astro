@@ -1,5 +1,4 @@
 ---
-
 import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
 import MiniCard from '../components/MiniCard.astro';
@@ -7,32 +6,32 @@ import MiniCard from '../components/MiniCard.astro';
 const minis = await getCollection('minis');
 
 const classes = [
-"Todos",
-...[...new Set(
-minis.flatMap(
-m => m.data.classes || []
-)
-)].sort()
+  "Todos",
+  ...[...new Set(
+    minis.flatMap(
+      m => m.data.classes || []
+    )
+  )].sort()
 ];
 
 const racas = [
-"Todos",
-...[...new Set(
-minis.flatMap(
-m => m.data.racas || []
-)
-)].sort()
+  "Todos",
+  ...[...new Set(
+    minis.flatMap(
+      m => m.data.racas || []
+    )
+  )].sort()
 ];
 
 const cenarios = [
-"Todos",
-...[...new Set(
-minis.flatMap(
-m => m.data.cenarios || []
-)
-)].sort()
+  "Todos",
+  ...[...new Set(
+    minis.flatMap(
+      m => m.data.cenarios || []
+    )
+  )].sort()
 ];
---
+---
 
 <Layout titulo="Galeria">
 
@@ -46,29 +45,29 @@ m => m.data.cenarios || []
 Galeria
 </h2>
 
+
 <h5>Classes</h5>
 
 <div class="d-flex flex-column gap-2 mb-4">
 
 {
-classes.map(c=>(
+classes.map(c => (
 
-<div class={c==="Todos"?"mb-3":""}>
+<div class={c==="Todos" ? "mb-3" : ""}>
 
 <button
 class:list={[
 "btn",
 c==="Todos"
-?"btn-warning"
-:"btn-outline-dark",
+? "btn-warning"
+: "btn-outline-dark",
 "filtro-classe",
 "w-100"
 ]}
 data-classe={c}
-
 >
-
-{c} </button>
+{c}
+</button>
 
 </div>
 
@@ -76,30 +75,30 @@ data-classe={c}
 }
 
 </div>
+
 
 <h5>Raças</h5>
 
 <div class="d-flex flex-column gap-2 mb-4">
 
 {
-racas.map(r=>(
+racas.map(r => (
 
-<div class={r==="Todos"?"mb-3":""}>
+<div class={r==="Todos" ? "mb-3" : ""}>
 
 <button
 class:list={[
 "btn",
 r==="Todos"
-?"btn-warning"
-:"btn-outline-dark",
+? "btn-warning"
+: "btn-outline-dark",
 "filtro-raca",
 "w-100"
 ]}
 data-raca={r}
-
 >
-
-{r} </button>
+{r}
+</button>
 
 </div>
 
@@ -107,30 +106,30 @@ data-raca={r}
 }
 
 </div>
+
 
 <h5>Cenários</h5>
 
 <div class="d-flex flex-column gap-2">
 
 {
-cenarios.map(c=>(
+cenarios.map(c => (
 
-<div class={c==="Todos"?"mb-3":""}>
+<div class={c==="Todos" ? "mb-3" : ""}>
 
 <button
 class:list={[
 "btn",
 c==="Todos"
-?"btn-warning"
-:"btn-outline-dark",
+? "btn-warning"
+: "btn-outline-dark",
 "filtro-cenario",
 "w-100"
 ]}
 data-cenario={c}
-
 >
-
-{c} </button>
+{c}
+</button>
 
 </div>
 
@@ -141,28 +140,19 @@ data-cenario={c}
 
 </div>
 
+
 <div class="col-lg-9">
 
 <div class="row g-4">
 
 {
-minis.map(m=>(
+minis.map(m => (
 
 <div
 class="col-12 col-md-6 mini"
-
-data-classes={JSON.stringify(
-m.data.classes || []
-)}
-
-data-racas={JSON.stringify(
-m.data.racas || []
-)}
-
-data-cenarios={JSON.stringify(
-m.data.cenarios || []
-)}
-
+data-classes={JSON.stringify(m.data.classes || [])}
+data-racas={JSON.stringify(m.data.racas || [])}
+data-cenarios={JSON.stringify(m.data.cenarios || [])}
 >
 
 <MiniCard mini={m}/>
@@ -180,12 +170,12 @@ m.data.cenarios || []
 
 </section>
 
+
 <script is:inline>
 
 let classesAtivas=[];
 let racasAtivas=[];
 let cenariosAtivos=[];
-
 
 function atualizarMiniaturas(){
 
@@ -208,42 +198,28 @@ JSON.parse(
 el.dataset.cenarios
 );
 
-
 const classeOk=
-
-classesAtivas.length===0
-||
+classesAtivas.length===0 ||
 classesAtivas.some(
 c=>classes.includes(c)
 );
 
-
 const racaOk=
-
-racasAtivas.length===0
-||
+racasAtivas.length===0 ||
 racasAtivas.some(
 r=>racas.includes(r)
 );
 
-
 const cenarioOk=
-
-cenariosAtivos.length===0
-||
+cenariosAtivos.length===0 ||
 cenariosAtivos.some(
 c=>cenarios.includes(c)
 );
 
-
 el.style.display=
-
-classeOk
-&&
-racaOk
-&&
+classeOk &&
+racaOk &&
 cenarioOk
-
 ? ""
 : "none";
 
@@ -252,15 +228,14 @@ cenarioOk
 }
 
 
-
 function configurarGrupo(
-classe,
+selector,
 atributo,
 lista
 ){
 
 document
-.querySelectorAll(classe)
+.querySelectorAll(selector)
 .forEach(btn=>{
 
 btn.addEventListener(
@@ -270,13 +245,12 @@ btn.addEventListener(
 const valor=
 btn.dataset[atributo];
 
-
 if(valor==="Todos"){
 
 lista.length=0;
 
 document
-.querySelectorAll(classe)
+.querySelectorAll(selector)
 .forEach(b=>{
 
 b.classList.remove(
@@ -299,22 +273,18 @@ btn.classList.add(
 
 }else{
 
-document
-.querySelector(
-`${classe}[data-${atributo}=Todos]`
-)
-?.classList.remove(
+const botaoTodos=
+document.querySelector(
+`${selector}[data-${atributo}="Todos"]`
+);
+
+botaoTodos?.classList.remove(
 "btn-warning"
 );
 
-document
-.querySelector(
-`${classe}[data-${atributo}=Todos]`
-)
-?.classList.add(
+botaoTodos?.classList.add(
 "btn-outline-dark"
 );
-
 
 if(
 lista.includes(valor)
@@ -351,13 +321,11 @@ btn.classList.add(
 
 atualizarMiniaturas();
 
-}
-);
+});
 
 });
 
 }
-
 
 configurarGrupo(
 ".filtro-classe",
