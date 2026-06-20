@@ -1,30 +1,382 @@
 ---
+
 import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
 import MiniCard from '../components/MiniCard.astro';
 
 const minis = await getCollection('minis');
----
 
-<Layout
-  titulo="Galeria — Klipel Studio"
-  descricao="Galeria completa de miniaturas artesanais."
+const classes = [
+"Todos",
+...[...new Set(
+minis.flatMap(
+m => m.data.classes || []
+)
+)].sort()
+];
+
+const racas = [
+"Todos",
+...[...new Set(
+minis.flatMap(
+m => m.data.racas || []
+)
+)].sort()
+];
+
+const cenarios = [
+"Todos",
+...[...new Set(
+minis.flatMap(
+m => m.data.cenarios || []
+)
+)].sort()
+];
+--
+
+<Layout titulo="Galeria">
+
+<section class="container py-5">
+
+<div class="row">
+
+<div class="col-lg-3">
+
+<h2 class="mb-4">
+Galeria
+</h2>
+
+<h5>Classes</h5>
+
+<div class="d-flex flex-column gap-2 mb-4">
+
+{
+classes.map(c=>(
+
+<div class={c==="Todos"?"mb-3":""}>
+
+<button
+class:list={[
+"btn",
+c==="Todos"
+?"btn-warning"
+:"btn-outline-dark",
+"filtro-classe",
+"w-100"
+]}
+data-classe={c}
+
 >
-  <section class="container py-5">
-    <h1 class="h2 mb-4">Galeria</h1>
 
-    {minis.length === 0 ? (
-      <p class="text-muted">
-        Nenhuma miniatura cadastrada ainda.
-      </p>
-    ) : (
-      <div class="row g-4">
-        {minis.map((m) => (
-          <div class="col-12 col-sm-6 col-lg-4">
-            <MiniCard mini={m} />
-          </div>
-        ))}
-      </div>
-    )}
-  </section>
+{c} </button>
+
+</div>
+
+))
+}
+
+</div>
+
+<h5>Raças</h5>
+
+<div class="d-flex flex-column gap-2 mb-4">
+
+{
+racas.map(r=>(
+
+<div class={r==="Todos"?"mb-3":""}>
+
+<button
+class:list={[
+"btn",
+r==="Todos"
+?"btn-warning"
+:"btn-outline-dark",
+"filtro-raca",
+"w-100"
+]}
+data-raca={r}
+
+>
+
+{r} </button>
+
+</div>
+
+))
+}
+
+</div>
+
+<h5>Cenários</h5>
+
+<div class="d-flex flex-column gap-2">
+
+{
+cenarios.map(c=>(
+
+<div class={c==="Todos"?"mb-3":""}>
+
+<button
+class:list={[
+"btn",
+c==="Todos"
+?"btn-warning"
+:"btn-outline-dark",
+"filtro-cenario",
+"w-100"
+]}
+data-cenario={c}
+
+>
+
+{c} </button>
+
+</div>
+
+))
+}
+
+</div>
+
+</div>
+
+<div class="col-lg-9">
+
+<div class="row g-4">
+
+{
+minis.map(m=>(
+
+<div
+class="col-12 col-md-6 mini"
+
+data-classes={JSON.stringify(
+m.data.classes || []
+)}
+
+data-racas={JSON.stringify(
+m.data.racas || []
+)}
+
+data-cenarios={JSON.stringify(
+m.data.cenarios || []
+)}
+
+>
+
+<MiniCard mini={m}/>
+
+</div>
+
+))
+}
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+<script is:inline>
+
+let classesAtivas=[];
+let racasAtivas=[];
+let cenariosAtivos=[];
+
+
+function atualizarMiniaturas(){
+
+document
+.querySelectorAll(".mini")
+.forEach(el=>{
+
+const classes=
+JSON.parse(
+el.dataset.classes
+);
+
+const racas=
+JSON.parse(
+el.dataset.racas
+);
+
+const cenarios=
+JSON.parse(
+el.dataset.cenarios
+);
+
+
+const classeOk=
+
+classesAtivas.length===0
+||
+classesAtivas.some(
+c=>classes.includes(c)
+);
+
+
+const racaOk=
+
+racasAtivas.length===0
+||
+racasAtivas.some(
+r=>racas.includes(r)
+);
+
+
+const cenarioOk=
+
+cenariosAtivos.length===0
+||
+cenariosAtivos.some(
+c=>cenarios.includes(c)
+);
+
+
+el.style.display=
+
+classeOk
+&&
+racaOk
+&&
+cenarioOk
+
+? ""
+: "none";
+
+});
+
+}
+
+
+
+function configurarGrupo(
+classe,
+atributo,
+lista
+){
+
+document
+.querySelectorAll(classe)
+.forEach(btn=>{
+
+btn.addEventListener(
+"click",
+()=>{
+
+const valor=
+btn.dataset[atributo];
+
+
+if(valor==="Todos"){
+
+lista.length=0;
+
+document
+.querySelectorAll(classe)
+.forEach(b=>{
+
+b.classList.remove(
+"btn-warning"
+);
+
+b.classList.add(
+"btn-outline-dark"
+);
+
+});
+
+btn.classList.remove(
+"btn-outline-dark"
+);
+
+btn.classList.add(
+"btn-warning"
+);
+
+}else{
+
+document
+.querySelector(
+`${classe}[data-${atributo}=Todos]`
+)
+?.classList.remove(
+"btn-warning"
+);
+
+document
+.querySelector(
+`${classe}[data-${atributo}=Todos]`
+)
+?.classList.add(
+"btn-outline-dark"
+);
+
+
+if(
+lista.includes(valor)
+){
+
+lista.splice(
+lista.indexOf(valor),
+1
+);
+
+btn.classList.remove(
+"btn-warning"
+);
+
+btn.classList.add(
+"btn-outline-dark"
+);
+
+}else{
+
+lista.push(valor);
+
+btn.classList.remove(
+"btn-outline-dark"
+);
+
+btn.classList.add(
+"btn-warning"
+);
+
+}
+
+}
+
+atualizarMiniaturas();
+
+}
+);
+
+});
+
+}
+
+
+configurarGrupo(
+".filtro-classe",
+"classe",
+classesAtivas
+);
+
+configurarGrupo(
+".filtro-raca",
+"raca",
+racasAtivas
+);
+
+configurarGrupo(
+".filtro-cenario",
+"cenario",
+cenariosAtivos
+);
+
+</script>
+
 </Layout>
