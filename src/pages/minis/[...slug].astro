@@ -16,9 +16,6 @@ const { Content } = await mini.render();
 
 const base = import.meta.env.BASE_URL;
 
-const url = (p) =>
-  `${base}${p}`.replace(/\/{2,}/g, '/');
-
 const asset = (p) =>
   /^https?:\/\//.test(p)
     ? p
@@ -34,9 +31,10 @@ const imgs = [
   titulo={`${mini.data.titulo} — Klipel Studio`}
   descricao={mini.data.descricao}
 >
-  <section class="container py-5">
-
-    <!-- Botão voltar para página anterior -->
+  <section
+    class="container py-3"
+    style="height: calc(100vh - 90px);"
+  >
     <button
       class="btn btn-sm btn-outline-dark mb-4"
       onclick="history.back()"
@@ -45,25 +43,29 @@ const imgs = [
       ← Voltar
     </button>
 
-    <div class="row g-5 align-items-start">
+    <div class="row g-4 h-100 align-items-start">
 
-      <!-- Conteúdo à esquerda -->
-      <div class="col-lg-5 order-2 order-lg-1">
+      <!-- Informações -->
+      <div class="col-lg-4">
 
-        <h1 class="h2">{mini.data.titulo}</h1>
+        <h1 class="display-5 fw-bold mb-3">
+          {mini.data.titulo}
+        </h1>
 
-        <div class="d-flex flex-wrap gap-2 my-3">
+        <div class="d-flex flex-wrap gap-2 mb-4">
 
           {/* Classe = preto */}
           {mini.data.classes?.map((c) => (
-            <span class="badge text-bg-dark">{c}</span>
+            <span class="badge text-bg-dark fs-6">
+              {c}
+            </span>
           ))}
 
           {/* Raça = amarelo */}
           {mini.data.racas?.map((r) => (
             <span
-              class="badge"
-              style="background-color:#ffc107;color:#000;"
+              class="badge fs-6"
+              style="background:#ffc107;color:#000;"
             >
               {r}
             </span>
@@ -72,8 +74,8 @@ const imgs = [
           {/* Cenário = branco */}
           {mini.data.cenarios?.map((c) => (
             <span
-              class="badge border"
-              style="background-color:#fff;color:#000;"
+              class="badge fs-6 border"
+              style="background:#fff;color:#000;"
             >
               {c}
             </span>
@@ -81,45 +83,35 @@ const imgs = [
 
         </div>
 
-        <p class="lead">{mini.data.descricao}</p>
+        {mini.data.descricao && (
+          <p class="lead">
+            {mini.data.descricao}
+          </p>
+        )}
 
         <article class="mt-4">
           <Content />
         </article>
 
-        <a href={url('/contato')} class="btn btn-warning mt-4">
-          Encomendar peça semelhante
-        </a>
-
       </div>
 
-      <!-- Foto à direita -->
-      <div class="col-lg-7 order-1 order-lg-2">
+      <!-- Imagem -->
+      <div class="col-lg-8 d-flex justify-content-center align-items-start">
 
         <img
           src={asset(mini.data.imagem)}
-          class="img-fluid rounded shadow-sm w-100"
           alt={mini.data.titulo}
+          class="rounded shadow-sm"
+          style="
+            height: 85vh;
+            width: auto;
+            max-width: 100%;
+            object-fit: contain;
+          "
         />
-
-        {imgs.length > 1 && (
-          <div class="row g-2 mt-3">
-            {imgs.map((src) => (
-              <div class="col-3">
-                <img
-                  src={asset(src)}
-                  class="img-fluid rounded border"
-                  alt={mini.data.titulo}
-                  loading="lazy"
-                />
-              </div>
-            ))}
-          </div>
-        )}
 
       </div>
 
     </div>
-
   </section>
 </Layout>
