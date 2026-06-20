@@ -1,7 +1,7 @@
 ---
 titulo: "teSte"
 descricao: "Frase curta de descrição."
-imagem: "(https://i.imgur.com/wTcWjAu.jpeg)"
+imagem: "https://i.imgur.com/wTcWjAu.jpeg"
 
 
 classes: ["Arqueiro"]
