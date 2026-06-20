@@ -1,25 +1,206 @@
 ---
 import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import MiniCard from '../../components/MiniCard.astro';
 
 const minis = await getCollection('minis');
 
 const classes = [
+  "Todos",
   ...new Set(
-    minis.flatMap(m => m.data.classes || [])
+    minis.flatMap(
+      m => m.data.classes || []
+    )
   )
-];
+].sort();
 ---
 
-<h1>Classes</h1>
+<Layout titulo="Classes & Estilos">
 
-<ul>
+<section class="container py-5">
+
+<div class="row">
+
+<div class="col-lg-3">
+
+<h2 class="mb-4">
+Classes & Estilos
+</h2>
+
+<div
+class="d-flex flex-column gap-2"
+id="filtros"
+>
+
 {
-classes.map(classe => (
-<li>
-<a href={`/classes/${classe.toLowerCase()}`}>
-{classe}
-</a>
-</li>
+classes.map(c=>(
+<button
+class:list={[
+"btn",
+c==="Todos"
+?"btn-warning"
+:"btn-outline-dark",
+"filtro"
+]}
+data-classe={c}
+>
+{c}
+</button>
 ))
 }
-</ul>
+
+</div>
+
+</div>
+
+<div class="col-lg-9">
+
+<div
+class="row g-4"
+id="grid"
+>
+
+{
+minis.map(m=>(
+
+<div
+class="col-12 col-md-6 mini"
+data-classes={JSON.stringify(
+m.data.classes||[]
+)}
+>
+
+<MiniCard mini={m}/>
+
+</div>
+
+))
+}
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+<script is:inline>
+
+let ativos=[];
+
+const filtros=
+document.querySelectorAll(".filtro");
+
+filtros.forEach(btn=>{
+
+btn.addEventListener("click",()=>{
+
+const valor=
+btn.dataset.classe;
+
+if(valor==="Todos"){
+
+ativos=[];
+
+filtros.forEach(b=>{
+
+b.classList.remove(
+"btn-warning"
+);
+
+b.classList.add(
+"btn-outline-dark"
+);
+
+});
+
+btn.classList.remove(
+"btn-outline-dark"
+);
+
+btn.classList.add(
+"btn-warning"
+);
+
+}else{
+
+document
+.querySelector('[data-classe="Todos"]')
+.classList.remove(
+"btn-warning"
+);
+
+document
+.querySelector('[data-classe="Todos"]')
+.classList.add(
+"btn-outline-dark"
+);
+
+if(
+ativos.includes(valor)
+){
+
+ativos=
+ativos.filter(
+v=>v!==valor
+);
+
+btn.classList.remove(
+"btn-warning"
+);
+
+btn.classList.add(
+"btn-outline-dark"
+);
+
+}else{
+
+ativos.push(valor);
+
+btn.classList.remove(
+"btn-outline-dark"
+);
+
+btn.classList.add(
+"btn-warning"
+);
+
+}
+
+}
+
+document
+.querySelectorAll(".mini")
+.forEach(el=>{
+
+const classes=
+JSON.parse(
+el.dataset.classes
+);
+
+if(
+ativos.length===0
+||
+ativos.some(
+a=>classes.includes(a)
+)
+){
+
+el.style.display="";
+
+}else{
+
+el.style.display="none";
+
+}
+
+});
+
+});
+
+});
+
+</script>
+
+</Layout>
