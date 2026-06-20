@@ -20,11 +20,6 @@ const asset = (p) =>
   /^https?:\/\//.test(p)
     ? p
     : `${base}${p}`.replace(/\/{2,}/g, '/');
-
-const imgs = [
-  mini.data.imagem,
-  ...(mini.data.galeria ?? [])
-].filter(Boolean);
 ---
 
 <Layout
@@ -32,8 +27,8 @@ const imgs = [
   descricao={mini.data.descricao}
 >
   <section
-    class="container py-3"
-    style="height: calc(100vh - 90px);"
+    class="container pt-3 pb-0"
+    style="overflow: hidden;"
   >
     <button
       class="btn btn-sm btn-outline-dark mb-4"
@@ -43,12 +38,12 @@ const imgs = [
       ← Voltar
     </button>
 
-    <div class="row g-4 h-100 align-items-start">
+    <div class="row g-4 align-items-start">
 
       <!-- Informações -->
       <div class="col-lg-4">
 
-        <h1 class="display-5 fw-bold mb-3">
+        <h1 class="display-3 fw-bold mb-3">
           {mini.data.titulo}
         </h1>
 
@@ -75,7 +70,7 @@ const imgs = [
           {mini.data.cenarios?.map((c) => (
             <span
               class="badge fs-6 border"
-              style="background:#fff;color:#000;"
+              style="background:#fff;color:#000;border-color:#ced4da;"
             >
               {c}
             </span>
@@ -96,16 +91,16 @@ const imgs = [
       </div>
 
       <!-- Imagem -->
-      <div class="col-lg-8 d-flex justify-content-center align-items-start">
+      <div class="col-lg-8 d-flex justify-content-center">
 
         <img
           src={asset(mini.data.imagem)}
           alt={mini.data.titulo}
           class="rounded shadow-sm"
           style="
-            height: 85vh;
-            width: auto;
+            max-height: 75vh;
             max-width: 100%;
+            width: auto;
             object-fit: contain;
           "
         />
