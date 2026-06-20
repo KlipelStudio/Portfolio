@@ -36,15 +36,15 @@ cenarios.map(c=>(
 <div class={c==="Todos"?"mb-3":""}>
 
 <button
-class:list=[
+class:list={[
 "btn",
 c==="Todos"
 ?"btn-warning"
 :"btn-outline-dark",
 "filtro",
 "w-100"
-]
-data-raca={c}
+]}
+data-cenario={c}
 >
 {c}
 </button>
@@ -67,7 +67,9 @@ minis.map(m=>(
 
 <div
 class="col-12 col-md-6 mini"
-data-racas={JSON.stringify(m.data.racas||[])}
+data-cenarios={JSON.stringify(
+m.data.cenarios||[]
+)}
 >
 
 <MiniCard mini={m}/>
@@ -89,21 +91,21 @@ data-racas={JSON.stringify(m.data.racas||[])}
 
 let ativos=[];
 
-document
-.querySelectorAll(".filtro")
-.forEach(btn=>{
+const filtros=
+document.querySelectorAll(".filtro");
+
+filtros.forEach(btn=>{
 
 btn.addEventListener("click",()=>{
 
-const valor=btn.dataset.raca;
+const valor=
+btn.dataset.cenario;
 
 if(valor==="Todos"){
 
 ativos=[];
 
-document
-.querySelectorAll(".filtro")
-.forEach(b=>{
+filtros.forEach(b=>{
 
 b.classList.remove("btn-warning");
 b.classList.add("btn-outline-dark");
@@ -114,6 +116,18 @@ btn.classList.remove("btn-outline-dark");
 btn.classList.add("btn-warning");
 
 }else{
+
+document
+.querySelector(
+'[data-cenario="Todos"]'
+)
+.classList.remove("btn-warning");
+
+document
+.querySelector(
+'[data-cenario="Todos"]'
+)
+.classList.add("btn-outline-dark");
 
 if(ativos.includes(valor)){
 
@@ -140,15 +154,21 @@ document
 .querySelectorAll(".mini")
 .forEach(el=>{
 
-const valores=
-JSON.parse(el.dataset.racas);
+const cenarios=
+JSON.parse(
+el.dataset.cenarios
+);
 
 el.style.display=
-ativos.length===0 ||
+
+ativos.length===0
+||
 ativos.some(
-v=>valores.includes(v)
+c=>cenarios.includes(c)
 )
-?"":"none";
+
+? ""
+: "none";
 
 });
 
