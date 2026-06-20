@@ -3,14 +3,14 @@ import { getCollection } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 import MiniCard from '../../components/MiniCard.astro';
 
-const minis=(await getCollection('minis'))
-.filter(m=>m.data.racas?.length);
+const minis = (await getCollection('minis'))
+.filter(m => m.data.racas?.length);
 
-const racas=[
+const racas = [
 "Todos",
 ...[...new Set(
 minis.flatMap(
-m=>m.data.racas||[]
+m => m.data.racas || []
 )
 )].sort()
 ];
@@ -31,22 +31,22 @@ Raças & Tipos
 <div class="d-flex flex-column gap-2">
 
 {
-racas.map(c=>(
+racas.map(r => (
 
-<div class={c==="Todos"?"mb-3":""}>
+<div class={r==="Todos" ? "mb-3" : ""}>
 
 <button
-class:list=[
+class:list={[
 "btn",
-c==="Todos"
-?"btn-warning"
-:"btn-outline-dark",
+r==="Todos"
+? "btn-warning"
+: "btn-outline-dark",
 "filtro",
 "w-100"
-]
-data-raca={c}
+]}
+data-raca={r}
 >
-{c}
+{r}
 </button>
 
 </div>
@@ -63,11 +63,13 @@ data-raca={c}
 <div class="row g-4">
 
 {
-minis.map(m=>(
+minis.map(m => (
 
 <div
 class="col-12 col-md-6 mini"
-data-racas={JSON.stringify(m.data.racas||[])}
+data-racas={JSON.stringify(
+m.data.racas || []
+)}
 >
 
 <MiniCard mini={m}/>
@@ -89,48 +91,86 @@ data-racas={JSON.stringify(m.data.racas||[])}
 
 let ativos=[];
 
-document
-.querySelectorAll(".filtro")
-.forEach(btn=>{
+const filtros=
+document.querySelectorAll(".filtro");
+
+filtros.forEach(btn=>{
 
 btn.addEventListener("click",()=>{
 
-const valor=btn.dataset.raca;
+const valor=
+btn.dataset.raca;
 
 if(valor==="Todos"){
 
 ativos=[];
 
-document
-.querySelectorAll(".filtro")
-.forEach(b=>{
+filtros.forEach(b=>{
 
-b.classList.remove("btn-warning");
-b.classList.add("btn-outline-dark");
+b.classList.remove(
+"btn-warning"
+);
+
+b.classList.add(
+"btn-outline-dark"
+);
 
 });
 
-btn.classList.remove("btn-outline-dark");
-btn.classList.add("btn-warning");
+btn.classList.remove(
+"btn-outline-dark"
+);
+
+btn.classList.add(
+"btn-warning"
+);
 
 }else{
 
-if(ativos.includes(valor)){
+document
+.querySelector(
+'[data-raca="Todos"]'
+)
+.classList.remove(
+"btn-warning"
+);
+
+document
+.querySelector(
+'[data-raca="Todos"]'
+)
+.classList.add(
+"btn-outline-dark"
+);
+
+if(
+ativos.includes(valor)
+){
 
 ativos=
 ativos.filter(
 v=>v!==valor
 );
 
-btn.classList.remove("btn-warning");
-btn.classList.add("btn-outline-dark");
+btn.classList.remove(
+"btn-warning"
+);
+
+btn.classList.add(
+"btn-outline-dark"
+);
 
 }else{
 
 ativos.push(valor);
 
-btn.classList.remove("btn-outline-dark");
-btn.classList.add("btn-warning");
+btn.classList.remove(
+"btn-outline-dark"
+);
+
+btn.classList.add(
+"btn-warning"
+);
 
 }
 
@@ -140,15 +180,21 @@ document
 .querySelectorAll(".mini")
 .forEach(el=>{
 
-const valores=
-JSON.parse(el.dataset.racas);
+const racas=
+JSON.parse(
+el.dataset.racas
+);
 
 el.style.display=
-ativos.length===0 ||
+
+ativos.length===0
+||
 ativos.some(
-v=>valores.includes(v)
+r=>racas.includes(r)
 )
-?"":"none";
+
+? ""
+: "none";
 
 });
 
