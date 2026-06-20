@@ -1,3 +1,4 @@
+```astro
 ---
 import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
@@ -5,30 +6,25 @@ import MiniCard from '../components/MiniCard.astro';
 
 const minis = await getCollection('minis');
 
-const classes=[
-...new Set(
-minis.flatMap(
-m=>m.data.classes||[]
-)
-)
+const classes = [
+  ...new Set(
+    minis.flatMap(m => m.data.classes || [])
+  )
 ].sort();
 
-const racas=[
-...new Set(
-minis.flatMap(
-m=>m.data.racas||[]
-)
-)
+const racas = [
+  ...new Set(
+    minis.flatMap(m => m.data.racas || [])
+  )
 ].sort();
 
-const cenarios=[
-...new Set(
-minis.flatMap(
-m=>m.data.cenarios||[]
-)
-)
+const cenarios = [
+  ...new Set(
+    minis.flatMap(m => m.data.cenarios || [])
+  )
 ].sort();
 
+const POR_PAGINA=100;
 ---
 
 <Layout titulo="Galeria">
@@ -37,10 +33,13 @@ m=>m.data.cenarios||[]
 
 <div class="row">
 
-<!-- FILTROS -->
+<!-- SIDEBAR -->
+
 <div class="col-lg-2 sidebar">
 
-<h4>Galeria</h4>
+<h4 class="mb-4">
+Galeria
+</h4>
 
 <button
 id="todos"
@@ -51,7 +50,9 @@ Limpar / Exibir Todos
 
 <div id="filtros-ativos"></div>
 
-<h6>Classes & Estilos</h6>
+<h6>
+Classes & Estilos
+</h6>
 
 <div class="grupo">
 
@@ -70,7 +71,10 @@ data-classe={c}
 
 </div>
 
-<h6>Raças & Tipos</h6>
+
+<h6>
+Raças & Tipos
+</h6>
 
 <div class="grupo">
 
@@ -89,7 +93,10 @@ data-raca={r}
 
 </div>
 
-<h6>Cenários & Objetos</h6>
+
+<h6>
+Cenários & Objetos
+</h6>
 
 <div class="grupo">
 
@@ -160,7 +167,6 @@ class="d-flex justify-content-center gap-2 mt-5"
 
 </section>
 
-
 <script is:inline>
 
 let paginaAtual=1;
@@ -169,10 +175,10 @@ let classesAtivas=[];
 let racasAtivas=[];
 let cenariosAtivos=[];
 
-const POR_PAGINA=100;
-
 const minis=[
-...document.querySelectorAll(".mini")
+...document.querySelectorAll(
+".mini"
+)
 ];
 
 const filtrosContainer=
@@ -199,36 +205,28 @@ JSON.parse(
 el.dataset.cenarios||"[]"
 );
 
-return(
-
-(
-classesAtivas.length===0
-||
+const classeOk=
+classesAtivas.length===0 ||
 classesAtivas.some(
 c=>classes.includes(c)
-)
-)
+);
 
-&&
-
-(
-racasAtivas.length===0
-||
+const racaOk=
+racasAtivas.length===0 ||
 racasAtivas.some(
 r=>racas.includes(r)
-)
-)
+);
 
-&&
-
-(
-cenariosAtivos.length===0
-||
+const cenarioOk=
+cenariosAtivos.length===0 ||
 cenariosAtivos.some(
 c=>cenarios.includes(c)
-)
-)
+);
 
+return(
+classeOk &&
+racaOk &&
+cenarioOk
 );
 
 });
@@ -239,8 +237,8 @@ m=>m.style.display="none"
 
 filtrados
 .slice(
-(paginaAtual-1)*POR_PAGINA,
-paginaAtual*POR_PAGINA
+(paginaAtual-1)*100,
+paginaAtual*100
 )
 .forEach(el=>{
 
@@ -260,54 +258,66 @@ function renderizarTags(){
 
 filtrosContainer.innerHTML="";
 
-function criar(lista,tipo){
+function criarBadge(
+lista,
+tipo
+){
 
 lista.forEach(item=>{
 
-const tag=
+const div=
 document.createElement(
 "div"
 );
 
-tag.className=
-`tag-filtro tag-${tipo}`;
+div.className=
+"tag-wrapper";
 
-tag.innerHTML=`
-<span>${item}</span>
-<span
-class="x"
+div.innerHTML=`
+
+<button
+class="badge-filtro badge-${tipo}"
 data-tipo="${tipo}"
 data-valor="${item}"
 >
+
+${item}
+
+<span class="badge-x">
 ×
 </span>
+
+</button>
+
 `;
 
 filtrosContainer.append(
-tag
+div
 );
 
 });
 
 }
 
-criar(
+criarBadge(
 classesAtivas,
 "classe"
 );
 
-criar(
+criarBadge(
 racasAtivas,
 "raca"
 );
 
-criar(
+criarBadge(
 cenariosAtivos,
 "cenario"
 );
 
 document
-.querySelectorAll(".x")
+.querySelectorAll(
+".badge-filtro"
+)
 .forEach(btn=>{
 
 btn.onclick=()=>{
@@ -342,11 +352,8 @@ document
 )
 .forEach(b=>{
 
-const dado=
-b.dataset[tipo];
-
 if(
-dado===valor
+b.dataset[tipo]===valor
 ){
 
 b.classList.remove(
@@ -376,12 +383,12 @@ Math.ceil(
 total/POR_PAGINA
 );
 
-const div=
+const container=
 document.querySelector(
 "#paginacao"
 );
 
-div.innerHTML="";
+container.innerHTML="";
 
 for(
 let i=1;
@@ -406,11 +413,13 @@ btn.innerText=i;
 btn.onclick=()=>{
 
 paginaAtual=i;
+
 atualizar();
 
 };
 
-div.append(btn);
+container.append(
+btn);
 
 }
 
@@ -563,11 +572,7 @@ display:flex;
 flex-direction:column;
 gap:6px;
 
-}
-
-.grupo button{
-
-font-size:.8rem;
+margin-bottom:20px;
 
 }
 
@@ -577,84 +582,68 @@ width:20%;
 
 }
 
-/* ===== BADGES FILTROS ATIVOS ===== */
-
 #filtros-ativos{
 
 display:flex;
 flex-wrap:wrap;
-gap:.45rem;
 
-margin:15px 0 25px 0;
+gap:8px;
+
+margin:20px 0;
 
 }
 
-.tag-filtro{
+/* BADGES */
+
+.badge-filtro{
+
+border:none;
 
 display:inline-flex;
 align-items:center;
 
-width:auto;
-max-width:fit-content;
+gap:6px;
 
-padding:5px 10px;
+padding:6px 10px;
 
-border-radius:7px;
+border-radius:8px;
 
 font-size:.75rem;
 font-weight:700;
 
 line-height:1;
 
-white-space:nowrap;
+cursor:pointer;
 
 }
 
-/* mesmas cores das badges do card */
+.badge-classe{
 
-.tag-filtro.tag-classe{
-
-background:#212529 !important;
-color:white !important;
-
-display:inline-flex !important;
-align-items:center;
-justify-content:center;
+background:#212529;
+color:white;
 
 }
 
-.tag-filtro.tag-raca{
+.badge-raca{
 
-background:#ffc107 !important;
-color:black !important;
-
-display:inline-flex !important;
-align-items:center;
-justify-content:center;
+background:#ffc107;
+color:black;
 
 }
 
-.tag-filtro.tag-cenario{
+.badge-cenario{
 
-background:#6c757d !important;
-color:white !important;
-
-display:inline-flex !important;
-align-items:center;
-justify-content:center;
+background:#6c757d;
+color:white;
 
 }
 
-/* X dentro da badge */
+.badge-x{
 
-.x{
-
-display:inline-flex;
+display:flex;
 
 align-items:center;
 justify-content:center;
-
-margin-left:6px;
 
 width:14px;
 height:14px;
@@ -662,27 +651,14 @@ height:14px;
 border-radius:50%;
 
 font-size:.65rem;
-font-weight:700;
-
-cursor:pointer;
-
-transition:.2s;
 
 background:rgba(255,255,255,.2);
 
-line-height:1;
-
 }
 
-.tag-filtro.tag-raca .x{
+.badge-raca .badge-x{
+
 background:rgba(0,0,0,.15);
-}
-
-.x:hover{
-
-transform:scale(1.15);
-
-opacity:.8;
 
 }
 
@@ -699,3 +675,4 @@ width:50%;
 </style>
 
 </Layout>
+```
