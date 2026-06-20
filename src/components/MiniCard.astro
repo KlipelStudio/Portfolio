@@ -1,21 +1,49 @@
 ---
 const { mini } = Astro.props;
+
 const base = import.meta.env.BASE_URL;
-const asset = (p) => /^https?:\/\//.test(p) ? p : `${base}${p}`.replace(/\/{2,}/g, '/');
+
+const asset = (p) =>
+  /^https?:\/\//.test(p)
+    ? p
+    : `${base}${p}`.replace(/\/{2,}/g,'/');
+
 const href = asset(`/minis/${mini.slug}/`);
 const img = asset(mini.data.imagem);
 ---
+
 <a href={href} class="text-decoration-none text-reset">
-  <div class="card card-mini h-100 shadow-sm border-0">
-    <img src={img} class="card-img-top" alt={mini.data.titulo} loading="lazy" />
-    <div class="card-body">
-      <h3 class="h5 card-title mb-1">{mini.data.titulo}</h3>
-      <p class="card-text text-muted small mb-2">{mini.data.descricao}</p>
-      <div class="d-flex flex-wrap gap-1">
-        <span class="badge text-bg-dark">{mini.data.categoria}</span>
-        <span class="badge text-bg-secondary">{mini.data.escala}</span>
-        <span class="badge text-bg-secondary">{mini.data.material}</span>
-      </div>
-    </div>
-  </div>
+
+<div class="card card-mini h-100 shadow-sm border-0">
+
+<img
+src={img}
+class="card-img-top"
+alt={mini.data.titulo}
+/>
+
+<div class="card-body">
+
+<h3 class="h5 card-title mb-1">
+{mini.data.titulo}
+</h3>
+
+<p class="card-text text-muted small mb-2">
+{mini.data.descricao}
+</p>
+
+<div class="d-flex flex-wrap gap-1">
+
+{mini.data.classes?.map(c=>(
+<span class="badge text-bg-dark">
+{c}
+</span>
+))}
+
+</div>
+
+</div>
+
+</div>
+
 </a>
