@@ -7,8 +7,12 @@ export async function getStaticPaths() {
 const minis = await getCollection('minis');
 
 return minis.map((m) => ({
-params: { slug: m.slug },
-props: { mini: m }
+params: {
+slug: m.slug
+},
+props: {
+mini: m
+}
 }));
 }
 
@@ -18,112 +22,127 @@ const { Content } = await mini.render();
 
 const base = import.meta.env.BASE_URL;
 
-const url = (p) =>
-`${base}${p}`.replace(//{2,}/g, '/');
+function url(p) {
+return `${base}${p}`.replace(//{2,}/g, '/');
+}
 
-const asset = (p) =>
-/^https?:///.test(p)
+function asset(p) {
+if (!p) return '';
+
+return /^https?:///.test(p)
 ? p
 : `${base}${p}`.replace(//{2,}/g, '/');
+}
 
 const imgs = [
 mini.data.imagem,
 ...(mini.data.galeria ?? [])
-];
---
+].filter(Boolean);
+
+---
 
 <Layout
 titulo={`${mini.data.titulo} — Klipel Studio`}
-descricao={mini.data.descricao}
+descricao={mini.data.descricao ?? ''}
 
 >
 
-  <section class="container py-5">
+<section class="container py-5">
+
+<a
+href={url('/galeria')}
+class="btn btn-sm btn-outline-dark mb-4"
+
+>
 
 ```
-<a
-  href={url('/galeria')}
-  class="btn btn-sm btn-outline-dark mb-4"
->
-  ← Voltar à galeria
-</a>
+← Voltar à galeria
+```
 
-<div class="row g-5">
+  </a>
 
-  <div class="col-lg-6">
+  <div class="row g-5">
 
-    <img
-      src={asset(mini.data.imagem)}
-      class="img-fluid rounded shadow-sm w-100"
-      alt={mini.data.titulo}
-    />
+```
+<div class="col-lg-6">
 
-    {imgs.length > 1 && (
-      <div class="row g-2 mt-2">
-        {imgs.map((src) => (
-          <div class="col-3">
-            <img
-              src={asset(src)}
-              class="img-fluid rounded border"
-              alt={mini.data.titulo}
-              loading="lazy"
-            />
-          </div>
-        ))}
-      </div>
-    )}
+  <img
+    src={asset(mini.data.imagem)}
+    class="img-fluid rounded shadow-sm w-100"
+    alt={mini.data.titulo}
+  />
 
-  </div>
+  {imgs.length > 1 && (
+    <div class="row g-2 mt-2">
 
-  <div class="col-lg-6">
+      {imgs.map((src) => (
+        <div class="col-3">
 
-    <h1 class="h2">
-      {mini.data.titulo}
-    </h1>
+          <img
+            src={asset(src)}
+            class="img-fluid rounded border"
+            alt={mini.data.titulo}
+            loading="lazy"
+          />
 
-    <div class="d-flex flex-wrap gap-2 my-3">
-
-      {mini.data.classes?.map((c) => (
-        <span class="badge text-bg-dark">
-          {c}
-        </span>
-      ))}
-
-      {mini.data.racas?.map((r) => (
-        <span class="badge text-bg-secondary">
-          {r}
-        </span>
-      ))}
-
-      {mini.data.cenarios?.map((c) => (
-        <span class="badge text-bg-warning">
-          {c}
-        </span>
+        </div>
       ))}
 
     </div>
+  )}
 
-    {mini.data.descricao && (
-      <p class="lead">
-        {mini.data.descricao}
-      </p>
-    )}
+</div>
 
-    <article class="mt-4">
-      <Content />
-    </article>
+<div class="col-lg-6">
 
-    <a
-      href={url('/contato')}
-      class="btn btn-warning mt-4"
-    >
-      Encomendar peça semelhante
-    </a>
+  <h1 class="h2">
+    {mini.data.titulo}
+  </h1>
+
+  <div class="d-flex flex-wrap gap-2 my-3">
+
+    {mini.data.classes?.map((c) => (
+      <span class="badge text-bg-dark">
+        {c}
+      </span>
+    ))}
+
+    {mini.data.racas?.map((r) => (
+      <span class="badge text-bg-secondary">
+        {r}
+      </span>
+    ))}
+
+    {mini.data.cenarios?.map((c) => (
+      <span class="badge text-bg-warning">
+        {c}
+      </span>
+    ))}
 
   </div>
+
+  {mini.data.descricao && (
+    <p class="lead">
+      {mini.data.descricao}
+    </p>
+  )}
+
+  <article class="mt-4">
+    <Content />
+  </article>
+
+  <a
+    href={url('/contato')}
+    class="btn btn-warning mt-4"
+  >
+    Encomendar peça semelhante
+  </a>
 
 </div>
 ```
 
-  </section>
+  </div>
+
+</section>
+
 </Layout>
