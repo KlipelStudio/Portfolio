@@ -1,37 +1,36 @@
 ---
+
 import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
 import MiniCard from '../components/MiniCard.astro';
 
-const minis = await getCollection('minis');
+const minis=await getCollection('minis');
 
-const classes = [
-  "Todos",
-  ...[...new Set(
-    minis.flatMap(
-      m => m.data.classes || []
-    )
-  )].sort()
+const classes=[
+...[...new Set(
+minis.flatMap(
+m=>m.data.classes||[]
+)
+)].sort()
 ];
 
-const racas = [
-  "Todos",
-  ...[...new Set(
-    minis.flatMap(
-      m => m.data.racas || []
-    )
-  )].sort()
+const racas=[
+...[...new Set(
+minis.flatMap(
+m=>m.data.racas||[]
+)
+)].sort()
 ];
 
-const cenarios = [
-  "Todos",
-  ...[...new Set(
-    minis.flatMap(
-      m => m.data.cenarios || []
-    )
-  )].sort()
+const cenarios=[
+...[...new Set(
+minis.flatMap(
+m=>m.data.cenarios||[]
+)
+)].sort()
 ];
----
+
+## const POR_PAGINA=100;
 
 <Layout titulo="Galeria">
 
@@ -39,99 +38,89 @@ const cenarios = [
 
 <div class="row">
 
-<div class="col-lg-3">
+<div class="col-lg-2">
 
-<h2 class="mb-4">
+<h4 class="mb-3">
 Galeria
-</h2>
+</h4>
 
-
-<h5>Classes</h5>
-
-<div class="d-flex flex-column gap-2 mb-4">
-
-{
-classes.map(c => (
-
-<div class={c==="Todos" ? "mb-3" : ""}>
+<div class="mb-4">
 
 <button
-class:list={[
-"btn",
-c==="Todos"
-? "btn-warning"
-: "btn-outline-dark",
-"filtro-classe",
-"w-100"
-]}
+class="btn btn-warning btn-sm w-100 filtro-todos"
+
+>
+
+Todos </button>
+
+</div>
+
+<h6 class="mb-2">
+Classes
+</h6>
+
+<div class="d-flex flex-column gap-1 mb-4">
+
+{
+classes.map(c=>(
+
+<button
+class="btn btn-outline-dark btn-sm filtro-classe w-100"
 data-classe={c}
->
-{c}
-</button>
 
-</div>
+>
+
+{c}
+
+</button>
 
 ))
 }
 
 </div>
 
+<h6 class="mb-2">
+Raças
+</h6>
 
-<h5>Raças</h5>
-
-<div class="d-flex flex-column gap-2 mb-4">
+<div class="d-flex flex-column gap-1 mb-4">
 
 {
-racas.map(r => (
-
-<div class={r==="Todos" ? "mb-3" : ""}>
+racas.map(r=>(
 
 <button
-class:list={[
-"btn",
-r==="Todos"
-? "btn-warning"
-: "btn-outline-dark",
-"filtro-raca",
-"w-100"
-]}
+class="btn btn-outline-dark btn-sm filtro-raca w-100"
 data-raca={r}
->
-{r}
-</button>
 
-</div>
+>
+
+{r}
+
+</button>
 
 ))
 }
 
 </div>
 
+<h6 class="mb-2">
+Cenários
+</h6>
 
-<h5>Cenários</h5>
-
-<div class="d-flex flex-column gap-2">
+<div class="d-flex flex-column gap-1">
 
 {
-cenarios.map(c => (
-
-<div class={c==="Todos" ? "mb-3" : ""}>
+cenarios.map(c=>(
 
 <button
-class:list={[
-"btn",
-c==="Todos"
-? "btn-warning"
-: "btn-outline-dark",
-"filtro-cenario",
-"w-100"
-]}
+class="btn btn-outline-dark btn-sm filtro-cenario w-100"
 data-cenario={c}
->
-{c}
-</button>
 
-</div>
+>
+
+{c}
+
+</button>
 
 ))
 }
@@ -140,19 +129,28 @@ data-cenario={c}
 
 </div>
 
-
-<div class="col-lg-9">
-
-<div class="row g-4">
-
-{
-minis.map(m => (
+<div class="col-lg-10">
 
 <div
-class="col-12 col-md-6 mini"
-data-classes={JSON.stringify(m.data.classes || [])}
-data-racas={JSON.stringify(m.data.racas || [])}
-data-cenarios={JSON.stringify(m.data.cenarios || [])}
+class="row g-3"
+id="grid"
+>
+
+{
+minis.map((m,index)=>(
+
+<div
+class="col-6 col-md-4 col-lg-custom mini"
+data-index={index}
+data-classes={JSON.stringify(
+m.data.classes||[]
+)}
+data-racas={JSON.stringify(
+m.data.racas||[]
+)}
+data-cenarios={JSON.stringify(
+m.data.cenarios||[]
+)}
 >
 
 <MiniCard mini={m}/>
@@ -164,73 +162,214 @@ data-cenarios={JSON.stringify(m.data.cenarios || [])}
 
 </div>
 
+<div
+class="d-flex justify-content-center gap-2 mt-5"
+id="paginacao"
+>
+
+</div>
+
 </div>
 
 </div>
 
 </section>
 
-
 <script is:inline>
+
+let paginaAtual=1;
 
 let classesAtivas=[];
 let racasAtivas=[];
 let cenariosAtivos=[];
 
-function atualizarMiniaturas(){
+const POR_PAGINA=100;
 
-document
-.querySelectorAll(".mini")
-.forEach(el=>{
+const minis=[
+...document.querySelectorAll(".mini")
+];
+
+function atualizar(){
+
+const filtrados=
+
+minis.filter(el=>{
 
 const classes=
 JSON.parse(
-el.dataset.classes
+el.dataset.classes||"[]"
 );
 
 const racas=
 JSON.parse(
-el.dataset.racas
+el.dataset.racas||"[]"
 );
 
 const cenarios=
 JSON.parse(
-el.dataset.cenarios
+el.dataset.cenarios||"[]"
 );
 
 const classeOk=
-classesAtivas.length===0 ||
+classesAtivas.length===0
+||
 classesAtivas.some(
 c=>classes.includes(c)
 );
 
 const racaOk=
-racasAtivas.length===0 ||
+racasAtivas.length===0
+||
 racasAtivas.some(
 r=>racas.includes(r)
 );
 
 const cenarioOk=
-cenariosAtivos.length===0 ||
-cenariosAtivos.some(
+cenariosAtivas.length===0
+||
+cenariosAtivas.some(
 c=>cenarios.includes(c)
 );
 
-el.style.display=
-classeOk &&
-racaOk &&
+return(
+classeOk
+&&
+racaOk
+&&
 cenarioOk
-? ""
-: "none";
+);
 
 });
 
+minis.forEach(
+m=>m.style.display="none"
+);
+
+const inicio=
+(paginaAtual-1)
+*
+POR_PAGINA;
+
+const fim=
+inicio
++
+POR_PAGINA;
+
+filtrados
+.slice(
+inicio,
+fim
+)
+.forEach(el=>{
+
+el.style.display="";
+
+});
+
+criarPaginacao(
+filtrados.length
+);
+
 }
 
+function criarPaginacao(total){
+
+const paginas=
+Math.ceil(
+total/POR_PAGINA
+);
+
+const container=
+document.querySelector(
+"#paginacao"
+);
+
+container.innerHTML="";
+
+for(
+let i=1;
+i<=paginas;
+i++
+){
+
+const btn=
+document.createElement(
+"button"
+);
+
+btn.innerText=i;
+
+btn.className=
+i===paginaAtual
+?
+"btn btn-warning btn-sm"
+:
+"btn btn-outline-dark btn-sm";
+
+btn.onclick=()=>{
+
+paginaAtual=i;
+
+atualizar();
+
+};
+
+container.append(btn);
+
+}
+
+}
+
+function limparTodos(){
+
+classesAtivas=[];
+racasAtivas=[];
+cenariosAtivas=[];
+
+document
+.querySelectorAll(
+".filtro-classe,.filtro-raca,.filtro-cenario"
+)
+.forEach(btn=>{
+
+btn.classList.remove(
+"btn-warning"
+);
+
+btn.classList.add(
+"btn-outline-dark"
+);
+
+});
+
+document
+.querySelector(".filtro-todos")
+.classList.remove(
+"btn-outline-dark"
+);
+
+document
+.querySelector(".filtro-todos")
+.classList.add(
+"btn-warning"
+);
+
+paginaAtual=1;
+
+atualizar();
+
+}
+
+document
+.querySelector(".filtro-todos")
+.addEventListener(
+"click",
+limparTodos
+);
 
 function configurarGrupo(
 selector,
-atributo,
+dataset,
 lista
 ){
 
@@ -243,46 +382,17 @@ btn.addEventListener(
 ()=>{
 
 const valor=
-btn.dataset[atributo];
-
-if(valor==="Todos"){
-
-lista.length=0;
+btn.dataset[dataset];
 
 document
-.querySelectorAll(selector)
-.forEach(b=>{
-
-b.classList.remove(
+.querySelector(".filtro-todos")
+.classList.remove(
 "btn-warning"
 );
 
-b.classList.add(
-"btn-outline-dark"
-);
-
-});
-
-btn.classList.remove(
-"btn-outline-dark"
-);
-
-btn.classList.add(
-"btn-warning"
-);
-
-}else{
-
-const botaoTodos=
-document.querySelector(
-`${selector}[data-${atributo}="Todos"]`
-);
-
-botaoTodos?.classList.remove(
-"btn-warning"
-);
-
-botaoTodos?.classList.add(
+document
+.querySelector(".filtro-todos")
+.classList.add(
 "btn-outline-dark"
 );
 
@@ -317,9 +427,9 @@ btn.classList.add(
 
 }
 
-}
+paginaAtual=1;
 
-atualizarMiniaturas();
+atualizar();
 
 });
 
@@ -342,9 +452,40 @@ racasAtivas
 configurarGrupo(
 ".filtro-cenario",
 "cenario",
-cenariosAtivos
+cenariosAtivas
 );
 
+atualizar();
+
 </script>
+
+<style>
+
+.filtro-classe,
+.filtro-raca,
+.filtro-cenario{
+font-size:.75rem;
+padding:.2rem .4rem;
+}
+
+.col-lg-custom{
+width:20%;
+}
+
+.mini img{
+width:100%;
+aspect-ratio:1/1;
+object-fit:cover;
+}
+
+@media(max-width:992px){
+
+.col-lg-custom{
+width:auto;
+}
+
+}
+
+</style>
 
 </Layout>
