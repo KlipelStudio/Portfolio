@@ -1,5 +1,4 @@
 ---
-
 import { getCollection } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 import MiniCard from '../../components/MiniCard.astro';
@@ -16,7 +15,8 @@ m=>m.data.classes||[]
 )].sort()
 ];
 
-## const POR_PAGINA=100;
+const POR_PAGINA=100;
+---
 
 <Layout titulo="Classes & Estilos">
 
