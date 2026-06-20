@@ -577,76 +577,102 @@ width:20%;
 
 }
 
+/* ===== BADGES FILTROS ATIVOS ===== */
+
 #filtros-ativos{
 
 display:flex;
 flex-wrap:wrap;
-gap:6px;
+gap:.45rem;
 
-margin:15px 0;
+margin:15px 0 25px 0;
 
 }
 
 .tag-filtro{
 
-display:flex;
+display:inline-flex;
 align-items:center;
-gap:6px;
 
-padding:6px 10px;
+width:auto;
+max-width:fit-content;
 
-border-radius:8px;
+padding:5px 10px;
+
+border-radius:7px;
 
 font-size:.75rem;
-font-weight:600;
+font-weight:700;
 
 line-height:1;
 
+white-space:nowrap;
+
 }
 
-.classe{
+/* mesmas cores das badges do card */
+
+.tag-filtro.classe{
 
 background:#212529;
 color:white;
 
 }
 
-.raca{
+.tag-filtro.raca{
 
 background:#ffc107;
 color:black;
 
 }
 
-.cenario{
+.tag-filtro.cenario{
 
 background:#6c757d;
 color:white;
 
 }
 
+/* X dentro da badge */
+
 .x{
 
-width:15px;
-height:15px;
+display:inline-flex;
 
-display:flex;
 align-items:center;
 justify-content:center;
 
+margin-left:6px;
+
+width:14px;
+height:14px;
+
 border-radius:50%;
+
+font-size:.65rem;
+font-weight:700;
 
 cursor:pointer;
 
-background:rgba(255,255,255,.15);
+transition:.2s;
 
-font-size:.7rem;
+background:rgba(255,255,255,.2);
+
+line-height:1;
 
 }
 
-.raca .x{
+.tag-filtro.raca .x{
 
 background:rgba(0,0,0,.15);
+
+}
+
+.x:hover{
+
+transform:scale(1.15);
+
+opacity:.8;
 
 }
 
