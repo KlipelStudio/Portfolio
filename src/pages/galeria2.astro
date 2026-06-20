@@ -5,31 +5,30 @@ import MiniCard from '../components/MiniCard.astro';
 
 const minis = await getCollection('minis');
 
-const classes = [
-  ...new Set(
-    minis.flatMap(
-      m => m.data.classes || []
-    )
-  )
+const classes=[
+...new Set(
+minis.flatMap(
+m=>m.data.classes||[]
+)
+)
 ].sort();
 
-const racas = [
-  ...new Set(
-    minis.flatMap(
-      m => m.data.racas || []
-    )
-  )
+const racas=[
+...new Set(
+minis.flatMap(
+m=>m.data.racas||[]
+)
+)
 ].sort();
 
-const cenarios = [
-  ...new Set(
-    minis.flatMap(
-      m => m.data.cenarios || []
-    )
-  )
+const cenarios=[
+...new Set(
+minis.flatMap(
+m=>m.data.cenarios||[]
+)
+)
 ].sort();
 
-const POR_PAGINA = 100;
 ---
 
 <Layout titulo="Galeria">
@@ -39,40 +38,28 @@ const POR_PAGINA = 100;
 <div class="row">
 
 <!-- FILTROS -->
-<div class="col-lg-2">
+<div class="col-lg-2 sidebar">
 
-<h4 class="mb-3">
-Galeria
-</h4>
-
-<div class="mb-3">
+<h4>Galeria</h4>
 
 <button
-class="btn btn-warning btn-sm w-100"
 id="todos"
+class="btn btn-warning w-100 mb-3"
 >
 Limpar / Exibir Todos
 </button>
 
-</div>
+<div id="filtros-ativos"></div>
 
-<!-- FILTROS ATIVOS -->
-<div
-id="filtros-ativos"
-class="d-flex flex-wrap gap-2 mb-4"
-></div>
+<h6>Classes & Estilos</h6>
 
-<h6 class="mb-2">
-Classes & Estilos
-</h6>
-
-<div class="d-flex flex-column gap-1 mb-4">
+<div class="grupo">
 
 {
-classes.map(c => (
+classes.map(c=>(
 
 <button
-class="btn btn-outline-dark btn-sm filtro-classe w-100"
+class="btn btn-outline-dark filtro-classe"
 data-classe={c}
 >
 {c}
@@ -83,17 +70,15 @@ data-classe={c}
 
 </div>
 
-<h6 class="mb-2">
-Raças & Tipos
-</h6>
+<h6>Raças & Tipos</h6>
 
-<div class="d-flex flex-column gap-1 mb-4">
+<div class="grupo">
 
 {
-racas.map(r => (
+racas.map(r=>(
 
 <button
-class="btn btn-outline-dark btn-sm filtro-raca w-100"
+class="btn btn-outline-dark filtro-raca"
 data-raca={r}
 >
 {r}
@@ -104,17 +89,15 @@ data-raca={r}
 
 </div>
 
-<h6 class="mb-2">
-Cenários & Objetos
-</h6>
+<h6>Cenários & Objetos</h6>
 
-<div class="d-flex flex-column gap-1">
+<div class="grupo">
 
 {
-cenarios.map(c => (
+cenarios.map(c=>(
 
 <button
-class="btn btn-outline-dark btn-sm filtro-cenario w-100"
+class="btn btn-outline-dark filtro-cenario"
 data-cenario={c}
 >
 {c}
@@ -128,11 +111,12 @@ data-cenario={c}
 </div>
 
 <!-- GALERIA -->
+
 <div class="col-lg-10">
 
 <div
-class="row g-3"
 id="grid"
+class="row g-3"
 >
 
 {
@@ -140,15 +124,19 @@ minis.map((m,index)=>(
 
 <div
 class="col-6 col-md-4 col-lg-custom mini"
+
 data-index={index}
+
 data-classes={JSON.stringify(
-m.data.classes || []
+m.data.classes||[]
 )}
+
 data-racas={JSON.stringify(
-m.data.racas || []
+m.data.racas||[]
 )}
+
 data-cenarios={JSON.stringify(
-m.data.cenarios || []
+m.data.cenarios||[]
 )}
 >
 
@@ -172,6 +160,7 @@ class="d-flex justify-content-center gap-2 mt-5"
 
 </section>
 
+
 <script is:inline>
 
 let paginaAtual=1;
@@ -186,10 +175,7 @@ const minis=[
 ...document.querySelectorAll(".mini")
 ];
 
-const botaoTodos=
-document.querySelector("#todos");
-
-const containerFiltros=
+const filtrosContainer=
 document.querySelector(
 "#filtros-ativos"
 );
@@ -200,44 +186,49 @@ const filtrados=minis.filter(el=>{
 
 const classes=
 JSON.parse(
-el.dataset.classes || "[]"
+el.dataset.classes||"[]"
 );
 
 const racas=
 JSON.parse(
-el.dataset.racas || "[]"
+el.dataset.racas||"[]"
 );
 
 const cenarios=
 JSON.parse(
-el.dataset.cenarios || "[]"
+el.dataset.cenarios||"[]"
 );
 
-const classeOk=
+return(
+
+(
 classesAtivas.length===0
 ||
 classesAtivas.some(
 c=>classes.includes(c)
-);
+)
+)
 
-const racaOk=
+&&
+
+(
 racasAtivas.length===0
 ||
 racasAtivas.some(
 r=>racas.includes(r)
-);
+)
+)
 
-const cenarioOk=
+&&
+
+(
 cenariosAtivos.length===0
 ||
 cenariosAtivos.some(
 c=>cenarios.includes(c)
-);
+)
+)
 
-return(
-classeOk &&
-racaOk &&
-cenarioOk
 );
 
 });
@@ -246,19 +237,10 @@ minis.forEach(
 m=>m.style.display="none"
 );
 
-const inicio=
-(paginaAtual-1)
-*
-POR_PAGINA;
-
-const fim=
-inicio+
-POR_PAGINA;
-
 filtrados
 .slice(
-inicio,
-fim
+(paginaAtual-1)*POR_PAGINA,
+paginaAtual*POR_PAGINA
 )
 .forEach(el=>{
 
@@ -266,74 +248,66 @@ el.style.display="";
 
 });
 
+renderizarTags();
+
 criarPaginacao(
 filtrados.length
 );
 
-renderizarFiltros();
-
 }
 
-function renderizarFiltros(){
+function renderizarTags(){
 
-containerFiltros.innerHTML="";
+filtrosContainer.innerHTML="";
 
-function criarBadge(
-texto,
-tipo
-){
+function criar(lista,tipo){
 
-const badge=
+lista.forEach(item=>{
+
+const tag=
 document.createElement(
 "div"
 );
 
-badge.className=
-`filtro-badge ${tipo}`;
+tag.className=
+`tag-filtro ${tipo}`;
 
-badge.innerHTML=`
-<span>${texto}</span>
-
-<button
-class="remover-filtro"
+tag.innerHTML=`
+<span>${item}</span>
+<span
+class="x"
 data-tipo="${tipo}"
-data-valor="${texto}"
+data-valor="${item}"
 >
 ×
-</button>
+</span>
 `;
 
-containerFiltros.append(
-badge
+filtrosContainer.append(
+tag
 );
+
+});
 
 }
 
-classesAtivas.forEach(
-v=>criarBadge(
-v,
+criar(
+classesAtivas,
 "classe"
-)
 );
 
-racasAtivas.forEach(
-v=>criarBadge(
-v,
+criar(
+racasAtivas,
 "raca"
-)
 );
 
-cenariosAtivos.forEach(
-v=>criarBadge(
-v,
+criar(
+cenariosAtivos,
 "cenario"
-)
 );
 
 document
-.querySelectorAll(
-".remover-filtro"
-)
+.querySelectorAll(".x")
 .forEach(btn=>{
 
 btn.onclick=()=>{
@@ -344,83 +318,42 @@ btn.dataset.tipo;
 const valor=
 btn.dataset.valor;
 
-if(tipo==="classe"){
+const mapa={
 
-removerFiltro(
-valor,
-classesAtivas,
-".filtro-classe",
-"classe"
-);
-
-}
-
-if(tipo==="raca"){
-
-removerFiltro(
-valor,
-racasAtivas,
-".filtro-raca",
-"raca"
-);
-
-}
-
-if(tipo==="cenario"){
-
-removerFiltro(
-valor,
-cenariosAtivos,
-".filtro-cenario",
-"cenario"
-);
-
-}
+classe:classesAtivas,
+raca:racasAtivas,
+cenario:cenariosAtivos
 
 };
 
-});
-
-}
-
-function removerFiltro(
-valor,
-lista,
-seletor,
-datasetNome
-){
-
-const index=
-lista.indexOf(
-valor
-);
-
-if(index>-1){
+const lista=
+mapa[tipo];
 
 lista.splice(
-index,
+lista.indexOf(
+valor
+),
 1
 );
 
-}
-
 document
 .querySelectorAll(
-seletor
+`.filtro-${tipo}`
 )
-.forEach(btn=>{
+.forEach(b=>{
+
+const dado=
+b.dataset[tipo];
 
 if(
-btn.dataset[
-datasetNome
-]===valor
+dado===valor
 ){
 
-btn.classList.remove(
+b.classList.remove(
 "btn-warning"
 );
 
-btn.classList.add(
+b.classList.add(
 "btn-outline-dark"
 );
 
@@ -429,6 +362,10 @@ btn.classList.add(
 });
 
 atualizar();
+
+};
+
+});
 
 }
 
@@ -439,12 +376,12 @@ Math.ceil(
 total/POR_PAGINA
 );
 
-const container=
+const div=
 document.querySelector(
 "#paginacao"
 );
 
-container.innerHTML="";
+div.innerHTML="";
 
 for(
 let i=1;
@@ -457,8 +394,6 @@ document.createElement(
 "button"
 );
 
-btn.innerText=i;
-
 btn.className=
 i===paginaAtual
 ?
@@ -466,71 +401,33 @@ i===paginaAtual
 :
 "btn btn-outline-dark btn-sm";
 
+btn.innerText=i;
+
 btn.onclick=()=>{
 
 paginaAtual=i;
-
 atualizar();
 
 };
 
-container.append(
-btn
-);
+div.append(btn);
 
 }
 
 }
 
-function resetarTodos(){
-
-classesAtivas=[];
-racasAtivas=[];
-cenariosAtivos=[];
-
-document
-.querySelectorAll(
-".filtro-classe,.filtro-raca,.filtro-cenario"
-)
-.forEach(btn=>{
-
-btn.classList.remove(
-"btn-warning"
-);
-
-btn.classList.add(
-"btn-outline-dark"
-);
-
-});
-
-paginaAtual=1;
-
-atualizar();
-
-}
-
-botaoTodos.addEventListener(
-"click",
-resetarTodos
-);
-
-function alternarFiltro(
+function alternar(
 valor,
 lista,
 botao
 ){
 
 if(
-lista.includes(
-valor
-)
+lista.includes(valor)
 ){
 
 lista.splice(
-lista.indexOf(
-valor
-),
+lista.indexOf(valor),
 1
 );
 
@@ -544,9 +441,7 @@ botao.classList.add(
 
 }else{
 
-lista.push(
-valor
-);
+lista.push(valor);
 
 botao.classList.remove(
 "btn-outline-dark"
@@ -572,7 +467,7 @@ document
 
 btn.onclick=()=>{
 
-alternarFiltro(
+alternar(
 btn.dataset.classe,
 classesAtivas,
 btn
@@ -590,7 +485,7 @@ document
 
 btn.onclick=()=>{
 
-alternarFiltro(
+alternar(
 btn.dataset.raca,
 racasAtivas,
 btn
@@ -608,7 +503,7 @@ document
 
 btn.onclick=()=>{
 
-alternarFiltro(
+alternar(
 btn.dataset.cenario,
 cenariosAtivos,
 btn
@@ -618,178 +513,148 @@ btn
 
 });
 
+document
+.querySelector(
+"#todos"
+)
+.onclick=()=>{
+
+classesAtivas=[];
+racasAtivas=[];
+cenariosAtivos=[];
+
+document
+.querySelectorAll(
+".filtro-classe,.filtro-raca,.filtro-cenario"
+)
+.forEach(btn=>{
+
+btn.classList.remove(
+"btn-warning"
+);
+
+btn.classList.add(
+"btn-outline-dark"
+);
+
+});
+
+paginaAtual=1;
+
+atualizar();
+
+};
+
 atualizar();
 
 </script>
 
 <style>
 
-.filtro-classe,
-.filtro-raca,
-.filtro-cenario{
-font-size:.75rem;
-padding:.2rem .4rem;
+.sidebar h6{
+
+margin-top:30px;
+
+}
+
+.grupo{
+
+display:flex;
+flex-direction:column;
+gap:6px;
+
+}
+
+.grupo button{
+
+font-size:.8rem;
+
 }
 
 .col-lg-custom{
+
 width:20%;
-}
 
-.mini img{
-width:100%;
-aspect-ratio:1/1;
-object-fit:cover;
 }
-
-/* FILTROS ATIVOS */
 
 #filtros-ativos{
 
 display:flex;
 flex-wrap:wrap;
-gap:.4rem;
+gap:6px;
 
-margin-bottom:1rem;
+margin:15px 0;
 
 }
 
-.filtro-badge{
+.tag-filtro{
 
-display:inline-flex;
+display:flex;
 align-items:center;
+gap:6px;
 
-gap:.35rem;
+padding:6px 10px;
 
-padding:.25rem .55rem;
+border-radius:8px;
 
-border-radius:.45rem;
-
-font-size:.72rem;
+font-size:.75rem;
 font-weight:600;
 
 line-height:1;
 
-white-space:nowrap;
-
-width:auto;
-
 }
 
-/* Classe */
-
-.filtro-badge.classe{
+.classe{
 
 background:#212529;
-color:#fff;
+color:white;
 
 }
 
-/* Raça */
-
-.filtro-badge.raca{
+.raca{
 
 background:#ffc107;
-color:#000;
+color:black;
 
 }
 
-/* Cenário */
-
-.filtro-badge.cenario{
+.cenario{
 
 background:#6c757d;
-color:#fff;
+color:white;
 
 }
 
-/* botão X */
+.x{
 
-.remover-filtro{
+width:15px;
+height:15px;
 
 display:flex;
 align-items:center;
 justify-content:center;
 
-width:14px;
-height:14px;
-
-border:none;
-outline:none;
-
-background:rgba(255,255,255,.15);
-
 border-radius:50%;
-
-font-size:.6rem;
-font-weight:bold;
-
-padding:0;
 
 cursor:pointer;
 
-color:inherit;
+background:rgba(255,255,255,.15);
 
-transition:.2s;
-
-}
-
-.filtro-badge.raca .remover-filtro{
-
-background:rgba(0,0,0,.12);
+font-size:.7rem;
 
 }
 
-.remover-filtro:hover{
+.raca .x{
 
-transform:scale(1.1);
-
-opacity:.8;
+background:rgba(0,0,0,.15);
 
 }
-
-/* MOBILE */
 
 @media(max-width:992px){
-
-.container>.row{
-
-display:flex;
-flex-wrap:nowrap;
-
-gap:.5rem;
-
-}
-
-.col-lg-2{
-
-flex:0 0 110px;
-width:110px;
-
-}
-
-.col-lg-10{
-
-flex:1;
-min-width:0;
-
-}
 
 .col-lg-custom{
 
 width:50%;
-padding:.25rem;
-
-}
-
-.mini{
-
-width:50%;
-
-}
-
-#paginacao{
-
-flex-wrap:wrap;
 
 }
 
