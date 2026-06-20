@@ -94,9 +94,44 @@ let ativos=[];
 const filtros=
 document.querySelectorAll(".filtro");
 
+const botaoTodos=
+document.querySelector(
+'[data-raca="Todos"]'
+);
+
+function atualizar(){
+
+document
+.querySelectorAll(".mini")
+.forEach(el=>{
+
+const racas=
+JSON.parse(
+el.dataset.racas || "[]"
+);
+
+const mostrar=
+
+ativos.length===0
+||
+ativos.some(
+r=>racas.includes(r)
+);
+
+el.style.display=
+mostrar
+? ""
+: "none";
+
+});
+
+}
+
 filtros.forEach(btn=>{
 
-btn.addEventListener("click",()=>{
+btn.addEventListener(
+"click",
+()=>{
 
 const valor=
 btn.dataset.raca;
@@ -125,21 +160,14 @@ btn.classList.add(
 "btn-warning"
 );
 
-}else{
+}
+else{
 
-document
-.querySelector(
-'[data-raca="Todos"]'
-)
-.classList.remove(
+botaoTodos?.classList.remove(
 "btn-warning"
 );
 
-document
-.querySelector(
-'[data-raca="Todos"]'
-)
-.classList.add(
+botaoTodos?.classList.add(
 "btn-outline-dark"
 );
 
@@ -160,7 +188,8 @@ btn.classList.add(
 "btn-outline-dark"
 );
 
-}else{
+}
+else{
 
 ativos.push(valor);
 
@@ -176,27 +205,7 @@ btn.classList.add(
 
 }
 
-document
-.querySelectorAll(".mini")
-.forEach(el=>{
-
-const racas=
-JSON.parse(
-el.dataset.racas
-);
-
-el.style.display=
-
-ativos.length===0
-||
-ativos.some(
-r=>racas.includes(r)
-)
-
-? ""
-: "none";
-
-});
+atualizar();
 
 });
 
