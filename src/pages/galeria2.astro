@@ -6,27 +6,27 @@ import MiniCard from '../components/MiniCard.astro';
 const minis = await getCollection('minis');
 
 const classes = [
-...new Set(
-minis.flatMap(
-m => m.data.classes || []
-)
-)
+  ...new Set(
+    minis.flatMap(
+      m => m.data.classes || []
+    )
+  )
 ].sort();
 
 const racas = [
-...new Set(
-minis.flatMap(
-m => m.data.racas || []
-)
-)
+  ...new Set(
+    minis.flatMap(
+      m => m.data.racas || []
+    )
+  )
 ].sort();
 
 const cenarios = [
-...new Set(
-minis.flatMap(
-m => m.data.cenarios || []
-)
-)
+  ...new Set(
+    minis.flatMap(
+      m => m.data.cenarios || []
+    )
+  )
 ].sort();
 
 const POR_PAGINA = 100;
@@ -38,6 +38,7 @@ const POR_PAGINA = 100;
 
 <div class="row">
 
+<!-- FILTROS -->
 <div class="col-lg-2">
 
 <h4 class="mb-3">
@@ -50,7 +51,7 @@ Galeria
 class="btn btn-warning btn-sm w-100"
 id="todos"
 >
-Limpar/ Exibir Todos
+Limpar / Exibir Todos
 </button>
 
 </div>
@@ -126,6 +127,7 @@ data-cenario={c}
 
 </div>
 
+<!-- GALERIA -->
 <div class="col-lg-10">
 
 <div
@@ -150,7 +152,7 @@ m.data.cenarios || []
 )}
 >
 
-<MiniCard mini={m} />
+<MiniCard mini={m}/>
 
 </div>
 
@@ -160,11 +162,9 @@ m.data.cenarios || []
 </div>
 
 <div
-class="d-flex justify-content-center gap-2 mt-5"
 id="paginacao"
->
-
-</div>
+class="d-flex justify-content-center gap-2 mt-5"
+></div>
 
 </div>
 
@@ -196,9 +196,7 @@ document.querySelector(
 
 function atualizar(){
 
-const filtrados=
-
-minis.filter(el=>{
+const filtrados=minis.filter(el=>{
 
 const classes=
 JSON.parse(
@@ -237,10 +235,8 @@ c=>cenarios.includes(c)
 );
 
 return(
-classeOk
-&&
-racaOk
-&&
+classeOk &&
+racaOk &&
 cenarioOk
 );
 
@@ -260,7 +256,10 @@ inicio+
 POR_PAGINA;
 
 filtrados
-.slice(inicio,fim)
+.slice(
+inicio,
+fim
+)
 .forEach(el=>{
 
 el.style.display="";
@@ -279,7 +278,10 @@ function renderizarFiltros(){
 
 containerFiltros.innerHTML="";
 
-const criarBadge=(valor,tipo)=>{
+function criarBadge(
+texto,
+tipo
+){
 
 const badge=
 document.createElement(
@@ -290,11 +292,11 @@ badge.className=
 `filtro-badge ${tipo}`;
 
 badge.innerHTML=`
-<span>${valor}</span>
+<span>${texto}</span>
 <button
-class="fechar-filtro"
-data-valor="${valor}"
+class="remover-filtro"
 data-tipo="${tipo}"
+data-valor="${texto}"
 >
 ✕
 </button>
@@ -304,7 +306,7 @@ containerFiltros.append(
 badge
 );
 
-};
+}
 
 classesAtivas.forEach(
 v=>criarBadge(
@@ -329,43 +331,49 @@ v,
 
 document
 .querySelectorAll(
-".fechar-filtro"
+".remover-filtro"
 )
 .forEach(btn=>{
 
 btn.onclick=()=>{
 
-const valor=
-btn.dataset.valor;
-
 const tipo=
 btn.dataset.tipo;
 
+const valor=
+btn.dataset.valor;
+
 if(tipo==="classe"){
+
 removerFiltro(
 valor,
 classesAtivas,
 ".filtro-classe",
 "classe"
 );
+
 }
 
 if(tipo==="raca"){
+
 removerFiltro(
 valor,
 racasAtivas,
 ".filtro-raca",
 "raca"
 );
+
 }
 
 if(tipo==="cenario"){
+
 removerFiltro(
 valor,
 cenariosAtivos,
 ".filtro-cenario",
 "cenario"
 );
+
 }
 
 };
@@ -378,7 +386,7 @@ function removerFiltro(
 valor,
 lista,
 seletor,
-tipo
+datasetNome
 ){
 
 const index=
@@ -401,19 +409,19 @@ seletor
 )
 .forEach(btn=>{
 
-const data=
-btn.dataset[tipo];
-
-if(data===valor){
+if(
+btn.dataset[
+datasetNome
+]===valor
+){
 
 btn.classList.remove(
 "btn-warning"
 );
 
 btn.classList.add(
-"btn-outline-dark";
-
-)
+"btn-outline-dark"
+);
 
 }
 
@@ -561,9 +569,7 @@ document
 )
 .forEach(btn=>{
 
-btn.addEventListener(
-"click",
-()=>{
+btn.onclick=()=>{
 
 alternarFiltro(
 btn.dataset.classe,
@@ -571,7 +577,7 @@ classesAtivas,
 btn
 );
 
-});
+};
 
 });
 
@@ -581,9 +587,7 @@ document
 )
 .forEach(btn=>{
 
-btn.addEventListener(
-"click",
-()=>{
+btn.onclick=()=>{
 
 alternarFiltro(
 btn.dataset.raca,
@@ -591,7 +595,7 @@ racasAtivas,
 btn
 );
 
-});
+};
 
 });
 
@@ -601,9 +605,7 @@ document
 )
 .forEach(btn=>{
 
-btn.addEventListener(
-"click",
-()=>{
+btn.onclick=()=>{
 
 alternarFiltro(
 btn.dataset.cenario,
@@ -611,7 +613,7 @@ cenariosAtivos,
 btn
 );
 
-});
+};
 
 });
 
@@ -638,7 +640,7 @@ aspect-ratio:1/1;
 object-fit:cover;
 }
 
-/* BADGES */
+/* BADGES DOS FILTROS */
 
 .filtro-badge{
 
@@ -654,47 +656,54 @@ font-size:.75rem;
 font-weight:600;
 
 width:fit-content;
+
 }
 
 .filtro-badge.classe{
 
-background:#1f2430;
+background:#212529;
 color:white;
+
 }
 
 .filtro-badge.raca{
 
 background:#ffc107;
 color:black;
+
 }
 
 .filtro-badge.cenario{
 
 background:#6c757d;
 color:white;
+
 }
 
-.fechar-filtro{
+.remover-filtro{
 
-background:none;
 border:none;
-
-color:inherit;
-
-font-size:.8rem;
-font-weight:bold;
+background:none;
 
 cursor:pointer;
 
 padding:0;
 margin:0;
+
+font-size:.8rem;
+font-weight:bold;
+
+color:inherit;
+
 }
 
-.fechar-filtro:hover{
+.remover-filtro:hover{
 
 opacity:.7;
 
 }
+
+/* MOBILE */
 
 @media(max-width:992px){
 
@@ -702,7 +711,7 @@ opacity:.7;
 
 display:flex;
 flex-wrap:nowrap;
-align-items:flex-start;
+
 gap:.5rem;
 
 }
@@ -711,8 +720,6 @@ gap:.5rem;
 
 flex:0 0 110px;
 width:110px;
-max-width:110px;
-padding-right:0;
 
 }
 
@@ -720,29 +727,6 @@ padding-right:0;
 
 flex:1;
 min-width:0;
-padding-left:0;
-
-}
-
-.col-lg-2 h4{
-
-font-size:1.3rem;
-
-}
-
-.col-lg-2 h6{
-
-font-size:.8rem;
-
-}
-
-.filtro-classe,
-.filtro-raca,
-.filtro-cenario,
-#todos{
-
-font-size:.65rem;
-padding:.25rem;
 
 }
 
