@@ -1,5 +1,4 @@
 ---
-
 import { getCollection } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 import MiniCard from '../../components/MiniCard.astro';
@@ -16,7 +15,8 @@ m=>m.data.racas||[]
 )].sort()
 ];
 
-## const POR_PAGINA=100;
+const POR_PAGINA=100;
+---
 
 <Layout titulo="Raças & Tipos">
 
@@ -48,7 +48,6 @@ r==="Todos"
 "w-100"
 ]}
 data-raca={r}
-
 >
 
 {r}
@@ -119,11 +118,8 @@ document.querySelector(
 '[data-raca="Todos"]'
 );
 
-const minis=
-[
-...document.querySelectorAll(
-".mini"
-)
+const minis=[
+...document.querySelectorAll(".mini")
 ];
 
 function atualizar(){
@@ -137,7 +133,7 @@ JSON.parse(
 el.dataset.racas||"[]"
 );
 
-return (
+return(
 ativos.length===0
 ||
 ativos.some(
@@ -157,15 +153,10 @@ const inicio=
 POR_PAGINA;
 
 const fim=
-inicio
-+
-POR_PAGINA;
+inicio+POR_PAGINA;
 
 filtrados
-.slice(
-inicio,
-fim
-)
+.slice(inicio,fim)
 .forEach(el=>{
 
 el.style.display="";
@@ -192,11 +183,7 @@ document.querySelector(
 
 container.innerHTML="";
 
-for(
-let i=1;
-i<=paginas;
-i++
-){
+for(let i=1;i<=paginas;i++){
 
 const btn=
 document.createElement(
@@ -215,7 +202,6 @@ i===paginaAtual
 btn.onclick=()=>{
 
 paginaAtual=i;
-
 atualizar();
 
 };
@@ -237,9 +223,7 @@ btn.dataset.raca;
 
 paginaAtual=1;
 
-if(
-valor==="Todos"
-){
+if(valor==="Todos"){
 
 ativos=[];
 
