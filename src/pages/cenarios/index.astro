@@ -1,0 +1,161 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import MiniCard from '../../components/MiniCard.astro';
+
+const minis=(await getCollection('minis'))
+.filter(m=>m.data.cenarios?.length);
+
+const cenarios=[
+"Todos",
+...[...new Set(
+minis.flatMap(
+m=>m.data.cenarios||[]
+)
+)].sort()
+];
+---
+
+<Layout titulo="Cenários & Objetos">
+
+<section class="container py-5">
+
+<div class="row">
+
+<div class="col-lg-3">
+
+<h2 class="mb-4">
+Cenários & Objetos
+</h2>
+
+<div class="d-flex flex-column gap-2">
+
+{
+cenarios.map(c=>(
+
+<div class={c==="Todos"?"mb-3":""}>
+
+<button
+class:list=[
+"btn",
+c==="Todos"
+?"btn-warning"
+:"btn-outline-dark",
+"filtro",
+"w-100"
+]
+data-raca={c}
+>
+{c}
+</button>
+
+</div>
+
+))
+}
+
+</div>
+
+</div>
+
+<div class="col-lg-9">
+
+<div class="row g-4">
+
+{
+minis.map(m=>(
+
+<div
+class="col-12 col-md-6 mini"
+data-racas={JSON.stringify(m.data.racas||[])}
+>
+
+<MiniCard mini={m}/>
+
+</div>
+
+))
+}
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+<script is:inline>
+
+let ativos=[];
+
+document
+.querySelectorAll(".filtro")
+.forEach(btn=>{
+
+btn.addEventListener("click",()=>{
+
+const valor=btn.dataset.raca;
+
+if(valor==="Todos"){
+
+ativos=[];
+
+document
+.querySelectorAll(".filtro")
+.forEach(b=>{
+
+b.classList.remove("btn-warning");
+b.classList.add("btn-outline-dark");
+
+});
+
+btn.classList.remove("btn-outline-dark");
+btn.classList.add("btn-warning");
+
+}else{
+
+if(ativos.includes(valor)){
+
+ativos=
+ativos.filter(
+v=>v!==valor
+);
+
+btn.classList.remove("btn-warning");
+btn.classList.add("btn-outline-dark");
+
+}else{
+
+ativos.push(valor);
+
+btn.classList.remove("btn-outline-dark");
+btn.classList.add("btn-warning");
+
+}
+
+}
+
+document
+.querySelectorAll(".mini")
+.forEach(el=>{
+
+const valores=
+JSON.parse(el.dataset.racas);
+
+el.style.display=
+ativos.length===0 ||
+ativos.some(
+v=>valores.includes(v)
+)
+?"":"none";
+
+});
+
+});
+
+});
+
+</script>
+
+</Layout>
