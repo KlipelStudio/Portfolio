@@ -6,7 +6,7 @@ classes: ["Bardo"]
 racas: ["Humano"]
 cenarios: []
 
-destaque: []
+destaque: true
 
 galeria: []
 ---
