@@ -1,20 +1,22 @@
 ---
+
 import { getCollection } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 import MiniCard from '../../components/MiniCard.astro';
 
-const minis = (await getCollection('minis'))
-.filter(m => m.data.cenarios?.length);
+const minis=(await getCollection('minis'))
+.filter(m=>m.data.cenarios?.length);
 
-const cenarios = [
+const cenarios=[
 "Todos",
 ...[...new Set(
 minis.flatMap(
-m => m.data.cenarios || []
+m=>m.data.cenarios||[]
 )
 )].sort()
 ];
----
+
+## const POR_PAGINA=100;
 
 <Layout titulo="Cenários & Objetos">
 
@@ -22,31 +24,35 @@ m => m.data.cenarios || []
 
 <div class="row">
 
-<div class="col-lg-3">
+<div class="col-lg-2">
 
-<h2 class="mb-4">
+<h4 class="mb-3">
 Cenários & Objetos
-</h2>
+</h4>
 
-<div class="d-flex flex-column gap-2">
+<div class="d-flex flex-column gap-1">
 
 {
-cenarios.map(c => (
+cenarios.map(c=>(
 
-<div class={c==="Todos" ? "mb-3" : ""}>
+<div class={c==="Todos"?"mb-3":""}>
 
 <button
 class:list={[
 "btn",
+"btn-sm",
 c==="Todos"
-? "btn-warning"
-: "btn-outline-dark",
+?"btn-warning"
+:"btn-outline-dark",
 "filtro",
 "w-100"
 ]}
 data-cenario={c}
+
 >
+
 {c}
+
 </button>
 
 </div>
@@ -58,17 +64,21 @@ data-cenario={c}
 
 </div>
 
-<div class="col-lg-9">
-
-<div class="row g-4">
-
-{
-minis.map(m => (
+<div class="col-lg-10">
 
 <div
-class="col-12 col-md-6 mini"
+class="row g-3"
+id="grid"
+>
+
+{
+minis.map((m,index)=>(
+
+<div
+class="col-6 col-md-4 col-lg-custom mini"
+data-index={index}
 data-cenarios={JSON.stringify(
-m.data.cenarios || []
+m.data.cenarios||[]
 )}
 >
 
@@ -81,6 +91,13 @@ m.data.cenarios || []
 
 </div>
 
+<div
+class="d-flex justify-content-center gap-2 mt-5"
+id="paginacao"
+>
+
+</div>
+
 </div>
 
 </div>
@@ -90,6 +107,9 @@ m.data.cenarios || []
 <script is:inline>
 
 let ativos=[];
+let paginaAtual=1;
+
+const POR_PAGINA=100;
 
 const filtros=
 document.querySelectorAll(".filtro");
@@ -99,31 +119,110 @@ document.querySelector(
 '[data-cenario="Todos"]'
 );
 
+const minis=
+[
+...document.querySelectorAll(
+".mini"
+)
+];
+
 function atualizar(){
 
-document
-.querySelectorAll(".mini")
-.forEach(el=>{
+const filtrados=
+
+minis.filter(el=>{
 
 const cenarios=
 JSON.parse(
-el.dataset.cenarios || "[]"
+el.dataset.cenarios||"[]"
 );
 
-const mostrar=
-
+return (
 ativos.length===0
 ||
 ativos.some(
 c=>cenarios.includes(c)
+)
 );
 
-el.style.display=
-mostrar
-? ""
-: "none";
+});
+
+minis.forEach(
+m=>m.style.display="none"
+);
+
+const inicio=
+(paginaAtual-1)
+*
+POR_PAGINA;
+
+const fim=
+inicio
++
+POR_PAGINA;
+
+filtrados
+.slice(
+inicio,
+fim
+)
+.forEach(el=>{
+
+el.style.display="";
 
 });
+
+criarPaginacao(
+filtrados.length
+);
+
+}
+
+function criarPaginacao(total){
+
+const paginas=
+Math.ceil(
+total/POR_PAGINA
+);
+
+const container=
+document.querySelector(
+"#paginacao"
+);
+
+container.innerHTML="";
+
+for(
+let i=1;
+i<=paginas;
+i++
+){
+
+const btn=
+document.createElement(
+"button"
+);
+
+btn.innerText=i;
+
+btn.className=
+i===paginaAtual
+?
+"btn btn-warning btn-sm"
+:
+"btn btn-outline-dark btn-sm";
+
+btn.onclick=()=>{
+
+paginaAtual=i;
+
+atualizar();
+
+};
+
+container.append(btn);
+
+}
 
 }
 
@@ -136,7 +235,11 @@ btn.addEventListener(
 const valor=
 btn.dataset.cenario;
 
-if(valor==="Todos"){
+paginaAtual=1;
+
+if(
+valor==="Todos"
+){
 
 ativos=[];
 
@@ -160,14 +263,13 @@ btn.classList.add(
 "btn-warning"
 );
 
-}
-else{
+}else{
 
-botaoTodos?.classList.remove(
+botaoTodos.classList.remove(
 "btn-warning"
 );
 
-botaoTodos?.classList.add(
+botaoTodos.classList.add(
 "btn-outline-dark"
 );
 
@@ -177,7 +279,7 @@ ativos.includes(valor)
 
 ativos=
 ativos.filter(
-v=>v!==valor
+x=>x!==valor
 );
 
 btn.classList.remove(
@@ -188,8 +290,7 @@ btn.classList.add(
 "btn-outline-dark"
 );
 
-}
-else{
+}else{
 
 ativos.push(valor);
 
@@ -211,6 +312,35 @@ atualizar();
 
 });
 
+atualizar();
+
 </script>
+
+<style>
+
+.filtro{
+font-size:.75rem;
+padding:.2rem .4rem;
+}
+
+.col-lg-custom{
+width:20%;
+}
+
+.mini img{
+width:100%;
+aspect-ratio:1/1;
+object-fit:cover;
+}
+
+@media(max-width:992px){
+
+.col-lg-custom{
+width:auto;
+}
+
+}
+
+</style>
 
 </Layout>
