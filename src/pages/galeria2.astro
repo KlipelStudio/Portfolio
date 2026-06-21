@@ -33,7 +33,7 @@ id="botao-filtro-mobile"
 class="botao-filtro-mobile"
 type="button"
 >
-☰ Filtros
+&gt; Filtros
 </button>
 
 <div
@@ -214,6 +214,8 @@ class="d-flex justify-content-center flex-wrap gap-2 mt-5"
 </section>
 
 <script is:inline>
+
+const POR_PAGINA=100;
 
 let paginaAtual=1;
 
@@ -944,19 +946,18 @@ border:none;
 background:#ffc107;
 color:#000;
 
-font-size:.85rem;
+font-size:.82rem;
 font-weight:800;
 
-padding:12px 10px;
+padding:10px 12px;
 
-border-radius:0 14px 14px 0;
+border-radius:0 12px 12px 0;
 
 box-shadow:0 6px 18px rgba(0,0,0,.28);
 
-writing-mode:vertical-rl;
-text-orientation:mixed;
-
 cursor:pointer;
+
+white-space:nowrap;
 
 }
 
