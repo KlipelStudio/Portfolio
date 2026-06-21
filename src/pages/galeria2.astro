@@ -52,7 +52,7 @@ Limpar / Exibir Todos
 <div class="grupo-dropdown">
 
 <button
-class="titulo-filtro"
+class="titulo-filtro fechado"
 type="button"
 data-target="grupo-classes"
 >
@@ -62,7 +62,7 @@ data-target="grupo-classes"
 
 <div
 id="grupo-classes"
-class="grupo grupo-aberto"
+class="grupo"
 >
 
 {
@@ -85,7 +85,7 @@ data-classe={c}
 <div class="grupo-dropdown">
 
 <button
-class="titulo-filtro"
+class="titulo-filtro fechado"
 type="button"
 data-target="grupo-racas"
 >
@@ -95,7 +95,7 @@ data-target="grupo-racas"
 
 <div
 id="grupo-racas"
-class="grupo grupo-aberto"
+class="grupo"
 >
 
 {
@@ -118,7 +118,7 @@ data-raca={r}
 <div class="grupo-dropdown">
 
 <button
-class="titulo-filtro"
+class="titulo-filtro fechado"
 type="button"
 data-target="grupo-cenarios"
 >
@@ -128,7 +128,7 @@ data-target="grupo-cenarios"
 
 <div
 id="grupo-cenarios"
-class="grupo grupo-aberto"
+class="grupo"
 >
 
 {
@@ -625,6 +625,7 @@ top:20px;
 
 max-height:calc(100vh - 40px);
 overflow-y:auto;
+overflow-x:hidden;
 
 padding-right:6px;
 
@@ -646,6 +647,7 @@ background:transparent;
 display:flex;
 align-items:center;
 justify-content:space-between;
+gap:10px;
 
 padding:0;
 
@@ -661,6 +663,12 @@ cursor:pointer;
 
 }
 
+.titulo-filtro span:first-child{
+
+min-width:0;
+
+}
+
 .seta{
 
 font-size:1.4rem;
@@ -668,6 +676,8 @@ line-height:1;
 
 transform:rotate(90deg);
 transition:.2s ease;
+
+flex-shrink:0;
 
 }
 
@@ -683,11 +693,24 @@ display:none;
 flex-direction:column;
 gap:6px;
 
+width:100%;
+
 }
 
 .grupo.grupo-aberto{
 
 display:flex;
+
+}
+
+.grupo .btn{
+
+width:100%;
+max-width:100%;
+
+white-space:normal;
+overflow-wrap:anywhere;
+word-break:normal;
 
 }
 
@@ -706,9 +729,18 @@ gap:6px;
 
 margin:20px 0;
 
+max-width:100%;
+overflow:hidden;
+
 }
 
 /* BADGES DOS FILTROS ATIVOS */
+
+:global(.tag-wrapper){
+
+max-width:100%;
+
+}
 
 :global(.badge-filtro){
 
@@ -716,8 +748,11 @@ border:none;
 
 display:inline-flex;
 align-items:center;
+justify-content:center;
 
 gap:5px;
+
+max-width:100%;
 
 padding:4px 8px;
 
@@ -729,6 +764,10 @@ font-weight:600;
 line-height:1;
 
 cursor:pointer;
+
+white-space:normal;
+overflow-wrap:anywhere;
+text-align:center;
 
 }
 
@@ -757,7 +796,7 @@ border:1px solid #d0d7de;
 
 :global(.badge-x){
 
-display:flex;
+display:inline-flex;
 
 align-items:center;
 justify-content:center;
@@ -765,9 +804,16 @@ justify-content:center;
 width:13px;
 height:13px;
 
+min-width:13px;
+
 border-radius:50%;
 
 font-size:.6rem;
+font-weight:700;
+
+line-height:13px;
+
+padding-bottom:1px;
 
 background:rgba(255,255,255,.2);
 
@@ -787,7 +833,7 @@ background:rgba(0,0,0,.15);
 position:static;
 
 max-height:none;
-overflow-y:visible;
+overflow:visible;
 
 padding-right:0;
 
