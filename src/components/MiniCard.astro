@@ -46,6 +46,12 @@ const img = asset(mini.data.imagem);
           </span>
         ))}
 
+        {mini.data.sexo?.map(s => (
+          <span class="badge badge-sexo">
+            {s}
+          </span>
+        ))}
+
         {mini.data.cenarios?.map(c => (
           <span class="badge badge-cenario">
             {c}
@@ -72,6 +78,13 @@ const img = asset(mini.data.imagem);
 .badge-raca{
   background:#ffc107;
   color:#000;
+  font-size:.75rem;
+  font-weight:600;
+}
+
+.badge-sexo{
+  background:#b23a48;
+  color:#fff;
   font-size:.75rem;
   font-weight:600;
 }
