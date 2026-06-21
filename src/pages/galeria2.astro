@@ -28,6 +28,19 @@ const POR_PAGINA=100;
 
 <Layout titulo="Galeria">
 
+<button
+id="botao-filtro-mobile"
+class="botao-filtro-mobile"
+type="button"
+>
+☰ Filtros
+</button>
+
+<div
+id="overlay-filtros"
+class="overlay-filtros"
+></div>
+
 <section class="container py-5">
 
 <div class="row">
@@ -218,6 +231,49 @@ const filtrosContainer=
 document.querySelector(
 "#filtros-ativos"
 );
+
+const sidebar=
+document.querySelector(
+".sidebar"
+);
+
+const botaoFiltroMobile=
+document.querySelector(
+"#botao-filtro-mobile"
+);
+
+const overlayFiltros=
+document.querySelector(
+"#overlay-filtros"
+);
+
+function alternarSidebarMobile(){
+
+sidebar.classList.toggle(
+"sidebar-aberta"
+);
+
+overlayFiltros.classList.toggle(
+"overlay-aberto"
+);
+
+botaoFiltroMobile.classList.toggle(
+"botao-aberto"
+);
+
+}
+
+botaoFiltroMobile.onclick=()=>{
+
+alternarSidebarMobile();
+
+};
+
+overlayFiltros.onclick=()=>{
+
+alternarSidebarMobile();
+
+};
 
 function atualizar(){
 
@@ -652,6 +708,13 @@ atualizar();
 
 <style>
 
+.botao-filtro-mobile,
+.overlay-filtros{
+
+display:none;
+
+}
+
 .sidebar-sticky{
 
 position:sticky;
@@ -862,6 +925,105 @@ background:rgba(0,0,0,.15);
 
 @media(max-width:992px){
 
+.botao-filtro-mobile{
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+position:fixed;
+left:0;
+top:50%;
+
+transform:translateY(-50%);
+
+z-index:1060;
+
+border:none;
+
+background:#ffc107;
+color:#000;
+
+font-size:.85rem;
+font-weight:800;
+
+padding:12px 10px;
+
+border-radius:0 14px 14px 0;
+
+box-shadow:0 6px 18px rgba(0,0,0,.28);
+
+writing-mode:vertical-rl;
+text-orientation:mixed;
+
+cursor:pointer;
+
+}
+
+.botao-filtro-mobile.botao-aberto{
+
+left:260px;
+
+}
+
+.overlay-filtros{
+
+display:block;
+
+position:fixed;
+inset:0;
+
+background:rgba(0,0,0,.35);
+
+z-index:1040;
+
+opacity:0;
+pointer-events:none;
+
+transition:.25s ease;
+
+}
+
+.overlay-filtros.overlay-aberto{
+
+opacity:1;
+pointer-events:auto;
+
+}
+
+.sidebar{
+
+position:fixed;
+
+top:0;
+left:0;
+
+width:260px;
+max-width:82vw;
+height:100vh;
+
+z-index:1050;
+
+background:#fff;
+
+padding:24px 16px;
+
+transform:translateX(-100%);
+transition:.25s ease;
+
+overflow-y:auto;
+overflow-x:hidden;
+
+box-shadow:4px 0 22px rgba(0,0,0,.22);
+
+}
+
+.sidebar.sidebar-aberta{
+
+transform:translateX(0);
+
+}
+
 .sidebar-sticky{
 
 position:static;
@@ -871,7 +1033,13 @@ overflow:visible;
 
 padding-right:0;
 
-margin-bottom:30px;
+margin-bottom:0;
+
+}
+
+.col-lg-10{
+
+width:100%;
 
 }
 
