@@ -184,10 +184,34 @@ const imagens = [
     width:100%;
 
     display:flex;
-    flex-wrap:wrap;
     gap:10px;
 
-    justify-content:center;
+    overflow-x:auto;
+    overflow-y:hidden;
+
+    justify-content:flex-start;
+
+    padding-bottom:8px;
+
+    scroll-behavior:smooth;
+  }
+
+  .galeria-miniaturas::-webkit-scrollbar{
+    height:8px;
+  }
+
+  .galeria-miniaturas::-webkit-scrollbar-track{
+    background:#e9ecef;
+    border-radius:999px;
+  }
+
+  .galeria-miniaturas::-webkit-scrollbar-thumb{
+    background:#adb5bd;
+    border-radius:999px;
+  }
+
+  .galeria-miniaturas::-webkit-scrollbar-thumb:hover{
+    background:#868e96;
   }
 
   .thumb-btn{
@@ -201,6 +225,8 @@ const imagens = [
     cursor:pointer;
 
     transition:.15s ease;
+
+    flex:0 0 auto;
   }
 
   .thumb-btn:hover{
