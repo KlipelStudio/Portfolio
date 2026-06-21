@@ -149,7 +149,7 @@ function criarBadges(lista,tipo){
 
 return lista.map(item=>`
 
-<span class="badge-home badge-${tipo}">
+<span class="badge badge-home badge-${tipo}">
 ${item}
 </span>
 
@@ -294,9 +294,10 @@ object-fit:cover;
 
 }
 
-.badge-home{
+:global(.badge-home){
 
 display:inline-flex;
+align-items:center;
 
 padding:.35em .55em;
 
@@ -309,31 +310,31 @@ line-height:1;
 
 }
 
-.badge-classe{
+:global(.badge-classe){
 
-background:#212529;
-color:#fff;
-
-}
-
-.badge-raca{
-
-background:#ffc107;
-color:#000;
+background:#212529 !important;
+color:#fff !important;
 
 }
 
-.badge-sexo{
+:global(.badge-raca){
 
-background:#b23a48;
-color:#fff;
+background:#ffc107 !important;
+color:#000 !important;
 
 }
 
-.badge-cenario{
+:global(.badge-sexo){
 
-background:#fff;
-color:#212529;
+background:#b23a48 !important;
+color:#fff !important;
+
+}
+
+:global(.badge-cenario){
+
+background:#fff !important;
+color:#212529 !important;
 
 border:1px solid #dee2e6;
 
