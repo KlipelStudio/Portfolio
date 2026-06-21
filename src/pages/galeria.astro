@@ -60,6 +60,13 @@ Galeria
 </h4>
 
 <button
+id="recentes"
+class="btn btn-warning w-50 mb-2"
+>
+Mais recentes
+</button>
+
+<button
 id="todos"
 class="btn btn-warning w-100 mb-3"
 >
@@ -261,6 +268,7 @@ class="d-flex justify-content-center flex-wrap gap-2 mt-5"
 const POR_PAGINA=100;
 
 let paginaAtual=1;
+let ordemInvertida=false;
 
 let classesAtivas=[];
 let racasAtivas=[];
@@ -378,11 +386,18 @@ cenarioOk
 
 });
 
+const ordenados=
+ordemInvertida
+?
+[...filtrados].reverse()
+:
+filtrados;
+
 const totalPaginas=
 Math.max(
 1,
 Math.ceil(
-filtrados.length/POR_PAGINA
+ordenados.length/POR_PAGINA
 )
 );
 
@@ -400,7 +415,7 @@ m.style.display="none";
 
 });
 
-filtrados
+ordenados
 .slice(
 (paginaAtual-1)*POR_PAGINA,
 paginaAtual*POR_PAGINA
@@ -414,7 +429,7 @@ el.style.display="";
 renderizarTags();
 
 criarPaginacao(
-filtrados.length
+ordenados.length
 );
 
 }
@@ -726,6 +741,20 @@ btn
 };
 
 });
+
+document
+.querySelector(
+"#recentes"
+)
+.onclick=()=>{
+
+ordemInvertida=!ordemInvertida;
+
+paginaAtual=1;
+
+atualizar();
+
+};
 
 document
 .querySelector(
