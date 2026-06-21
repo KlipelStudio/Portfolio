@@ -32,8 +32,6 @@ const POR_PAGINA=100;
 
 <div class="row">
 
-<!-- SIDEBAR -->
-
 <div class="col-lg-2 sidebar">
 
 <h4 class="mb-4">
@@ -70,7 +68,6 @@ data-classe={c}
 
 </div>
 
-
 <h6>
 Raças & Tipos
 </h6>
@@ -91,7 +88,6 @@ data-raca={r}
 }
 
 </div>
-
 
 <h6>
 Cenários & Objetos
@@ -115,8 +111,6 @@ data-cenario={c}
 </div>
 
 </div>
-
-<!-- GALERIA -->
 
 <div class="col-lg-10">
 
@@ -603,12 +597,12 @@ align-items:center;
 
 gap:6px;
 
-padding:6px 10px;
+padding:6px 12px;
 
 border-radius:8px;
 
-font-size:.75rem;
-font-weight:700;
+font-size:.95rem;
+font-weight:500;
 
 line-height:1;
 
@@ -619,21 +613,23 @@ cursor:pointer;
 :global(.badge-classe){
 
 background:#212529;
-color:white;
+color:#fff;
 
 }
 
 :global(.badge-raca){
 
 background:#ffc107;
-color:black;
+color:#000;
 
 }
 
 :global(.badge-cenario){
 
-background:#6c757d;
-color:white;
+background:#fff;
+color:#212529;
+
+border:1px solid #d0d7de;
 
 }
 
@@ -655,7 +651,8 @@ background:rgba(255,255,255,.2);
 
 }
 
-:global(.badge-raca .badge-x){
+:global(.badge-raca .badge-x),
+:global(.badge-cenario .badge-x){
 
 background:rgba(0,0,0,.15);
 
