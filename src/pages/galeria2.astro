@@ -191,7 +191,7 @@ m.data.cenarios||[]
 
 <div
 id="paginacao"
-class="d-flex justify-content-center gap-2 mt-5"
+class="d-flex justify-content-center flex-wrap gap-2 mt-5"
 ></div>
 
 </div>
@@ -264,14 +264,32 @@ cenarioOk
 
 });
 
-minis.forEach(
-m=>m.style.display="none"
+const totalPaginas=
+Math.max(
+1,
+Math.ceil(
+filtrados.length/POR_PAGINA
+)
 );
+
+if(
+paginaAtual>totalPaginas
+){
+
+paginaAtual=totalPaginas;
+
+}
+
+minis.forEach(m=>{
+
+m.style.display="none";
+
+});
 
 filtrados
 .slice(
-(paginaAtual-1)*100,
-paginaAtual*100
+(paginaAtual-1)*POR_PAGINA,
+paginaAtual*POR_PAGINA
 )
 .forEach(el=>{
 
@@ -401,6 +419,8 @@ b.classList.add(
 
 });
 
+paginaAtual=1;
+
 atualizar();
 
 };
@@ -422,6 +442,14 @@ document.querySelector(
 );
 
 container.innerHTML="";
+
+if(
+paginas<=1
+){
+
+return;
+
+}
 
 for(
 let i=1;
@@ -449,10 +477,16 @@ paginaAtual=i;
 
 atualizar();
 
+window.scrollTo({
+top:0,
+behavior:"smooth"
+});
+
 };
 
 container.append(
-btn);
+btn
+);
 
 }
 
