@@ -34,6 +34,8 @@ const POR_PAGINA=100;
 
 <div class="col-lg-2 sidebar">
 
+<div class="sidebar-sticky">
+
 <h4 class="mb-4">
 Galeria
 </h4>
@@ -47,11 +49,21 @@ Limpar / Exibir Todos
 
 <div id="filtros-ativos"></div>
 
-<h6>
-Classes & Estilos
-</h6>
+<div class="grupo-dropdown">
 
-<div class="grupo">
+<button
+class="titulo-filtro"
+type="button"
+data-target="grupo-classes"
+>
+<span>Classes & Estilos</span>
+<span class="seta">›</span>
+</button>
+
+<div
+id="grupo-classes"
+class="grupo grupo-aberto"
+>
 
 {
 classes.map(c=>(
@@ -68,11 +80,23 @@ data-classe={c}
 
 </div>
 
-<h6>
-Raças & Tipos
-</h6>
+</div>
 
-<div class="grupo">
+<div class="grupo-dropdown">
+
+<button
+class="titulo-filtro"
+type="button"
+data-target="grupo-racas"
+>
+<span>Raças & Tipos</span>
+<span class="seta">›</span>
+</button>
+
+<div
+id="grupo-racas"
+class="grupo grupo-aberto"
+>
 
 {
 racas.map(r=>(
@@ -89,11 +113,23 @@ data-raca={r}
 
 </div>
 
-<h6>
-Cenários & Objetos
-</h6>
+</div>
 
-<div class="grupo">
+<div class="grupo-dropdown">
+
+<button
+class="titulo-filtro"
+type="button"
+data-target="grupo-cenarios"
+>
+<span>Cenários & Objetos</span>
+<span class="seta">›</span>
+</button>
+
+<div
+id="grupo-cenarios"
+class="grupo grupo-aberto"
+>
 
 {
 cenarios.map(c=>(
@@ -107,6 +143,10 @@ data-cenario={c}
 
 ))
 }
+
+</div>
+
+</div>
 
 </div>
 
@@ -547,25 +587,107 @@ atualizar();
 
 };
 
+document
+.querySelectorAll(
+".titulo-filtro"
+)
+.forEach(btn=>{
+
+btn.onclick=()=>{
+
+const target=
+document.getElementById(
+btn.dataset.target
+);
+
+target.classList.toggle(
+"grupo-aberto"
+);
+
+btn.classList.toggle(
+"fechado"
+);
+
+};
+
+});
+
 atualizar();
 
 </script>
 
 <style>
 
-.sidebar h6{
+.sidebar-sticky{
 
-margin-top:30px;
+position:sticky;
+top:20px;
+
+max-height:calc(100vh - 40px);
+overflow-y:auto;
+
+padding-right:6px;
+
+}
+
+.grupo-dropdown{
+
+margin-bottom:20px;
+
+}
+
+.titulo-filtro{
+
+width:100%;
+
+border:none;
+background:transparent;
+
+display:flex;
+align-items:center;
+justify-content:space-between;
+
+padding:0;
+
+margin-top:26px;
+margin-bottom:10px;
+
+font-size:1rem;
+font-weight:700;
+
+color:#212529;
+
+cursor:pointer;
+
+}
+
+.seta{
+
+font-size:1.4rem;
+line-height:1;
+
+transform:rotate(90deg);
+transition:.2s ease;
+
+}
+
+.titulo-filtro.fechado .seta{
+
+transform:rotate(0deg);
 
 }
 
 .grupo{
 
-display:flex;
+display:none;
 flex-direction:column;
 gap:6px;
 
-margin-bottom:20px;
+}
+
+.grupo.grupo-aberto{
+
+display:flex;
 
 }
 
@@ -659,6 +781,19 @@ background:rgba(0,0,0,.15);
 }
 
 @media(max-width:992px){
+
+.sidebar-sticky{
+
+position:static;
+
+max-height:none;
+overflow-y:visible;
+
+padding-right:0;
+
+margin-bottom:30px;
+
+}
 
 .col-lg-custom{
 
