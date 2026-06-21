@@ -1,5 +1,4 @@
 ---
-
 import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
 import MiniCard from '../components/MiniCard.astro';
@@ -7,75 +6,92 @@ import MiniCard from '../components/MiniCard.astro';
 const minis = await getCollection('minis');
 
 const classes = [
-...new Set(
-minis.flatMap(
-m => m.data.classes || []
-)
-)
+  ...new Set(
+    minis.flatMap(m => m.data.classes || [])
+  )
 ].sort();
 
 const racas = [
-...new Set(
-minis.flatMap(
-m => m.data.racas || []
-)
-)
+  ...new Set(
+    minis.flatMap(m => m.data.racas || [])
+  )
+].sort();
+
+const sexos = [
+  ...new Set(
+    minis.flatMap(m => m.data.sexo || [])
+  )
 ].sort();
 
 const cenarios = [
-...new Set(
-minis.flatMap(
-m => m.data.cenarios || []
-)
-)
+  ...new Set(
+    minis.flatMap(m => m.data.cenarios || [])
+  )
 ].sort();
 
-const POR_PAGINA = 100;
+const POR_PAGINA=100;
 ---
 
 <Layout titulo="Galeria">
+
+<button
+id="botao-filtro-mobile"
+class="botao-filtro-mobile"
+type="button"
+>
+&gt; Filtros
+</button>
+
+<div
+id="overlay-filtros"
+class="overlay-filtros"
+></div>
 
 <section class="container py-5">
 
 <div class="row">
 
-<div class="col-lg-2">
+<div class="col-lg-2 sidebar">
 
-<h4 class="mb-3">
+<div class="sidebar-sticky">
+
+<h4 class="mb-4">
 Galeria
 </h4>
 
-<div class="mb-3">
-
 <button
-class="btn btn-warning btn-sm w-100"
 id="todos"
-
+class="btn btn-warning w-100 mb-3"
 >
-
-Limpar/ Exibir Todos
-
+Limpar / Exibir Todos
 </button>
 
-</div>
+<div id="filtros-ativos"></div>
 
-<h6 class="mb-2">
-Classes & Estilos
-</h6>
-
-<div class="d-flex flex-column gap-1 mb-4">
-
-{
-classes.map(c => (
+<div class="grupo-dropdown">
 
 <button
-class="btn btn-outline-dark btn-sm filtro-classe w-100"
+class="titulo-filtro fechado"
+type="button"
+data-target="grupo-classes"
+>
+<span>Classes & Estilos</span>
+<span class="seta">›</span>
+</button>
+
+<div
+id="grupo-classes"
+class="grupo"
+>
+
+{
+classes.map(c=>(
+
+<button
+class="btn btn-outline-dark filtro-classe"
 data-classe={c}
-
 >
-
 {c}
-
 </button>
 
 ))
@@ -83,23 +99,32 @@ data-classe={c}
 
 </div>
 
-<h6 class="mb-2">
-Raças & Tipos
-</h6>
+</div>
 
-<div class="d-flex flex-column gap-1 mb-4">
-
-{
-racas.map(r => (
+<div class="grupo-dropdown">
 
 <button
-class="btn btn-outline-dark btn-sm filtro-raca w-100"
+class="titulo-filtro fechado"
+type="button"
+data-target="grupo-racas"
+>
+<span>Raças & Tipos</span>
+<span class="seta">›</span>
+</button>
+
+<div
+id="grupo-racas"
+class="grupo"
+>
+
+{
+racas.map(r=>(
+
+<button
+class="btn btn-outline-dark filtro-raca"
 data-raca={r}
-
 >
-
 {r}
-
 </button>
 
 ))
@@ -107,27 +132,73 @@ data-raca={r}
 
 </div>
 
-<h6 class="mb-2">
-Cenários & Objetos
-</h6>
+</div>
 
-<div class="d-flex flex-column gap-1">
-
-{
-cenarios.map(c => (
+<div class="grupo-dropdown">
 
 <button
-class="btn btn-outline-dark btn-sm filtro-cenario w-100"
-data-cenario={c}
+class="titulo-filtro fechado"
+type="button"
+data-target="grupo-sexos"
+>
+<span>Sexo</span>
+<span class="seta">›</span>
+</button>
 
+<div
+id="grupo-sexos"
+class="grupo"
 >
 
-{c}
+{
+sexos.map(s=>(
 
+<button
+class="btn btn-outline-dark filtro-sexo"
+data-sexo={s}
+>
+{s}
 </button>
 
 ))
 }
+
+</div>
+
+</div>
+
+<div class="grupo-dropdown">
+
+<button
+class="titulo-filtro fechado"
+type="button"
+data-target="grupo-cenarios"
+>
+<span>Cenários & Objetos</span>
+<span class="seta">›</span>
+</button>
+
+<div
+id="grupo-cenarios"
+class="grupo"
+>
+
+{
+cenarios.map(c=>(
+
+<button
+class="btn btn-outline-dark filtro-cenario"
+data-cenario={c}
+>
+{c}
+</button>
+
+))
+}
+
+</div>
+
+</div>
 
 </div>
 
@@ -136,8 +207,8 @@ data-cenario={c}
 <div class="col-lg-10">
 
 <div
-class="row g-3"
 id="grid"
+class="row g-3"
 >
 
 {
@@ -145,19 +216,27 @@ minis.map((m,index)=>(
 
 <div
 class="col-6 col-md-4 col-lg-custom mini"
+
 data-index={index}
+
 data-classes={JSON.stringify(
-m.data.classes || []
+m.data.classes||[]
 )}
+
 data-racas={JSON.stringify(
-m.data.racas || []
+m.data.racas||[]
 )}
+
+data-sexos={JSON.stringify(
+m.data.sexo||[]
+)}
+
 data-cenarios={JSON.stringify(
-m.data.cenarios || []
+m.data.cenarios||[]
 )}
 >
 
-<MiniCard mini={m} />
+<MiniCard mini={m}/>
 
 </div>
 
@@ -167,11 +246,9 @@ m.data.cenarios || []
 </div>
 
 <div
-class="d-flex justify-content-center gap-2 mt-5"
 id="paginacao"
->
-
-</div>
+class="d-flex justify-content-center flex-wrap gap-2 mt-5"
+></div>
 
 </div>
 
@@ -181,93 +258,160 @@ id="paginacao"
 
 <script is:inline>
 
-let paginaAtual = 1;
+const POR_PAGINA=100;
 
-let classesAtivas = [];
-let racasAtivas = [];
-let cenariosAtivos = [];
+let paginaAtual=1;
 
-const POR_PAGINA = 100;
+let classesAtivas=[];
+let racasAtivas=[];
+let sexosAtivos=[];
+let cenariosAtivos=[];
 
-const minis = [
-...document.querySelectorAll(".mini")
+const minis=[
+...document.querySelectorAll(
+".mini"
+)
 ];
 
-const botaoTodos =
-document.querySelector("#todos");
+const filtrosContainer=
+document.querySelector(
+"#filtros-ativos"
+);
+
+const sidebar=
+document.querySelector(
+".sidebar"
+);
+
+const botaoFiltroMobile=
+document.querySelector(
+"#botao-filtro-mobile"
+);
+
+const overlayFiltros=
+document.querySelector(
+"#overlay-filtros"
+);
+
+function alternarSidebarMobile(){
+
+sidebar.classList.toggle(
+"sidebar-aberta"
+);
+
+overlayFiltros.classList.toggle(
+"overlay-aberto"
+);
+
+botaoFiltroMobile.classList.toggle(
+"botao-aberto"
+);
+
+}
+
+botaoFiltroMobile.onclick=()=>{
+
+alternarSidebarMobile();
+
+};
+
+overlayFiltros.onclick=()=>{
+
+alternarSidebarMobile();
+
+};
 
 function atualizar(){
 
-const filtrados =
+const filtrados=minis.filter(el=>{
 
-minis.filter(el=>{
-
-const classes =
+const classes=
 JSON.parse(
-el.dataset.classes || "[]"
+el.dataset.classes||"[]"
 );
 
-const racas =
+const racas=
 JSON.parse(
-el.dataset.racas || "[]"
+el.dataset.racas||"[]"
 );
 
-const cenarios =
+const sexos=
 JSON.parse(
-el.dataset.cenarios || "[]"
+el.dataset.sexos||"[]"
 );
 
-const classeOk =
-classesAtivas.length===0
-||
+const cenarios=
+JSON.parse(
+el.dataset.cenarios||"[]"
+);
+
+const classeOk=
+classesAtivas.length===0 ||
 classesAtivas.some(
 c=>classes.includes(c)
 );
 
-const racaOk =
-racasAtivas.length===0
-||
+const racaOk=
+racasAtivas.length===0 ||
 racasAtivas.some(
 r=>racas.includes(r)
 );
 
-const cenarioOk =
-cenariosAtivos.length===0
-||
+const sexoOk=
+sexosAtivos.length===0 ||
+sexosAtivos.some(
+s=>sexos.includes(s)
+);
+
+const cenarioOk=
+cenariosAtivos.length===0 ||
 cenariosAtivos.some(
 c=>cenarios.includes(c)
 );
 
-return (
-classeOk
-&&
-racaOk
-&&
+return(
+classeOk &&
+racaOk &&
+sexoOk &&
 cenarioOk
 );
 
 });
 
-minis.forEach(
-m=>m.style.display="none"
+const totalPaginas=
+Math.max(
+1,
+Math.ceil(
+filtrados.length/POR_PAGINA
+)
 );
 
-const inicio =
-(paginaAtual-1)
-*
-POR_PAGINA;
+if(
+paginaAtual>totalPaginas
+){
 
-const fim =
-inicio +
-POR_PAGINA;
+paginaAtual=totalPaginas;
+
+}
+
+minis.forEach(m=>{
+
+m.style.display="none";
+
+});
 
 filtrados
-.slice(inicio,fim)
+.slice(
+(paginaAtual-1)*POR_PAGINA,
+paginaAtual*POR_PAGINA
+)
 .forEach(el=>{
 
 el.style.display="";
 
 });
+
+renderizarTags();
 
 criarPaginacao(
 filtrados.length
@@ -275,19 +419,157 @@ filtrados.length
 
 }
 
-function criarPaginacao(total){
+function renderizarTags(){
 
-const paginas =
-Math.ceil(
-total / POR_PAGINA
+filtrosContainer.innerHTML="";
+
+function criarBadge(
+lista,
+tipo
+){
+
+lista.forEach(item=>{
+
+const div=
+document.createElement(
+"div"
 );
 
-const container =
+div.className=
+"tag-wrapper";
+
+div.innerHTML=`
+
+<button
+class="badge-filtro badge-${tipo}"
+data-tipo="${tipo}"
+data-valor="${item}"
+>
+
+${item}
+
+<span class="badge-x">
+×
+</span>
+
+</button>
+
+`;
+
+filtrosContainer.append(
+div
+);
+
+});
+
+}
+
+criarBadge(
+classesAtivas,
+"classe"
+);
+
+criarBadge(
+racasAtivas,
+"raca"
+);
+
+criarBadge(
+sexosAtivos,
+"sexo"
+);
+
+criarBadge(
+cenariosAtivos,
+"cenario"
+);
+
+document
+.querySelectorAll(
+".badge-filtro"
+)
+.forEach(btn=>{
+
+btn.onclick=()=>{
+
+const tipo=
+btn.dataset.tipo;
+
+const valor=
+btn.dataset.valor;
+
+const mapa={
+
+classe:classesAtivas,
+raca:racasAtivas,
+sexo:sexosAtivos,
+cenario:cenariosAtivos
+
+};
+
+const lista=
+mapa[tipo];
+
+lista.splice(
+lista.indexOf(
+valor
+),
+1
+);
+
+document
+.querySelectorAll(
+`.filtro-${tipo}`
+)
+.forEach(b=>{
+
+if(
+b.dataset[tipo]===valor
+){
+
+b.classList.remove(
+"filtro-ativo"
+);
+
+b.classList.add(
+"btn-outline-dark"
+);
+
+}
+
+});
+
+paginaAtual=1;
+
+atualizar();
+
+};
+
+});
+
+}
+
+function criarPaginacao(total){
+
+const paginas=
+Math.ceil(
+total/POR_PAGINA
+);
+
+const container=
 document.querySelector(
 "#paginacao"
 );
 
-container.innerHTML = "";
+container.innerHTML="";
+
+if(
+paginas<=1
+){
+
+return;
+
+}
 
 for(
 let i=1;
@@ -295,88 +577,46 @@ i<=paginas;
 i++
 ){
 
-const btn =
+const btn=
 document.createElement(
 "button"
 );
 
-btn.innerText = i;
-
-btn.className =
+btn.className=
 i===paginaAtual
 ?
 "btn btn-warning btn-sm"
 :
 "btn btn-outline-dark btn-sm";
 
-btn.onclick = ()=>{
+btn.innerText=i;
+
+btn.onclick=()=>{
 
 paginaAtual=i;
 
 atualizar();
 
-};
-
-container.append(btn);
-
-}
-
-}
-
-function resetarTodos(){
-
-classesAtivas=[];
-racasAtivas=[];
-cenariosAtivos=[];
-
-document
-.querySelectorAll(
-".filtro-classe,.filtro-raca,.filtro-cenario"
-)
-.forEach(btn=>{
-
-btn.classList.remove(
-"btn-warning"
-);
-
-btn.classList.add(
-"btn-outline-dark"
-);
-
+window.scrollTo({
+top:0,
+behavior:"smooth"
 });
 
-botaoTodos.classList.remove(
-"btn-outline-dark"
+};
+
+container.append(
+btn
 );
-
-botaoTodos.classList.add(
-"btn-warning"
-);
-
-paginaAtual=1;
-
-atualizar();
 
 }
 
-botaoTodos.addEventListener(
-"click",
-resetarTodos
-);
+}
 
-function alternarFiltro(
+function alternar(
 valor,
 lista,
 botao
 ){
-
-botaoTodos.classList.remove(
-"btn-warning"
-);
-
-botaoTodos.classList.add(
-"btn-outline-dark"
-);
 
 if(
 lista.includes(valor)
@@ -388,7 +628,7 @@ lista.indexOf(valor),
 );
 
 botao.classList.remove(
-"btn-warning"
+"filtro-ativo"
 );
 
 botao.classList.add(
@@ -404,7 +644,7 @@ botao.classList.remove(
 );
 
 botao.classList.add(
-"btn-warning"
+"filtro-ativo"
 );
 
 }
@@ -421,17 +661,15 @@ document
 )
 .forEach(btn=>{
 
-btn.addEventListener(
-"click",
-()=>{
+btn.onclick=()=>{
 
-alternarFiltro(
+alternar(
 btn.dataset.classe,
 classesAtivas,
 btn
 );
 
-});
+};
 
 });
 
@@ -441,17 +679,33 @@ document
 )
 .forEach(btn=>{
 
-btn.addEventListener(
-"click",
-()=>{
+btn.onclick=()=>{
 
-alternarFiltro(
+alternar(
 btn.dataset.raca,
 racasAtivas,
 btn
 );
 
+};
+
 });
+
+document
+.querySelectorAll(
+".filtro-sexo"
+)
+.forEach(btn=>{
+
+btn.onclick=()=>{
+
+alternar(
+btn.dataset.sexo,
+sexosAtivos,
+btn
+);
+
+};
 
 });
 
@@ -461,17 +715,73 @@ document
 )
 .forEach(btn=>{
 
-btn.addEventListener(
-"click",
-()=>{
+btn.onclick=()=>{
 
-alternarFiltro(
+alternar(
 btn.dataset.cenario,
 cenariosAtivos,
 btn
 );
 
+};
+
 });
+
+document
+.querySelector(
+"#todos"
+)
+.onclick=()=>{
+
+classesAtivas=[];
+racasAtivas=[];
+sexosAtivos=[];
+cenariosAtivos=[];
+
+document
+.querySelectorAll(
+".filtro-classe,.filtro-raca,.filtro-sexo,.filtro-cenario"
+)
+.forEach(btn=>{
+
+btn.classList.remove(
+"filtro-ativo"
+);
+
+btn.classList.add(
+"btn-outline-dark"
+);
+
+});
+
+paginaAtual=1;
+
+atualizar();
+
+};
+
+document
+.querySelectorAll(
+".titulo-filtro"
+)
+.forEach(btn=>{
+
+btn.onclick=()=>{
+
+const target=
+document.getElementById(
+btn.dataset.target
+);
+
+target.classList.toggle(
+"grupo-aberto"
+);
+
+btn.classList.toggle(
+"fechado"
+);
+
+};
 
 });
 
@@ -481,104 +791,374 @@ atualizar();
 
 <style>
 
-.filtro-classe,
-.filtro-raca,
-.filtro-cenario{
-    font-size:.75rem;
-    padding:.2rem .4rem;
+.botao-filtro-mobile,
+.overlay-filtros{
+
+display:none;
+
+}
+
+.sidebar-sticky{
+
+position:sticky;
+top:20px;
+
+max-height:calc(100vh - 40px);
+overflow-y:auto;
+overflow-x:hidden;
+
+padding-right:6px;
+
+}
+
+.grupo-dropdown{
+
+margin-bottom:20px;
+
+}
+
+.titulo-filtro{
+
+width:100%;
+
+border:none;
+background:transparent;
+
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:10px;
+
+padding:0;
+
+margin-top:26px;
+margin-bottom:10px;
+
+font-size:1rem;
+font-weight:700;
+
+color:#212529;
+
+cursor:pointer;
+
+}
+
+.titulo-filtro span:first-child{
+
+min-width:0;
+
+}
+
+.seta{
+
+font-size:1.4rem;
+line-height:1;
+
+transform:rotate(90deg);
+transition:.2s ease;
+
+flex-shrink:0;
+
+}
+
+.titulo-filtro.fechado .seta{
+
+transform:rotate(0deg);
+
+}
+
+.grupo{
+
+display:none;
+flex-direction:column;
+gap:6px;
+
+width:100%;
+
+}
+
+.grupo.grupo-aberto{
+
+display:flex;
+
+}
+
+.grupo .btn{
+
+width:100%;
+max-width:100%;
+
+white-space:normal;
+overflow-wrap:anywhere;
+word-break:normal;
+
+}
+
+.filtro-ativo{
+
+background:#343a40 !important;
+border-color:#343a40 !important;
+color:#fff !important;
+
+box-shadow:
+0 0 0 3px rgba(52,58,64,.15),
+0 4px 12px rgba(0,0,0,.12);
+
+transition:.15s ease;
+
+}
+
+.filtro-ativo:hover{
+
+background:#2b3035 !important;
+border-color:#2b3035 !important;
+color:#fff !important;
+
 }
 
 .col-lg-custom{
-    width:20%;
+
+width:20%;
+
 }
 
-.mini img{
-    width:100%;
-    aspect-ratio:1/1;
-    object-fit:cover;
+#filtros-ativos{
+
+display:flex;
+flex-wrap:wrap;
+
+gap:6px;
+
+margin:20px 0;
+
+max-width:100%;
+overflow:hidden;
+
 }
 
-/* ========================= */
-/* MOBILE */
-/* ========================= */
+/* BADGES DOS FILTROS ATIVOS */
+
+:global(.tag-wrapper){
+
+max-width:100%;
+
+}
+
+:global(.badge-filtro){
+
+border:none;
+
+display:inline-flex;
+align-items:center;
+justify-content:center;
+
+gap:5px;
+
+max-width:100%;
+
+padding:4px 8px;
+
+border-radius:8px;
+
+font-size:.8rem;
+font-weight:600;
+
+line-height:1;
+
+cursor:pointer;
+
+white-space:normal;
+overflow-wrap:anywhere;
+text-align:center;
+
+}
+
+:global(.badge-classe){
+
+background:#212529;
+color:#fff;
+
+}
+
+:global(.badge-raca){
+
+background:#ffc107;
+color:#000;
+
+}
+
+:global(.badge-sexo){
+
+background:#b23a48;
+color:#fff;
+
+}
+
+:global(.badge-cenario){
+
+background:#fff;
+color:#212529;
+
+border:1px solid #d0d7de;
+
+}
+
+:global(.badge-x){
+
+display:inline-flex;
+
+align-items:center;
+justify-content:center;
+
+width:13px;
+height:13px;
+
+min-width:13px;
+
+border-radius:50%;
+
+font-size:.6rem;
+font-weight:700;
+
+line-height:13px;
+
+padding-bottom:1px;
+
+background:rgba(255,255,255,.2);
+
+}
+
+:global(.badge-raca .badge-x),
+:global(.badge-cenario .badge-x){
+
+background:rgba(0,0,0,.15);
+
+}
+
 @media(max-width:992px){
 
-    /* Layout principal:
-       filtros à esquerda
-       galeria à direita */
-    .container > .row{
-        display:flex;
-        flex-wrap:nowrap;
-        align-items:flex-start;
-        gap:.5rem;
-    }
+.botao-filtro-mobile{
 
-    /* coluna dos filtros */
-    .col-lg-2{
-        flex:0 0 110px;
-        width:110px;
-        max-width:110px;
-        padding-right:0;
-    }
+display:flex;
+align-items:center;
+justify-content:center;
 
-    /* coluna da galeria */
-    .col-lg-10{
-        flex:1;
-        min-width:0;
-        padding-left:0;
-    }
+position:fixed;
+left:0;
+top:50%;
 
-    /* títulos */
-    .col-lg-2 h4{
-        font-size:1.3rem;
-        margin-bottom:.75rem;
-    }
+transform:translateY(-50%);
 
-    .col-lg-2 h6{
-        font-size:.8rem;
-        margin-bottom:.4rem;
-    }
+z-index:1060;
 
-    /* botões dos filtros */
-    .filtro-classe,
-    .filtro-raca,
-    .filtro-cenario,
-    #todos{
-        font-size:.65rem;
-        padding:.25rem;
-        line-height:1.1;
-    }
+border:none;
 
-    /* espaçamento dos grupos */
-    .d-flex.flex-column.gap-1{
-        gap:.25rem !important;
-    }
+background:#ffc107;
+color:#000;
 
-    /* galeria */
-    #grid{
-        margin:0;
-    }
+font-size:.82rem;
+font-weight:800;
 
-    .col-lg-custom{
-        width:50%;
-        padding:.25rem;
-    }
+padding:10px 12px;
 
-    .mini{
-        width:50%;
-    }
+border-radius:0 12px 12px 0;
 
-    .mini img{
-        width:100%;
-        aspect-ratio:1/1;
-        object-fit:cover;
-        display:block;
-    }
+box-shadow:0 6px 18px rgba(0,0,0,.28);
 
-    /* paginação */
-    #paginacao{
-        flex-wrap:wrap;
-    }
+cursor:pointer;
+
+white-space:nowrap;
+
+}
+
+.botao-filtro-mobile.botao-aberto{
+
+left:260px;
+
+}
+
+.overlay-filtros{
+
+display:block;
+
+position:fixed;
+inset:0;
+
+background:rgba(0,0,0,.35);
+
+z-index:1040;
+
+opacity:0;
+pointer-events:none;
+
+transition:.25s ease;
+
+}
+
+.overlay-filtros.overlay-aberto{
+
+opacity:1;
+pointer-events:auto;
+
+}
+
+.sidebar{
+
+position:fixed;
+
+top:0;
+left:0;
+
+width:260px;
+max-width:82vw;
+height:100vh;
+
+z-index:1050;
+
+background:#fff;
+
+padding:24px 16px;
+
+transform:translateX(-100%);
+transition:.25s ease;
+
+overflow-y:auto;
+overflow-x:hidden;
+
+box-shadow:4px 0 22px rgba(0,0,0,.22);
+
+}
+
+.sidebar.sidebar-aberta{
+
+transform:translateX(0);
+
+}
+
+.sidebar-sticky{
+
+position:static;
+
+max-height:none;
+overflow:visible;
+
+padding-right:0;
+
+margin-bottom:0;
+
+}
+
+.col-lg-10{
+
+width:100%;
+
+}
+
+.col-lg-custom{
+
+width:50%;
+
+}
 
 }
 
