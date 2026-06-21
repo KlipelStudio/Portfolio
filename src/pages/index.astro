@@ -9,7 +9,11 @@ const url = (p) =>
 
 const minis = await getCollection('minis');
 
-const miniaturas = minis.map(m=>({
+const miniaturas = minis
+.filter(
+  m => m.data.destaque === true
+)
+.map(m=>({
   slug:m.slug,
   titulo:m.data.titulo,
   imagem:m.data.imagem,
