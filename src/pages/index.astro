@@ -15,6 +15,7 @@ const miniaturas = minis
 )
 .map(m=>({
   slug:m.slug,
+  href:url(`/minis/${m.slug}/`),
   titulo:m.data.titulo,
   imagem:m.data.imagem,
   classes:m.data.classes || [],
@@ -160,7 +161,7 @@ ${item}
 function criarCard(mini){
 
 const href =
-asset(`/minis/${mini.slug}/`);
+mini.href;
 
 const img =
 asset(mini.imagem);
