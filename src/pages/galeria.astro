@@ -417,6 +417,7 @@ paginaAtual=totalPaginas;
 minis.forEach(m=>{
 
 m.style.display="none";
+m.style.order="";
 
 });
 
@@ -425,9 +426,10 @@ ordenados
 (paginaAtual-1)*POR_PAGINA,
 paginaAtual*POR_PAGINA
 )
-.forEach(el=>{
+.forEach((el,index)=>{
 
 el.style.display="";
+el.style.order=index;
 
 });
 
@@ -862,8 +864,9 @@ padding-right:6px;
 
 .recentes-btn{
 
-width:140px;
+width:125px;
 white-space:nowrap;
+font-size:.9rem;
 
 }
 
