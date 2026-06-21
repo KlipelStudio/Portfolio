@@ -20,6 +20,11 @@ const asset = (p) =>
   /^https?:\/\//.test(p)
     ? p
     : `${base}${p}`.replace(/\/{2,}/g, '/');
+
+const imagens = [
+  mini.data.imagem,
+  ...(mini.data.galeria || [])
+].filter(Boolean);
 ---
 
 <Layout
@@ -40,7 +45,6 @@ const asset = (p) =>
 
     <div class="row g-4 align-items-start">
 
-      <!-- Informações -->
       <div class="col-lg-4">
 
         <h1 class="display-3 fw-bold mb-3">
@@ -49,14 +53,12 @@ const asset = (p) =>
 
         <div class="d-flex flex-wrap gap-2 mb-4">
 
-          {/* Classe = preto */}
           {mini.data.classes?.map((c) => (
             <span class="badge text-bg-dark fs-6">
               {c}
             </span>
           ))}
 
-          {/* Raça = amarelo */}
           {mini.data.racas?.map((r) => (
             <span
               class="badge fs-6"
@@ -66,17 +68,15 @@ const asset = (p) =>
             </span>
           ))}
 
-{/* Sexo = vermelho */}
-{mini.data.sexo?.map((s) => (
-  <span
-    class="badge fs-6"
-    style="background:#b23a48;color:#fff;"
-  >
-    {s}
-  </span>
-))}
+          {mini.data.sexo?.map((s) => (
+            <span
+              class="badge fs-6"
+              style="background:#b23a48;color:#fff;"
+            >
+              {s}
+            </span>
+          ))}
 
-          {/* Cenário = branco */}
           {mini.data.cenarios?.map((c) => (
             <span
               class="badge fs-6 border"
@@ -100,23 +100,136 @@ const asset = (p) =>
 
       </div>
 
-      <!-- Imagem -->
-      <div class="col-lg-8 d-flex justify-content-center">
+      <div class="col-lg-8 d-flex flex-column align-items-center">
 
         <img
-          src={asset(mini.data.imagem)}
+          id="imagem-principal"
+          src={asset(imagens[0])}
           alt={mini.data.titulo}
-          class="rounded shadow-sm"
-          style="
-            max-height: 75vh;
-            max-width: 100%;
-            width: auto;
-            object-fit: contain;
-          "
+          class="rounded shadow-sm imagem-principal"
         />
+
+        {imagens.length > 1 && (
+          <div class="galeria-miniaturas mt-3">
+
+            {imagens.map((img, index) => (
+              <button
+                class={`thumb-btn ${index === 0 ? 'thumb-ativa' : ''}`}
+                type="button"
+                data-img={asset(img)}
+              >
+                <img
+                  src={asset(img)}
+                  alt={`${mini.data.titulo} imagem ${index + 1}`}
+                />
+              </button>
+            ))}
+
+          </div>
+        )}
 
       </div>
 
     </div>
   </section>
+
+  <script is:inline>
+    const imagemPrincipal =
+    document.querySelector(
+      "#imagem-principal"
+    );
+
+    document
+    .querySelectorAll(
+      ".thumb-btn"
+    )
+    .forEach(btn=>{
+
+      btn.onclick=()=>{
+
+        imagemPrincipal.src =
+        btn.dataset.img;
+
+        document
+        .querySelectorAll(
+          ".thumb-btn"
+        )
+        .forEach(b=>{
+
+          b.classList.remove(
+            "thumb-ativa"
+          );
+
+        });
+
+        btn.classList.add(
+          "thumb-ativa"
+        );
+
+      };
+
+    });
+  </script>
+
+  <style>
+
+  .imagem-principal{
+    max-height:75vh;
+    max-width:100%;
+    width:auto;
+    object-fit:contain;
+  }
+
+  .galeria-miniaturas{
+    width:100%;
+
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+
+    justify-content:center;
+  }
+
+  .thumb-btn{
+    border:2px solid transparent;
+    background:#fff;
+
+    padding:4px;
+
+    border-radius:8px;
+
+    cursor:pointer;
+
+    transition:.15s ease;
+  }
+
+  .thumb-btn:hover{
+    border-color:#ffc107;
+  }
+
+  .thumb-btn.thumb-ativa{
+    border-color:#212529;
+  }
+
+  .thumb-btn img{
+    width:82px;
+    height:82px;
+
+    object-fit:cover;
+
+    border-radius:6px;
+
+    display:block;
+  }
+
+  @media(max-width:768px){
+
+    .thumb-btn img{
+      width:68px;
+      height:68px;
+    }
+
+  }
+
+  </style>
 </Layout>
