@@ -528,7 +528,7 @@ b.dataset[tipo]===valor
 ){
 
 b.classList.remove(
-"btn-warning"
+"filtro-ativo"
 );
 
 b.classList.add(
@@ -628,7 +628,7 @@ lista.indexOf(valor),
 );
 
 botao.classList.remove(
-"btn-warning"
+"filtro-ativo"
 );
 
 botao.classList.add(
@@ -644,7 +644,7 @@ botao.classList.remove(
 );
 
 botao.classList.add(
-"btn-warning"
+"filtro-ativo"
 );
 
 }
@@ -745,7 +745,7 @@ document
 .forEach(btn=>{
 
 btn.classList.remove(
-"btn-warning"
+"filtro-ativo"
 );
 
 btn.classList.add(
@@ -894,6 +894,27 @@ word-break:normal;
 
 }
 
+.filtro-ativo{
+
+background:#343a40 !important;
+border-color:#343a40 !important;
+color:#fff !important;
+
+box-shadow:
+0 0 0 3px rgba(52,58,64,.15),
+0 4px 12px rgba(0,0,0,.12);
+
+transition:.15s ease;
+
+}
+
+.filtro-ativo:hover{
+
+background:#2b3035 !important;
+border-color:#2b3035 !important;
+color:#fff !important;
+
+}
 
 .col-lg-custom{
 
