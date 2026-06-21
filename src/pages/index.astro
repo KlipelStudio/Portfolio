@@ -49,7 +49,7 @@ Ver portfólio
 
 </section>
 
-<section class="container py-5">
+<section class="container py-4">
 
 <div class="destaques-topo text-center">
 
@@ -58,7 +58,7 @@ Destaques
 </h2>
 
 <p>
-Uma seleção aleatória do nosso catálogo.
+Uma seleção do nosso catálogo.
 </p>
 
 </div>
@@ -73,7 +73,7 @@ Nenhuma miniatura cadastrada ainda.
 : (
 <div
 id="vitrine-aleatoria"
-class="row g-4"
+class="row g-3"
 ></div>
 )
 }
@@ -167,7 +167,7 @@ asset(mini.imagem);
 
 return `
 
-<div class="col-12 col-sm-6 col-lg-4">
+<div class="col-6 col-md-4 col-lg-2">
 
 <a href="${href}" class="text-decoration-none text-reset">
 
@@ -181,7 +181,7 @@ alt="${mini.titulo}"
 
 <div class="card-body">
 
-<h3 class="h5 card-title mb-3">
+<h3 class="card-title mb-2">
 ${mini.titulo}
 </h3>
 
@@ -227,7 +227,7 @@ embaralhar(dados)
 background:var(--kl-dark);
 color:#fff;
 
-padding:90px 0;
+padding:70px 0;
 
 }
 
@@ -235,10 +235,10 @@ padding:90px 0;
 
 color:var(--kl-gold);
 
-font-size:clamp(2.4rem,5vw,4.2rem);
+font-size:clamp(2.1rem,4vw,3.6rem);
 font-weight:800;
 
-margin-bottom:18px;
+margin-bottom:14px;
 
 }
 
@@ -246,19 +246,19 @@ margin-bottom:18px;
 
 max-width:620px;
 
-margin:0 auto 30px;
+margin:0 auto 26px;
 
-font-size:1.18rem;
+font-size:1.08rem;
 color:rgba(255,255,255,.82);
 
 }
 
 .destaques-topo h2{
 
-font-size:2rem;
+font-size:1.75rem;
 font-weight:800;
 
-margin-bottom:8px;
+margin-bottom:6px;
 
 }
 
@@ -266,7 +266,7 @@ margin-bottom:8px;
 
 color:#6c757d;
 
-margin-bottom:32px;
+margin-bottom:24px;
 
 }
 
@@ -294,16 +294,29 @@ object-fit:cover;
 
 }
 
+.card-home .card-body{
+
+padding:.75rem;
+
+}
+
+.card-home .card-title{
+
+font-size:1rem;
+font-weight:700;
+
+}
+
 :global(.badge-home){
 
 display:inline-flex;
 align-items:center;
 
-padding:.35em .55em;
+padding:.3em .48em;
 
 border-radius:.375rem;
 
-font-size:.75rem;
+font-size:.68rem;
 font-weight:600;
 
 line-height:1;
@@ -344,13 +357,32 @@ border:1px solid #dee2e6;
 
 .hero-home{
 
-padding:70px 0;
+padding:58px 0;
 
 }
 
 .hero-home p{
 
 font-size:1rem;
+
+}
+
+.card-home .card-body{
+
+padding:.65rem;
+
+}
+
+.card-home .card-title{
+
+font-size:.9rem;
+
+}
+
+:global(.badge-home){
+
+font-size:.62rem;
+padding:.28em .42em;
 
 }
 
