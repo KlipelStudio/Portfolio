@@ -9,6 +9,7 @@ const minis = defineCollection({
     
     classes: z.array(z.string()).optional(),
     racas: z.array(z.string()).optional(),
+    sexo: z.array(z.string()).optional(),
     cenarios: z.array(z.string()).optional(),
 
     destaque: z.boolean().optional(),
