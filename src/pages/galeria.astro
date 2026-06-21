@@ -61,7 +61,7 @@ Galeria
 
 <button
 id="recentes"
-class="btn btn-warning w-50 mb-2"
+class="btn btn-warning recentes-btn mb-2"
 >
 Mais recentes
 </button>
@@ -299,6 +299,11 @@ document.querySelector(
 const overlayFiltros=
 document.querySelector(
 "#overlay-filtros"
+);
+
+const btnRecentes=
+document.querySelector(
+"#recentes"
 );
 
 function alternarSidebarMobile(){
@@ -742,13 +747,19 @@ btn
 
 });
 
-document
-.querySelector(
-"#recentes"
-)
-.onclick=()=>{
+btnRecentes.onclick=()=>{
 
 ordemInvertida=!ordemInvertida;
+
+btnRecentes.classList.toggle(
+"btn-dark",
+ordemInvertida
+);
+
+btnRecentes.classList.toggle(
+"btn-warning",
+!ordemInvertida
+);
 
 paginaAtual=1;
 
@@ -766,6 +777,15 @@ classesAtivas=[];
 racasAtivas=[];
 sexosAtivos=[];
 cenariosAtivos=[];
+ordemInvertida=false;
+
+btnRecentes.classList.remove(
+"btn-dark"
+);
+
+btnRecentes.classList.add(
+"btn-warning"
+);
 
 document
 .querySelectorAll(
@@ -837,6 +857,13 @@ overflow-y:auto;
 overflow-x:hidden;
 
 padding-right:6px;
+
+}
+
+.recentes-btn{
+
+width:140px;
+white-space:nowrap;
 
 }
 
