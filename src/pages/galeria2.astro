@@ -53,7 +53,7 @@ Limpar / Exibir Todos
 Classes & Estilos
 </h6>
 
-<div class="grupo">
+<div class="grupo grupo-classe">
 
 {
 classes.map(c=>(
@@ -75,7 +75,7 @@ data-classe={c}
 Raças & Tipos
 </h6>
 
-<div class="grupo">
+<div class="grupo grupo-raca">
 
 {
 racas.map(r=>(
@@ -97,7 +97,7 @@ data-raca={r}
 Cenários & Objetos
 </h6>
 
-<div class="grupo">
+<div class="grupo grupo-cenario">
 
 {
 cenarios.map(c=>(
@@ -568,10 +568,73 @@ margin-top:30px;
 .grupo{
 
 display:flex;
-flex-direction:column;
-gap:6px;
+flex-wrap:wrap;
+gap:8px;
 
 margin-bottom:20px;
+
+}
+
+.grupo .btn{
+
+border:none;
+
+display:inline-flex;
+align-items:center;
+justify-content:center;
+
+width:auto;
+
+padding:6px 10px;
+
+border-radius:8px;
+
+font-size:.75rem;
+font-weight:700;
+
+line-height:1;
+
+box-shadow:none;
+
+}
+
+.grupo .btn:hover,
+.grupo .btn:focus,
+.grupo .btn:active{
+
+box-shadow:none;
+
+}
+
+/* FILTROS COM ESTÉTICA DE BADGE */
+
+.filtro-classe.btn-outline-dark,
+.filtro-classe.btn-warning{
+
+background:#212529;
+color:white;
+
+}
+
+.filtro-raca.btn-outline-dark,
+.filtro-raca.btn-warning{
+
+background:#ffc107;
+color:black;
+
+}
+
+.filtro-cenario.btn-outline-dark,
+.filtro-cenario.btn-warning{
+
+background:#6c757d;
+color:white;
+
+}
+
+.grupo .btn:hover{
+
+filter:brightness(.92);
 
 }
 
