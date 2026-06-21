@@ -66,6 +66,16 @@ const asset = (p) =>
             </span>
           ))}
 
+{/* Sexo = vermelho */}
+{mini.data.sexo?.map((s) => (
+  <span
+    class="badge fs-6"
+    style="background:#b23a48;color:#fff;"
+  >
+    {s}
+  </span>
+))}
+
           {/* Cenário = branco */}
           {mini.data.cenarios?.map((c) => (
             <span
