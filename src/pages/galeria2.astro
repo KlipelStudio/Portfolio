@@ -23,6 +23,12 @@ const cenarios = [
   )
 ].sort();
 
+const sexos = [
+  ...new Set(
+    minis.flatMap(m => m.data.sexo || [])
+  )
+].sort();
+
 const POR_PAGINA=100;
 ---
 
@@ -161,6 +167,39 @@ data-cenario={c}
 
 </div>
 
+<div class="grupo-dropdown">
+
+<button
+class="titulo-filtro fechado"
+type="button"
+data-target="grupo-sexos"
+>
+<span>Sexo</span>
+<span class="seta">›</span>
+</button>
+
+<div
+id="grupo-sexos"
+class="grupo"
+>
+
+{
+sexos.map(s=>(
+
+<button
+class="btn btn-outline-dark filtro-sexo"
+data-sexo={s}
+>
+{s}
+</button>
+
+))
+}
+
+</div>
+
+</div>
+
 </div>
 
 </div>
@@ -190,6 +229,10 @@ m.data.racas||[]
 
 data-cenarios={JSON.stringify(
 m.data.cenarios||[]
+)}
+
+data-sexos={JSON.stringify(
+m.data.sexo||[]
 )}
 >
 
@@ -222,6 +265,7 @@ let paginaAtual=1;
 let classesAtivas=[];
 let racasAtivas=[];
 let cenariosAtivos=[];
+let sexosAtivos=[];
 
 const minis=[
 ...document.querySelectorAll(
@@ -296,6 +340,11 @@ JSON.parse(
 el.dataset.cenarios||"[]"
 );
 
+const sexos=
+JSON.parse(
+el.dataset.sexos||"[]"
+);
+
 const classeOk=
 classesAtivas.length===0 ||
 classesAtivas.some(
@@ -314,10 +363,17 @@ cenariosAtivos.some(
 c=>cenarios.includes(c)
 );
 
+const sexoOk=
+sexosAtivos.length===0 ||
+sexosAtivos.some(
+s=>sexos.includes(s)
+);
+
 return(
 classeOk &&
 racaOk &&
-cenarioOk
+cenarioOk &&
+sexoOk
 );
 
 });
@@ -423,6 +479,11 @@ cenariosAtivos,
 "cenario"
 );
 
+criarBadge(
+sexosAtivos,
+"sexo"
+);
+
 document
 .querySelectorAll(
 ".badge-filtro"
@@ -441,7 +502,8 @@ const mapa={
 
 classe:classesAtivas,
 raca:racasAtivas,
-cenario:cenariosAtivos
+cenario:cenariosAtivos,
+sexo:sexosAtivos
 
 };
 
@@ -648,6 +710,24 @@ btn
 });
 
 document
+.querySelectorAll(
+".filtro-sexo"
+)
+.forEach(btn=>{
+
+btn.onclick=()=>{
+
+alternar(
+btn.dataset.sexo,
+sexosAtivos,
+btn
+);
+
+};
+
+});
+
+document
 .querySelector(
 "#todos"
 )
@@ -656,10 +736,11 @@ document
 classesAtivas=[];
 racasAtivas=[];
 cenariosAtivos=[];
+sexosAtivos=[];
 
 document
 .querySelectorAll(
-".filtro-classe,.filtro-raca,.filtro-cenario"
+".filtro-classe,.filtro-raca,.filtro-cenario,.filtro-sexo"
 )
 .forEach(btn=>{
 
@@ -890,6 +971,13 @@ background:#fff;
 color:#212529;
 
 border:1px solid #d0d7de;
+
+}
+
+:global(.badge-sexo){
+
+background:#0d6efd;
+color:#fff;
 
 }
 
