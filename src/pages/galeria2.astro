@@ -17,15 +17,15 @@ const racas = [
   )
 ].sort();
 
-const cenarios = [
-  ...new Set(
-    minis.flatMap(m => m.data.cenarios || [])
-  )
-].sort();
-
 const sexos = [
   ...new Set(
     minis.flatMap(m => m.data.sexo || [])
+  )
+].sort();
+
+const cenarios = [
+  ...new Set(
+    minis.flatMap(m => m.data.cenarios || [])
   )
 ].sort();
 
@@ -139,39 +139,6 @@ data-raca={r}
 <button
 class="titulo-filtro fechado"
 type="button"
-data-target="grupo-cenarios"
->
-<span>Cenários & Objetos</span>
-<span class="seta">›</span>
-</button>
-
-<div
-id="grupo-cenarios"
-class="grupo"
->
-
-{
-cenarios.map(c=>(
-
-<button
-class="btn btn-outline-dark filtro-cenario"
-data-cenario={c}
->
-{c}
-</button>
-
-))
-}
-
-</div>
-
-</div>
-
-<div class="grupo-dropdown">
-
-<button
-class="titulo-filtro fechado"
-type="button"
 data-target="grupo-sexos"
 >
 <span>Sexo</span>
@@ -191,6 +158,39 @@ class="btn btn-outline-dark filtro-sexo"
 data-sexo={s}
 >
 {s}
+</button>
+
+))
+}
+
+</div>
+
+</div>
+
+<div class="grupo-dropdown">
+
+<button
+class="titulo-filtro fechado"
+type="button"
+data-target="grupo-cenarios"
+>
+<span>Cenários & Objetos</span>
+<span class="seta">›</span>
+</button>
+
+<div
+id="grupo-cenarios"
+class="grupo"
+>
+
+{
+cenarios.map(c=>(
+
+<button
+class="btn btn-outline-dark filtro-cenario"
+data-cenario={c}
+>
+{c}
 </button>
 
 ))
@@ -227,12 +227,12 @@ data-racas={JSON.stringify(
 m.data.racas||[]
 )}
 
-data-cenarios={JSON.stringify(
-m.data.cenarios||[]
-)}
-
 data-sexos={JSON.stringify(
 m.data.sexo||[]
+)}
+
+data-cenarios={JSON.stringify(
+m.data.cenarios||[]
 )}
 >
 
@@ -264,8 +264,8 @@ let paginaAtual=1;
 
 let classesAtivas=[];
 let racasAtivas=[];
-let cenariosAtivos=[];
 let sexosAtivos=[];
+let cenariosAtivos=[];
 
 const minis=[
 ...document.querySelectorAll(
@@ -335,14 +335,14 @@ JSON.parse(
 el.dataset.racas||"[]"
 );
 
-const cenarios=
-JSON.parse(
-el.dataset.cenarios||"[]"
-);
-
 const sexos=
 JSON.parse(
 el.dataset.sexos||"[]"
+);
+
+const cenarios=
+JSON.parse(
+el.dataset.cenarios||"[]"
 );
 
 const classeOk=
@@ -357,23 +357,23 @@ racasAtivas.some(
 r=>racas.includes(r)
 );
 
-const cenarioOk=
-cenariosAtivos.length===0 ||
-cenariosAtivos.some(
-c=>cenarios.includes(c)
-);
-
 const sexoOk=
 sexosAtivos.length===0 ||
 sexosAtivos.some(
 s=>sexos.includes(s)
 );
 
+const cenarioOk=
+cenariosAtivos.length===0 ||
+cenariosAtivos.some(
+c=>cenarios.includes(c)
+);
+
 return(
 classeOk &&
 racaOk &&
-cenarioOk &&
-sexoOk
+sexoOk &&
+cenarioOk
 );
 
 });
@@ -475,13 +475,13 @@ racasAtivas,
 );
 
 criarBadge(
-cenariosAtivos,
-"cenario"
+sexosAtivos,
+"sexo"
 );
 
 criarBadge(
-sexosAtivos,
-"sexo"
+cenariosAtivos,
+"cenario"
 );
 
 document
@@ -502,8 +502,8 @@ const mapa={
 
 classe:classesAtivas,
 raca:racasAtivas,
-cenario:cenariosAtivos,
-sexo:sexosAtivos
+sexo:sexosAtivos,
+cenario:cenariosAtivos
 
 };
 
@@ -693,24 +693,6 @@ btn
 
 document
 .querySelectorAll(
-".filtro-cenario"
-)
-.forEach(btn=>{
-
-btn.onclick=()=>{
-
-alternar(
-btn.dataset.cenario,
-cenariosAtivos,
-btn
-);
-
-};
-
-});
-
-document
-.querySelectorAll(
 ".filtro-sexo"
 )
 .forEach(btn=>{
@@ -728,6 +710,24 @@ btn
 });
 
 document
+.querySelectorAll(
+".filtro-cenario"
+)
+.forEach(btn=>{
+
+btn.onclick=()=>{
+
+alternar(
+btn.dataset.cenario,
+cenariosAtivos,
+btn
+);
+
+};
+
+});
+
+document
 .querySelector(
 "#todos"
 )
@@ -735,12 +735,12 @@ document
 
 classesAtivas=[];
 racasAtivas=[];
-cenariosAtivos=[];
 sexosAtivos=[];
+cenariosAtivos=[];
 
 document
 .querySelectorAll(
-".filtro-classe,.filtro-raca,.filtro-cenario,.filtro-sexo"
+".filtro-classe,.filtro-raca,.filtro-sexo,.filtro-cenario"
 )
 .forEach(btn=>{
 
@@ -894,6 +894,14 @@ word-break:normal;
 
 }
 
+.filtro-sexo.btn-warning{
+
+background:#b23a48;
+border-color:#b23a48;
+color:#fff;
+
+}
+
 .col-lg-custom{
 
 width:20%;
@@ -965,19 +973,19 @@ color:#000;
 
 }
 
+:global(.badge-sexo){
+
+background:#b23a48;
+color:#fff;
+
+}
+
 :global(.badge-cenario){
 
 background:#fff;
 color:#212529;
 
 border:1px solid #d0d7de;
-
-}
-
-:global(.badge-sexo){
-
-background:#0d6efd;
-color:#fff;
 
 }
 
