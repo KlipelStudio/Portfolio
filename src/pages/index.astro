@@ -1,0 +1,471 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+
+const base = import.meta.env.BASE_URL;
+
+const url = (p) =>
+`${base}${p}`.replace(/\/{2,}/g,'/');
+
+const minis = await getCollection('minis');
+
+const miniaturas = minis
+.filter(
+  m => m.data.destaque === true
+)
+.map(m=>({
+  slug:m.slug,
+  href:url(`/minis/${m.slug}/`),
+  titulo:m.data.titulo,
+  imagem:m.data.imagem,
+  classes:m.data.classes || [],
+  racas:m.data.racas || [],
+  sexo:m.data.sexo || [],
+  cenarios:m.data.cenarios || []
+}));
+---
+
+<Layout titulo="Klipel Studio — Miniaturas para Aventureiros">
+
+<section class="hero-home">
+
+<!-- ADICIONADO -->
+<div class="weekly-badge">
+🔥 Atualizações semanais
+</div>
+
+<div class="container text-center">
+
+<h1>
+Miniaturas para suas aventuras
+</h1>
+
+<p>
+Heróis, vilões, monstros e cenários para dar vida às suas mesas de RPG.
+</p>
+
+<a
+href={url('/galeria')}
+class="btn btn-warning btn-lg px-5"
+>
+VER PORTFÓLIO
+</a>
+
+</div>
+
+</section>
+
+<section class="container py-4">
+
+<div class="destaques-topo text-center">
+
+<h2>
+Destaques
+</h2>
+
+<p>
+Uma seleção do nosso catálogo.
+</p>
+
+</div>
+
+{
+miniaturas.length===0
+? (
+<p class="text-center text-muted">
+Nenhuma miniatura cadastrada ainda.
+</p>
+)
+: (
+<div
+id="vitrine-aleatoria"
+class="row g-3"
+></div>
+)
+}
+
+<div class="text-center mt-4">
+
+<a
+href={url('/galeria')}
+class="btn btn-dark"
+>
+Ver todas as miniaturas
+</a>
+
+</div>
+
+</section>
+
+<script
+type="application/json"
+id="miniaturas-data"
+set:html={JSON.stringify(miniaturas)}
+/>
+
+<script is:inline>
+
+const base =
+document
+.querySelector(
+"base"
+)
+?.href || "/";
+
+const dados =
+JSON.parse(
+document
+.querySelector(
+"#miniaturas-data"
+)
+.textContent
+);
+
+const container =
+document.querySelector(
+"#vitrine-aleatoria"
+);
+
+function asset(p){
+
+if(
+/^https?:\/\//.test(p)
+){
+
+return p;
+
+}
+
+return `${base}${p}`.replace(
+/\/{2,}/g,
+"/"
+);
+
+}
+
+function embaralhar(lista){
+
+return [...lista].sort(
+()=>Math.random()-.5
+);
+
+}
+
+function criarBadges(lista,tipo){
+
+return lista.map(item=>`
+
+<span class="badge badge-home badge-${tipo}">
+${item}
+</span>
+
+`).join("");
+
+}
+
+function criarCard(mini){
+
+const href =
+mini.href;
+
+const img =
+asset(mini.imagem);
+
+return `
+
+<div class="col-6 col-lg-4">
+
+<a href="${href}" class="text-decoration-none text-reset">
+
+<div class="card card-home h-100 shadow-sm border-0">
+
+<img
+src="${img}"
+class="card-img-top"
+alt="${mini.titulo}"
+/>
+
+<div class="card-body">
+
+<h3 class="card-title mb-2">
+${mini.titulo}
+</h3>
+
+<div class="d-flex flex-wrap gap-1">
+
+${criarBadges(mini.classes,"classe")}
+${criarBadges(mini.racas,"raca")}
+${criarBadges(mini.sexo,"sexo")}
+${criarBadges(mini.cenarios,"cenario")}
+
+</div>
+
+</div>
+
+</div>
+
+</a>
+
+</div>
+
+`;
+
+}
+
+if(
+container
+){
+
+container.innerHTML =
+embaralhar(dados)
+.slice(0,6)
+.map(criarCard)
+.join("");
+
+}
+
+</script>
+
+<style>
+
+.hero-home{
+
+background:var(--kl-dark);
+color:#fff;
+
+padding:58px 0;
+
+position:relative; /* ADICIONADO */
+
+overflow:hidden; /* ADICIONADO */
+
+}
+
+.hero-home h1{
+
+color:var(--kl-gold);
+
+font-size:clamp(2.1rem,4vw,3.4rem);
+font-weight:800;
+
+margin-bottom:12px;
+
+}
+
+.hero-home p{
+
+max-width:620px;
+
+margin:0 auto 24px;
+
+font-size:1.05rem;
+color:rgba(255,255,255,.82);
+
+}
+
+/* ADICIONADO */
+.weekly-badge{
+
+position:absolute;
+
+top:50%;
+right:-70px;
+
+transform:
+translateY(-50%)
+rotate(-90deg);
+
+background:
+linear-gradient(
+135deg,
+var(--kl-gold),
+#f4ca74
+);
+
+color:var(--kl-dark);
+
+padding:12px 26px;
+
+font-size:.9rem;
+font-weight:800;
+
+border-radius:12px;
+
+letter-spacing:.5px;
+
+box-shadow:
+0 8px 24px rgba(0,0,0,.35);
+
+border:
+1px solid rgba(255,255,255,.15);
+
+z-index:20;
+
+transition:.3s;
+
+}
+
+.weekly-badge:hover{
+
+transform:
+translateY(-50%)
+rotate(-90deg)
+scale(1.05);
+
+}
+
+.destaques-topo h2{
+
+font-size:1.8rem;
+font-weight:800;
+
+margin-bottom:6px;
+
+}
+
+.destaques-topo p{
+
+color:#6c757d;
+
+margin-bottom:24px;
+
+}
+
+.card-home{
+
+overflow:hidden;
+
+transition:.2s ease;
+
+}
+
+.card-home:hover{
+
+transform:translateY(-4px);
+
+box-shadow:0 10px 24px rgba(0,0,0,.16) !important;
+
+}
+
+.card-home img{
+
+width:100%;
+aspect-ratio:1.35/1;
+object-fit:cover;
+
+}
+
+.card-home .card-body{
+
+padding:.8rem;
+
+}
+
+.card-home .card-title{
+
+font-size:1.05rem;
+font-weight:700;
+
+}
+
+:global(.badge-home){
+
+display:inline-flex;
+align-items:center;
+
+padding:.3em .48em;
+
+border-radius:.375rem;
+
+font-size:.68rem;
+font-weight:600;
+
+line-height:1;
+
+}
+
+:global(.badge-classe){
+
+background:#212529 !important;
+color:#fff !important;
+
+}
+
+:global(.badge-raca){
+
+background:#ffc107 !important;
+color:#000 !important;
+
+}
+
+:global(.badge-sexo){
+
+background:#b23a48 !important;
+color:#fff !important;
+
+}
+
+:global(.badge-cenario){
+
+background:#fff !important;
+color:#212529 !important;
+
+border:1px solid #dee2e6;
+
+}
+
+@media(max-width:768px){
+
+.hero-home{
+
+padding:58px 0;
+
+}
+
+.hero-home p{
+
+font-size:1rem;
+
+}
+
+.card-home img{
+
+aspect-ratio:1/1;
+
+}
+
+.card-home .card-body{
+
+padding:.65rem;
+
+}
+
+.card-home .card-title{
+
+font-size:.9rem;
+
+}
+
+:global(.badge-home){
+
+font-size:.62rem;
+padding:.28em .42em;
+
+}
+
+/* ADICIONADO */
+.weekly-badge{
+
+right:-90px;
+
+font-size:.72rem;
+
+padding:10px 20px;
+
+}
+
+}
+
+</style>
+
+</Layout>
