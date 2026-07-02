@@ -395,28 +395,6 @@ z-index:1;
 
 }
 
-.balao-grande::after{
-
-content:"";
-position:absolute;
-inset:0;
-
-background:
-radial-gradient(#000 2px, transparent 2.5px) 35px 14px / 15px 15px,
-radial-gradient(#000 1.8px, transparent 2.4px) 125px 104px / 15px 15px;
-
-opacity:.75;
-z-index:2;
-
-clip-path:polygon(
-10% 10%,
-92% 10%,
-92% 90%,
-10% 90%
-);
-
-}
-
 .balao-pequeno{
 
 width:185px;
@@ -604,33 +582,41 @@ font-size:.58rem;
 
 .hero-home{
 
-padding:58px 0 70px;
+padding:58px 0 34px;
 
 }
 
 .baloes-cartoon{
 
-right:8px;
+position:relative;
+right:auto;
 top:auto;
-bottom:10px;
+bottom:auto;
 transform:none;
 
-gap:8px;
+width:100%;
 
-align-items:flex-end;
+margin:34px auto 0;
+padding:0 14px;
 
-z-index:1;
+display:flex;
+flex-direction:row;
+justify-content:space-between;
+align-items:center;
+gap:10px;
+
+z-index:2;
 
 }
 
 .balao-grande{
 
-width:170px;
-min-height:92px;
+width:178px;
+min-height:96px;
 
-padding:25px 15px 19px;
+padding:26px 15px 20px;
 
-font-size:.88rem;
+font-size:.92rem;
 
 box-shadow:4px 5px 0 rgba(0,0,0,.55);
 
@@ -640,11 +626,11 @@ transform:rotate(-7deg);
 
 .balao-pequeno{
 
-width:122px;
+width:150px;
 
-padding:8px 9px;
+padding:10px 10px;
 
-font-size:.44rem;
+font-size:.52rem;
 
 border-width:3px;
 box-shadow:4px 5px 0 rgba(0,0,0,.55);
@@ -657,7 +643,7 @@ box-shadow:4px 5px 0 rgba(0,0,0,.55);
 
 .hero-home{
 
-padding:58px 0 76px;
+padding:58px 0 36px;
 
 }
 
@@ -669,21 +655,19 @@ font-size:1rem;
 
 .baloes-cartoon{
 
-right:4px;
-bottom:12px;
-
-gap:7px;
+margin-top:32px;
+padding:0 12px;
 
 }
 
 .balao-grande{
 
-width:155px;
-min-height:84px;
+width:174px;
+min-height:94px;
 
-padding:23px 13px 17px;
+padding:25px 14px 19px;
 
-font-size:.8rem;
+font-size:.9rem;
 
 border-width:3px;
 
@@ -695,21 +679,13 @@ inset:5px;
 
 }
 
-.balao-grande::after{
-
-background:
-radial-gradient(#000 1.3px, transparent 1.9px) 23px 10px / 10px 10px,
-radial-gradient(#000 1.2px, transparent 1.8px) 75px 61px / 10px 10px;
-
-}
-
 .balao-pequeno{
 
-width:112px;
+width:146px;
 
-padding:7px 8px;
+padding:10px 9px;
 
-font-size:.4rem;
+font-size:.5rem;
 
 }
 
@@ -766,31 +742,32 @@ transform:rotate(-5deg) translateY(-5px);
 
 .hero-home{
 
-padding-bottom:84px;
+padding-bottom:38px;
 
 }
 
 .baloes-cartoon{
 
-bottom:10px;
+margin-top:30px;
+padding:0 10px;
 
 }
 
 .balao-grande{
 
-width:138px;
-min-height:75px;
+width:165px;
+min-height:90px;
 
-padding:20px 11px 15px;
+padding:24px 12px 18px;
 
-font-size:.71rem;
+font-size:.84rem;
 
 }
 
 .balao-pequeno{
 
-width:100px;
-font-size:.36rem;
+width:137px;
+font-size:.47rem;
 
 }
 
