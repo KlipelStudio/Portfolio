@@ -29,7 +29,7 @@ const miniaturas = minis
 
 <section class="hero-home">
 
-<div class="container text-center">
+<div class="container text-center hero-conteudo">
 
 <h1>
 Miniaturas para suas aventuras
@@ -45,6 +45,23 @@ class="btn btn-warning btn-lg px-5"
 >
 VER PORTFÓLIO
 </a>
+
+</div>
+
+<div class="baloes-cartoon" aria-label="Avisos do site">
+
+<div class="balao balao-grande">
+<span>
+Atualizações<br />semanais 🔥
+</span>
+</div>
+
+<div class="balao balao-pequeno">
+<span>
+Não encontrou o que procura?<br />
+Entre em contato com a gente!
+</span>
+</div>
 
 </div>
 
@@ -230,6 +247,16 @@ color:#fff;
 
 padding:58px 0;
 
+position:relative;
+overflow:hidden;
+
+}
+
+.hero-conteudo{
+
+position:relative;
+z-index:2;
+
 }
 
 .hero-home h1{
@@ -251,6 +278,149 @@ margin:0 auto 24px;
 
 font-size:1.05rem;
 color:rgba(255,255,255,.82);
+
+}
+
+.baloes-cartoon{
+
+position:absolute;
+right:clamp(18px,4vw,70px);
+top:50%;
+transform:translateY(-50%);
+
+display:flex;
+flex-direction:column;
+align-items:flex-end;
+gap:18px;
+
+z-index:1;
+pointer-events:none;
+
+}
+
+.balao{
+
+position:relative;
+
+background:#ffc107;
+color:#111;
+
+border:4px solid #000;
+
+box-shadow:6px 7px 0 rgba(0,0,0,.55);
+
+font-weight:900;
+line-height:1.05;
+text-align:center;
+
+filter:drop-shadow(0 8px 12px rgba(0,0,0,.22));
+
+}
+
+.balao::before,
+.balao::after{
+
+content:"";
+position:absolute;
+background:#000;
+
+clip-path:polygon(0 0,100% 50%,0 100%);
+
+}
+
+.balao-grande{
+
+width:255px;
+min-height:125px;
+
+padding:30px 22px;
+
+font-size:1.55rem;
+
+border-radius:45% 55% 48% 52% / 58% 45% 55% 42%;
+
+transform:rotate(-8deg);
+
+animation:balaoFlutuarGrande 3.6s ease-in-out infinite;
+
+}
+
+.balao-grande::before{
+
+width:32px;
+height:24px;
+
+right:-34px;
+top:22px;
+
+transform:rotate(-12deg);
+
+}
+
+.balao-grande::after{
+
+width:26px;
+height:20px;
+
+left:-30px;
+bottom:18px;
+
+transform:rotate(178deg);
+
+}
+
+.balao-pequeno{
+
+width:245px;
+
+padding:18px 18px;
+
+font-size:.92rem;
+
+border-radius:34px;
+
+animation:balaoFlutuarPequeno 4.2s ease-in-out infinite;
+
+}
+
+.balao-pequeno::before{
+
+width:22px;
+height:18px;
+
+right:-24px;
+bottom:18px;
+
+}
+
+.balao span{
+
+position:relative;
+z-index:2;
+
+}
+
+@keyframes balaoFlutuarGrande{
+
+0%,100%{
+transform:rotate(-8deg) translateY(0);
+}
+
+50%{
+transform:rotate(-6deg) translateY(-8px);
+}
+
+}
+
+@keyframes balaoFlutuarPequeno{
+
+0%,100%{
+transform:translateY(0);
+}
+
+50%{
+transform:translateY(7px);
+}
 
 }
 
@@ -354,17 +524,112 @@ border:1px solid #dee2e6;
 
 }
 
+@media(max-width:1200px){
+
+.baloes-cartoon{
+
+opacity:.95;
+right:18px;
+
+}
+
+.balao-grande{
+
+width:220px;
+font-size:1.32rem;
+
+}
+
+.balao-pequeno{
+
+width:215px;
+font-size:.82rem;
+
+}
+
+}
+
+@media(max-width:992px){
+
+.hero-home{
+
+padding:58px 0 46px;
+
+}
+
+.baloes-cartoon{
+
+position:relative;
+right:auto;
+top:auto;
+transform:none;
+
+width:100%;
+max-width:520px;
+
+margin:30px auto 0;
+padding:0 18px;
+
+align-items:center;
+
+z-index:2;
+
+}
+
+.balao-grande{
+
+width:min(100%,310px);
+min-height:auto;
+
+padding:22px 18px;
+
+font-size:1.28rem;
+
+}
+
+.balao-pequeno{
+
+width:min(100%,320px);
+
+padding:15px 14px;
+
+font-size:.82rem;
+
+}
+
+}
+
 @media(max-width:768px){
 
 .hero-home{
 
-padding:58px 0;
+padding:58px 0 42px;
 
 }
 
 .hero-home p{
 
 font-size:1rem;
+
+}
+
+.baloes-cartoon{
+
+margin-top:34px;
+gap:14px;
+
+}
+
+.balao-grande{
+
+font-size:1.18rem;
+transform:rotate(-5deg);
+
+}
+
+.balao-pequeno{
+
+font-size:.78rem;
 
 }
 
@@ -390,6 +655,18 @@ font-size:.9rem;
 
 font-size:.62rem;
 padding:.28em .42em;
+
+}
+
+@keyframes balaoFlutuarGrande{
+
+0%,100%{
+transform:rotate(-5deg) translateY(0);
+}
+
+50%{
+transform:rotate(-3deg) translateY(-6px);
+}
 
 }
 
