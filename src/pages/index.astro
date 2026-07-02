@@ -32,7 +32,23 @@ const miniaturas = minis
 <div class="comic-badge">
 
 <div class="comic-inner">
-🔥 Atualizações semanais
+
+Atualizações
+<br>
+semanais! 🔥
+
+</div>
+
+</div>
+
+<div class="contact-badge">
+
+<div class="contact-inner">
+
+Não encontrou o que procura?
+<br>
+Entre em contato com a gente!
+
 </div>
 
 </div>
@@ -265,17 +281,16 @@ color:rgba(255,255,255,.82);
 
 }
 
-/* BALÃO QUADRINHO */
+/* BALÃO MAIOR - ATUALIZAÇÕES */
 
 .comic-badge{
 
 position:absolute;
 
-top:35px;
-right:35px;
+top:25px;
+right:30px;
 
-transform:
-rotate(22deg);
+transform:rotate(22deg);
 
 z-index:20;
 
@@ -296,9 +311,14 @@ var(--kl-gold),
 color:var(--kl-dark);
 
 font-weight:800;
-font-size:.9rem;
 
-padding:18px 24px;
+font-size:1rem;
+
+line-height:1.2;
+
+padding:24px 34px;
+
+min-width:240px;
 
 text-align:center;
 
@@ -330,13 +350,78 @@ clip-path:polygon(
 25% 15%
 );
 
+transition:.3s;
+
 }
 
 .comic-inner:hover{
 
 transform:scale(1.08);
 
+}
+
+
+/* BOTÃO MENOR - CONTATO */
+
+.contact-badge{
+
+position:absolute;
+
+right:60px;
+
+bottom:35px;
+
+z-index:20;
+
+animation:
+floatBadge 3s ease-in-out infinite;
+
+}
+
+.contact-inner{
+
+background:
+linear-gradient(
+135deg,
+var(--kl-gold),
+#f4ca74
+);
+
+color:var(--kl-dark);
+
+font-weight:700;
+
+font-size:.75rem;
+
+line-height:1.25;
+
+padding:12px 18px;
+
+width:240px;
+
+text-align:center;
+
+border:3px solid #111;
+
+box-shadow:
+6px 6px 0 rgba(0,0,0,.25);
+
+clip-path:polygon(
+5% 0%,
+95% 0%,
+100% 30%,
+95% 100%,
+5% 100%,
+0% 70%
+);
+
 transition:.3s;
+
+}
+
+.contact-inner:hover{
+
+transform:scale(1.08);
 
 }
 
@@ -345,7 +430,6 @@ transition:.3s;
 0%{
 
 transform:
-rotate(22deg)
 translateY(0px);
 
 }
@@ -353,7 +437,6 @@ translateY(0px);
 50%{
 
 transform:
-rotate(22deg)
 translateY(-6px);
 
 }
@@ -361,7 +444,6 @@ translateY(-6px);
 100%{
 
 transform:
-rotate(22deg)
 translateY(0px);
 
 }
@@ -509,19 +591,42 @@ padding:.28em .42em;
 
 .comic-badge{
 
-top:15px;
-right:-5px;
+top:5px;
+right:-25px;
 
 transform:
-scale(.75)
+scale(.72)
 rotate(22deg);
 
 }
 
 .comic-inner{
 
-font-size:.72rem;
-padding:14px 18px;
+font-size:.85rem;
+
+padding:22px 28px;
+
+min-width:220px;
+
+}
+
+.contact-badge{
+
+bottom:35px;
+right:10px;
+
+transform:
+scale(.85);
+
+}
+
+.contact-inner{
+
+width:180px;
+
+font-size:.62rem;
+
+padding:10px;
 
 }
 
