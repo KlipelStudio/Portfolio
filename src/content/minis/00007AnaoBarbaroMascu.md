@@ -2,7 +2,7 @@
 titulo: "Cod.: 00007"
 imagem: "https://i.imgur.com/O7qePiR.png"
 
-classes: ["Guerreiro"]
+classes: ["Bárbaro"]
 racas: ["Anão"]
 sexo: ["Masculino"]
 
