@@ -15,8 +15,8 @@ body:
     attributes:
       label: "Código"
       description: "O sistema sugere o próximo código com base no maior código já cadastrado. Normalmente, basta deixar este valor como está."
-      value: "00175"
-      placeholder: "00175"
+      value: "00176"
+      placeholder: "00176"
     validations:
       required: true
 
