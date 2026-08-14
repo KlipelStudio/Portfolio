@@ -6,15 +6,17 @@ body:
     attributes:
       value: |
         ## Cadastro de miniatura
-        Preencha o código e a imagem principal. Os demais grupos podem ficar vazios ou receber várias opções.
+        Preencha a imagem principal e confira o código sugerido automaticamente.
+        Os demais grupos podem ficar vazios ou receber várias opções.
         O arquivo será criado automaticamente como `00000.md`.
 
   - type: input
     id: codigo
     attributes:
       label: "Código"
-      description: "Digite o código da miniatura. Pode usar 174 ou 00174; o sistema salva sempre com 5 dígitos."
-      placeholder: "00174"
+      description: "O sistema sugere o próximo código com base no maior código já cadastrado. Normalmente, basta deixar este valor como está."
+      value: "00175"
+      placeholder: "00175"
     validations:
       required: true
 
