@@ -67,7 +67,6 @@ body:
       options:
         - "Aldeão"
         - "Alien"
-        - "Fantasma/ Banshee"
         - "Anão"
         - "Animal"
         - "Anjo"
@@ -84,6 +83,7 @@ body:
         - "Dragonborn"
         - "Elemental"
         - "Elfo"
+        - "Fantasma/ Banshee"
         - "Gárgula"
         - "Gato/ Tabaxi"
         - "Gigante"
