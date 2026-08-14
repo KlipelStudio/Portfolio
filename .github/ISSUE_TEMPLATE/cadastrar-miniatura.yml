@@ -1,0 +1,168 @@
+name: "Cadastrar miniatura"
+description: "Adiciona uma nova miniatura ao portfólio sem editar o Markdown manualmente."
+title: "[CADASTRO MINI] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Cadastro de miniatura
+        Preencha o código e a imagem principal. Os demais grupos podem ficar vazios ou receber várias opções.
+        O arquivo será criado automaticamente como `00000.md`.
+
+  - type: input
+    id: codigo
+    attributes:
+      label: "Código"
+      description: "Digite o código da miniatura. Pode usar 174 ou 00174; o sistema salva sempre com 5 dígitos."
+      placeholder: "00174"
+    validations:
+      required: true
+
+  - type: input
+    id: imagem
+    attributes:
+      label: "Imagem principal"
+      description: "Cole a URL direta da imagem principal."
+      placeholder: "https://i.imgur.com/exemplo.jpeg"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: classes
+    attributes:
+      label: "Classes"
+      description: "Opcional. Você pode selecionar várias classes."
+      multiple: true
+      options:
+        - "Arqueiro"
+        - "Atirador"
+        - "Bárbaro"
+        - "Bardo"
+        - "Bruxa/ Shaman"
+        - "Clérigo"
+        - "Druida"
+        - "Duelista"
+        - "Ferreiro"
+        - "Guerreiro"
+        - "Ladino/ Rogue"
+        - "Lanceiro"
+        - "Mago"
+        - "Monge"
+        - "Necromancer"
+        - "Ninja"
+        - "Paladino"
+        - "Viking"
+        - "Warlock"
+    validations:
+      required: false
+
+  - type: dropdown
+    id: racas
+    attributes:
+      label: "Raças"
+      description: "Opcional. Você pode selecionar várias raças/tipos."
+      multiple: true
+      options:
+        - "Aldeão"
+        - "Alien"
+        - "Anão"
+        - "Animal"
+        - "Anjo"
+        - "Aranha"
+        - "Boneco de Neve"
+        - "Boss"
+        - "Cavalo"
+        - "Centauro"
+        - "Cobra"
+        - "Cogumelo/ Myconid"
+        - "Cyberpunk"
+        - "Demônio"
+        - "Dragão"
+        - "Dragonborn"
+        - "Elemental"
+        - "Elfo"
+        - "Gárgula"
+        - "Gato/ Tabaxi"
+        - "Gigante"
+        - "Golem"
+        - "Grifo"
+        - "Halfling"
+        - "Humano"
+        - "Lobisomem"
+        - "Lobo"
+        - "Macaco"
+        - "Medusa/ Naga"
+        - "Minotauro"
+        - "Monstro"
+        - "Monstro Marinho"
+        - "Nórdico"
+        - "Ogro"
+        - "Orc"
+        - "Palhaço/ Jester"
+        - "Pirata"
+        - "Sapo"
+        - "Sátiro"
+        - "Tiefling"
+        - "Troll"
+        - "Urso"
+        - "Vampiro"
+    validations:
+      required: false
+
+  - type: dropdown
+    id: sexo
+    attributes:
+      label: "Sexo"
+      description: "Opcional. Você pode selecionar nenhum, um ou mais valores."
+      multiple: true
+      options:
+        - "Feminino"
+        - "Masculino"
+    validations:
+      required: false
+
+  - type: dropdown
+    id: cenarios
+    attributes:
+      label: "Cenários"
+      description: "Opcional. Você pode selecionar vários cenários."
+      multiple: true
+      options:
+        - "Bigorna"
+        - "Canhão"
+        - "Dummy"
+        - "Fornalha"
+        - "Treino"
+    validations:
+      required: false
+
+  - type: dropdown
+    id: destaque
+    attributes:
+      label: "Destaque"
+      description: "Escolha se a miniatura deve aparecer como destaque."
+      multiple: false
+      options:
+        - "Não"
+        - "Sim"
+      default: 0
+    validations:
+      required: true
+
+  - type: input
+    id: galeria1
+    attributes:
+      label: "Foto adicional 1"
+      description: "Opcional. Primeira imagem extra da galeria."
+      placeholder: "https://i.imgur.com/exemplo2.jpeg"
+    validations:
+      required: false
+
+  - type: input
+    id: galeria2
+    attributes:
+      label: "Foto adicional 2"
+      description: "Opcional. Segunda imagem extra da galeria."
+      placeholder: "https://i.imgur.com/exemplo3.jpeg"
+    validations:
+      required: false
