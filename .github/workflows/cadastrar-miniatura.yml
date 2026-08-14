@@ -1,0 +1,205 @@
+name: Cadastrar miniatura
+
+on:
+  issues:
+    types: [opened, edited]
+
+# Evita dois cadastros tentando gravar ao mesmo tempo.
+concurrency:
+  group: cadastro-miniatura
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  issues: write
+  actions: write
+
+jobs:
+  cadastrar:
+    # O formulário funciona como painel privado: somente o dono do repositório
+    # pode disparar alterações no código.
+    if: >-
+      github.event.issue.state == 'open' &&
+      startsWith(github.event.issue.title, '[CADASTRO MINI]') &&
+      github.actor == github.repository_owner
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Baixar repositório
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          fetch-depth: 0
+
+      - name: Validar cadastro e criar Markdown
+        id: cadastro
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+        run: |
+          python - <<'PY'
+          import os
+          import re
+          from pathlib import Path
+
+          body = os.environ.get("ISSUE_BODY", "")
+          output_file = Path(os.environ["GITHUB_OUTPUT"])
+
+          def set_output(name, value):
+              value = str(value).replace("\n", " ").replace("\r", " ")
+              with output_file.open("a", encoding="utf-8") as f:
+                  f.write(f"{name}={value}\n")
+
+          def fail(message):
+              set_output("status", "error")
+              set_output("message", message)
+              raise SystemExit(0)
+
+          headings = list(re.finditer(r"^###\s+(.+?)\s*$", body, re.MULTILINE))
+          sections = {}
+          for i, match in enumerate(headings):
+              start = match.end()
+              end = headings[i + 1].start() if i + 1 < len(headings) else len(body)
+              sections[match.group(1).strip()] = body[start:end].strip()
+
+          def get(label):
+              value = sections.get(label, "").strip()
+              if value in {"_No response_", "None", "N/A", "n/a"}:
+                  return ""
+              return value
+
+          def get_multi(label):
+              value = get(label)
+              if not value:
+                  return []
+              return [item.strip() for item in value.split(",") if item.strip()]
+
+          def yaml_string(value):
+              return '"' + value.replace("\\", "\\\\").replace('"', '\\"') + '"'
+
+          def yaml_array(values):
+              return "[" + ", ".join(yaml_string(v) for v in values) + "]"
+
+          raw_code = get("Código")
+          if not re.fullmatch(r"\d{1,5}", raw_code):
+              fail("Código inválido. Use somente números, com no máximo 5 dígitos (ex.: 174 ou 00174).")
+          code = raw_code.zfill(5)
+
+          image = get("Imagem principal")
+          if not re.fullmatch(r"https?://\S+", image):
+              fail("A imagem principal precisa ser uma URL http:// ou https:// válida.")
+
+          classes = get_multi("Classes")
+          racas = get_multi("Raças")
+          sexo = get_multi("Sexo")
+          cenarios = get_multi("Cenários")
+
+          destaque_raw = get("Destaque").casefold()
+          if destaque_raw == "sim":
+              destaque = "true"
+          elif destaque_raw in {"não", "nao"}:
+              destaque = "false"
+          else:
+              fail("Selecione Sim ou Não no campo Destaque.")
+
+          gallery = []
+          for label in ("Foto adicional 1", "Foto adicional 2"):
+              url = get(label)
+              if not url:
+                  continue
+              if not re.fullmatch(r"https?://\S+", url):
+                  fail(f"{label} precisa ser uma URL http:// ou https:// válida.")
+              gallery.append(url)
+
+          minis_dir = Path("src/content/minis")
+          if not minis_dir.is_dir():
+              fail("A pasta src/content/minis não foi encontrada no repositório.")
+
+          duplicates = []
+          title_pattern = re.compile(rf"titulo:\s*[\"']?Cod\.:\s*{re.escape(code)}\b")
+          for md in minis_dir.glob("*.md"):
+              if md.name.startswith(code):
+                  duplicates.append(md.name)
+                  continue
+              try:
+                  text = md.read_text(encoding="utf-8-sig")
+              except UnicodeDecodeError:
+                  continue
+              if title_pattern.search(text):
+                  duplicates.append(md.name)
+
+          if duplicates:
+              names = ", ".join(sorted(set(duplicates)))
+              fail(f"O código {code} já existe no catálogo ({names}). Nenhum arquivo foi alterado.")
+
+          lines = [
+              "---",
+              f'titulo: "Cod.: {code}"',
+              f"imagem: {yaml_string(image)}",
+              "",
+              f"classes: {yaml_array(classes)}",
+              f"racas: {yaml_array(racas)}",
+              f"sexo: {yaml_array(sexo)}",
+              f"cenarios: {yaml_array(cenarios)}",
+              "",
+              f"destaque: {destaque}",
+              "",
+          ]
+
+          if gallery:
+              lines.append("galeria:")
+              lines.extend(f"  - {yaml_string(url)}" for url in gallery)
+          else:
+              lines.append("galeria: []")
+          lines.append("---")
+
+          target = minis_dir / f"{code}.md"
+          target.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+          set_output("status", "ok")
+          set_output("code", code)
+          set_output("file", target.as_posix())
+          set_output("message", f"Miniatura {code} pronta para cadastro.")
+          PY
+
+      - name: Informar erro no cadastro
+        if: steps.cadastro.outputs.status == 'error'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_URL: ${{ github.event.issue.html_url }}
+          MESSAGE: ${{ steps.cadastro.outputs.message }}
+        run: |
+          gh issue comment "$ISSUE_URL" --body "❌ **Cadastro não realizado:** $MESSAGE
+
+          Edite este cadastro e salve novamente para tentar de novo."
+
+      - name: Gravar miniatura no repositório
+        if: steps.cadastro.outputs.status == 'ok'
+        env:
+          CODE: ${{ steps.cadastro.outputs.code }}
+          FILE: ${{ steps.cadastro.outputs.file }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$FILE"
+          git commit -m "Adiciona miniatura $CODE"
+          git push origin "HEAD:$DEFAULT_BRANCH"
+
+      - name: Atualizar GitHub Pages
+        if: steps.cadastro.outputs.status == 'ok'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          gh workflow run deploy.yml --ref "$DEFAULT_BRANCH"
+
+      - name: Concluir cadastro
+        if: steps.cadastro.outputs.status == 'ok'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_URL: ${{ github.event.issue.html_url }}
+          CODE: ${{ steps.cadastro.outputs.code }}
+          FILE: ${{ steps.cadastro.outputs.file }}
+        run: |
+          gh issue comment "$ISSUE_URL" --body "✅ Miniatura **$CODE** cadastrada com sucesso em \`$FILE\`. O deploy do Pages foi solicitado automaticamente."
+          gh issue close "$ISSUE_URL" --reason completed
