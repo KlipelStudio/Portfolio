@@ -31,7 +31,7 @@ jobs:
           ref: ${{ github.event.repository.default_branch }}
           fetch-depth: 0
 
-      - name: Validar cadastro e criar Markdown
+      - name: Validar cadastro, descobrir próximo código e criar Markdown
         id: cadastro
         env:
           ISSUE_BODY: ${{ github.event.issue.body }}
@@ -79,10 +79,67 @@ jobs:
           def yaml_array(values):
               return "[" + ", ".join(yaml_string(v) for v in values) + "]"
 
+          minis_dir = Path("src/content/minis")
+          if not minis_dir.is_dir():
+              fail("A pasta src/content/minis não foi encontrada no repositório.")
+
+          # Procura os códigos de TODAS as miniaturas existentes.
+          # O titulo "Cod.: 00000" é a fonte principal, então arquivos antigos
+          # como 00005GuerreiroNordico.md também entram corretamente na conta.
+          title_code_pattern = re.compile(
+              r"^\s*titulo:\s*[\"']?\s*Cod\.:\s*(\d{1,5})\b",
+              re.IGNORECASE | re.MULTILINE,
+          )
+          filename_code_pattern = re.compile(r"^(\d{5})")
+
+          def catalog_codes():
+              codes = []
+              for md in minis_dir.glob("*.md"):
+                  code_found = None
+                  try:
+                      text = md.read_text(encoding="utf-8-sig")
+                  except UnicodeDecodeError:
+                      text = ""
+
+                  match = title_code_pattern.search(text)
+                  if match:
+                      code_found = int(match.group(1))
+                  else:
+                      # Fallback de segurança caso algum arquivo não tenha titulo legível.
+                      match = filename_code_pattern.match(md.name)
+                      if match:
+                          code_found = int(match.group(1))
+
+                  if code_found is not None:
+                      codes.append(code_found)
+              return codes
+
+          existing_codes = catalog_codes()
+          if not existing_codes:
+              fail("Nenhum código existente foi encontrado em src/content/minis.")
+
+          max_existing = max(existing_codes)
+          if max_existing >= 99999:
+              fail("O catálogo já chegou ao código 99999; não existe próximo código de 5 dígitos.")
+
+          expected_code = f"{max_existing + 1:05d}"
+          max_existing_code = f"{max_existing:05d}"
+
           raw_code = get("Código")
           if not re.fullmatch(r"\d{1,5}", raw_code):
-              fail("Código inválido. Use somente números, com no máximo 5 dígitos (ex.: 174 ou 00174).")
+              fail(
+                  f"Código inválido. O próximo código calculado pelo catálogo é {expected_code}."
+              )
           code = raw_code.zfill(5)
+
+          # Segurança extra: o cadastro só continua se o código informado for
+          # exatamente o maior código existente + 1.
+          if code != expected_code:
+              fail(
+                  f"O próximo código deve ser {expected_code}. "
+                  f"O maior código encontrado no catálogo é {max_existing_code}. "
+                  "Atualize o campo Código e tente novamente."
+              )
 
           image = get("Imagem principal")
           if not re.fullmatch(r"https?://\S+", image):
@@ -110,12 +167,12 @@ jobs:
                   fail(f"{label} precisa ser uma URL http:// ou https:// válida.")
               gallery.append(url)
 
-          minis_dir = Path("src/content/minis")
-          if not minis_dir.is_dir():
-              fail("A pasta src/content/minis não foi encontrada no repositório.")
-
+          # Mantém a verificação de duplicidade mesmo com a regra de maior + 1.
           duplicates = []
-          title_pattern = re.compile(rf"titulo:\s*[\"']?Cod\.:\s*{re.escape(code)}\b")
+          duplicate_title_pattern = re.compile(
+              rf"^\s*titulo:\s*[\"']?\s*Cod\.:\s*{re.escape(code)}\b",
+              re.IGNORECASE | re.MULTILINE,
+          )
           for md in minis_dir.glob("*.md"):
               if md.name.startswith(code):
                   duplicates.append(md.name)
@@ -124,7 +181,7 @@ jobs:
                   text = md.read_text(encoding="utf-8-sig")
               except UnicodeDecodeError:
                   continue
-              if title_pattern.search(text):
+              if duplicate_title_pattern.search(text):
                   duplicates.append(md.name)
 
           if duplicates:
@@ -155,10 +212,78 @@ jobs:
           target = minis_dir / f"{code}.md"
           target.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
+          # Recalcula depois de criar a miniatura e grava o próximo código no
+          # próprio Issue Form, para ele já abrir preenchido no próximo cadastro.
+          after_codes = catalog_codes()
+          next_number = max(after_codes) + 1
+          if next_number > 99999:
+              next_code = "99999"
+          else:
+              next_code = f"{next_number:05d}"
+
+          template = Path(".github/ISSUE_TEMPLATE/cadastrar-miniatura.yml")
+          if not template.is_file():
+              fail("O formulário .github/ISSUE_TEMPLATE/cadastrar-miniatura.yml não foi encontrado.")
+
+          template_lines = template.read_text(encoding="utf-8").splitlines()
+          codigo_id_index = None
+          for i, line in enumerate(template_lines):
+              if line.strip() == "id: codigo":
+                  codigo_id_index = i
+                  break
+
+          if codigo_id_index is None:
+              fail("Não encontrei o campo id: codigo no formulário de cadastro.")
+
+          value_updated = False
+          placeholder_updated = False
+          field_end = len(template_lines)
+          for i in range(codigo_id_index + 1, len(template_lines)):
+              stripped = template_lines[i].strip()
+              if i > codigo_id_index + 1 and template_lines[i].startswith("  - type:"):
+                  field_end = i
+                  break
+              if stripped.startswith("value:"):
+                  indent = template_lines[i][: len(template_lines[i]) - len(template_lines[i].lstrip())]
+                  template_lines[i] = f'{indent}value: "{next_code}"'
+                  value_updated = True
+              elif stripped.startswith("placeholder:"):
+                  indent = template_lines[i][: len(template_lines[i]) - len(template_lines[i].lstrip())]
+                  template_lines[i] = f'{indent}placeholder: "{next_code}"'
+                  placeholder_updated = True
+
+          if not value_updated:
+              # Caso o value tenha sido removido manualmente, reinsere dentro de attributes.
+              insert_at = None
+              for i in range(codigo_id_index + 1, field_end):
+                  if template_lines[i].strip().startswith("placeholder:"):
+                      insert_at = i
+                      break
+                  if template_lines[i].strip() == "validations:":
+                      insert_at = i
+                      break
+              if insert_at is None:
+                  fail("Não consegui atualizar automaticamente o valor do campo Código no formulário.")
+              template_lines.insert(insert_at, f'      value: "{next_code}"')
+
+          if not placeholder_updated:
+              # O placeholder é apenas visual, mas mantemos sincronizado para não confundir.
+              for i in range(codigo_id_index + 1, len(template_lines)):
+                  if template_lines[i].strip() == "validations:":
+                      template_lines.insert(i, f'      placeholder: "{next_code}"')
+                      break
+
+          template.write_text("\n".join(template_lines) + "\n", encoding="utf-8")
+
           set_output("status", "ok")
           set_output("code", code)
           set_output("file", target.as_posix())
-          set_output("message", f"Miniatura {code} pronta para cadastro.")
+          set_output("template_file", template.as_posix())
+          set_output("next_code", next_code)
+          set_output(
+              "message",
+              f"Miniatura {code} pronta para cadastro. Próximo código calculado: {next_code}.",
+          )
           PY
 
       - name: Informar erro no cadastro
@@ -172,17 +297,18 @@ jobs:
 
           Edite este cadastro e salve novamente para tentar de novo."
 
-      - name: Gravar miniatura no repositório
+      - name: Gravar miniatura e próximo código no repositório
         if: steps.cadastro.outputs.status == 'ok'
         env:
           CODE: ${{ steps.cadastro.outputs.code }}
           FILE: ${{ steps.cadastro.outputs.file }}
+          TEMPLATE_FILE: ${{ steps.cadastro.outputs.template_file }}
           DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add "$FILE"
-          git commit -m "Adiciona miniatura $CODE"
+          git add "$FILE" "$TEMPLATE_FILE"
+          git commit -m "Adiciona miniatura $CODE e atualiza próximo código"
           git push origin "HEAD:$DEFAULT_BRANCH"
 
       - name: Atualizar GitHub Pages
@@ -200,6 +326,11 @@ jobs:
           ISSUE_URL: ${{ github.event.issue.html_url }}
           CODE: ${{ steps.cadastro.outputs.code }}
           FILE: ${{ steps.cadastro.outputs.file }}
+          NEXT_CODE: ${{ steps.cadastro.outputs.next_code }}
         run: |
-          gh issue comment "$ISSUE_URL" --body "✅ Miniatura **$CODE** cadastrada com sucesso em \`$FILE\`. O deploy do Pages foi solicitado automaticamente."
+          gh issue comment "$ISSUE_URL" --body "✅ Miniatura **$CODE** cadastrada com sucesso em \`$FILE\`.
+
+          Próximo código calculado pelo catálogo: **$NEXT_CODE**.
+
+          O formulário já foi atualizado para abrir com esse próximo código preenchido. O deploy do Pages foi solicitado automaticamente."
           gh issue close "$ISSUE_URL" --reason completed
