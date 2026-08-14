@@ -1,0 +1,147 @@
+name: Ordenar opções do cadastro
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/ISSUE_TEMPLATE/cadastrar-miniatura.yml"
+
+  # Também permite rodar manualmente pela aba Actions, se algum dia precisar.
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  ordenar:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Baixar repositório
+        uses: actions/checkout@v4
+
+      - name: Ordenar classes, raças, sexo e cenários
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          import unicodedata
+
+          arquivo = Path(".github/ISSUE_TEMPLATE/cadastrar-miniatura.yml")
+
+          if not arquivo.exists():
+              raise SystemExit(f"Arquivo não encontrado: {arquivo}")
+
+          linhas = arquivo.read_text(encoding="utf-8").splitlines(keepends=True)
+
+          # IDs dos dropdowns que serão mantidos em ordem alfabética.
+          ALVOS = {"classes", "racas", "sexo", "cenarios"}
+
+          def chave_alfabetica(linha):
+              """
+              Ordena ignorando diferença entre maiúsculas/minúsculas e acentos.
+              Ex.: 'Anão' é tratado alfabeticamente como 'Anao'.
+              """
+              texto = re.sub(r"^\s*-\s*", "", linha).strip()
+
+              # Ignora aspas externas apenas para calcular a ordem.
+              if len(texto) >= 2 and texto[0] == texto[-1] and texto[0] in {'"', "'"}:
+                  texto = texto[1:-1]
+
+              normalizado = unicodedata.normalize("NFKD", texto)
+              sem_acentos = "".join(
+                  c for c in normalizado
+                  if not unicodedata.combining(c)
+              )
+              return sem_acentos.casefold()
+
+          alterou = False
+          i = 0
+
+          while i < len(linhas):
+              match_id = re.match(r"^(\s*)id:\s*([A-Za-z0-9_-]+)\s*$", linhas[i].rstrip("\r\n"))
+
+              if not match_id or match_id.group(2) not in ALVOS:
+                  i += 1
+                  continue
+
+              id_indent = len(match_id.group(1))
+              campo = match_id.group(2)
+
+              # Procura "options:" dentro deste mesmo campo.
+              j = i + 1
+              options_index = None
+
+              while j < len(linhas):
+                  texto_sem_fim = linhas[j].rstrip("\r\n")
+                  stripped = texto_sem_fim.strip()
+
+                  # Chegou ao próximo id do mesmo nível ou acima: terminou o campo.
+                  outro_id = re.match(r"^(\s*)id:\s*([A-Za-z0-9_-]+)\s*$", texto_sem_fim)
+                  if outro_id and len(outro_id.group(1)) <= id_indent:
+                      break
+
+                  if re.match(r"^\s*options:\s*$", texto_sem_fim):
+                      options_index = j
+                      break
+
+                  j += 1
+
+              if options_index is None:
+                  i += 1
+                  continue
+
+              # Coleta somente os itens "- opção" imediatamente abaixo de options:.
+              k = options_index + 1
+              indices = []
+
+              while k < len(linhas):
+                  texto_sem_fim = linhas[k].rstrip("\r\n")
+
+                  if not texto_sem_fim.strip():
+                      # Linha vazia encerra a lista para não reorganizar outras partes.
+                      break
+
+                  if re.match(r"^\s*-\s+.+$", texto_sem_fim):
+                      indices.append(k)
+                      k += 1
+                      continue
+
+                  break
+
+              if len(indices) >= 2:
+                  originais = [linhas[idx] for idx in indices]
+                  ordenadas = sorted(originais, key=chave_alfabetica)
+
+                  if originais != ordenadas:
+                      for idx, nova_linha in zip(indices, ordenadas):
+                          linhas[idx] = nova_linha
+
+                      print(f"✓ {campo}: {len(indices)} opções ordenadas")
+                      alterou = True
+                  else:
+                      print(f"• {campo}: já estava em ordem")
+
+              i = max(k, i + 1)
+
+          if alterou:
+              arquivo.write_text("".join(linhas), encoding="utf-8", newline="")
+              print("Arquivo atualizado.")
+          else:
+              print("Nenhuma alteração necessária.")
+          PY
+
+      - name: Fazer commit da ordem corrigida
+        run: |
+          if git diff --quiet -- ".github/ISSUE_TEMPLATE/cadastrar-miniatura.yml"; then
+            echo "Nada para commitar."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add ".github/ISSUE_TEMPLATE/cadastrar-miniatura.yml"
+          git commit -m "chore: ordenar opções do cadastro"
+          git push
