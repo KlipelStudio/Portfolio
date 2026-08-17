@@ -4,4 +4,5 @@ import { defineConfig } from 'astro/config';
 export default defineConfig({
   site: 'https://klipelstudio.github.io',
   base: '/Portfolio',
+  compressHTML: true,
 });
