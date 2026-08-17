@@ -25,6 +25,7 @@ jobs:
         uses: withastro/action@v3
         with:
           package-manager: npm@latest
+          node-version: 22
         # path: .          # raiz do repo (padrao)
         # node-version: 20 # padrao
 

@@ -8,7 +8,7 @@ const asset = (p) =>
     ? p
     : `${base}${p}`.replace(/\/{2,}/g,'/');
 
-const href = asset(`/minis/${mini.slug}/`);
+const href = asset(`/minis/${mini.id}/`);
 const img = asset(mini.data.imagem);
 ---
 

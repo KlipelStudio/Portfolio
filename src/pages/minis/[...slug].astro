@@ -1,18 +1,18 @@
 ---
-import { getCollection } from 'astro:content';
+import { getCollection, render } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 
 export async function getStaticPaths() {
   const minis = await getCollection('minis');
 
   return minis.map((m) => ({
-    params: { slug: m.slug },
+    params: { slug: m.id },
     props: { mini: m }
   }));
 }
 
 const { mini } = Astro.props;
-const { Content } = await mini.render();
+const { Content } = await render(mini);
 
 const base = import.meta.env.BASE_URL;
 
