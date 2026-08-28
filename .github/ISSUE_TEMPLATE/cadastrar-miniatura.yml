@@ -143,6 +143,7 @@ body:
         - "Canhão"
         - "Dummy"
         - "Fornalha"
+        - "Fungo"
         - "Treino"
     validations:
       required: false
