@@ -54,6 +54,7 @@ body:
         - "Necromancer"
         - "Ninja"
         - "Paladino"
+        - "Samurai"
         - "Viking"
         - "Warlock"
     validations:
