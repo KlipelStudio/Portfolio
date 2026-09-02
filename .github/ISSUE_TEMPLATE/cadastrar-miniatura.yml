@@ -140,6 +140,7 @@ body:
       description: "Opcional. Você pode selecionar vários cenários."
       multiple: true
       options:
+        - "Alvo"
         - "Árvore"
         - "Baú"
         - "Bigorna"
