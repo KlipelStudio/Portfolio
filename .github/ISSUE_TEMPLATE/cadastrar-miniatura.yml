@@ -147,8 +147,10 @@ body:
         - "Cais"
         - "Canhão"
         - "Dummy"
+        - "Ferreiro"
         - "Fornalha"
         - "Fungo"
+        - "Mesa"
         - "Treino"
     validations:
       required: false
