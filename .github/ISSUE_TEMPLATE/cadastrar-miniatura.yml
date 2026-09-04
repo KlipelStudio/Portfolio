@@ -120,6 +120,7 @@ body:
         - "Troll"
         - "Urso"
         - "Vampiro"
+        - "Zumbi"
     validations:
       required: false
 
