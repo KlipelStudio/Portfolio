@@ -145,6 +145,8 @@ body:
       multiple: true
       options:
         - "Alvo"
+        - "Arma"
+        - "Arma de Cerco"
         - "Árvore"
         - "Bandeira/ Banner"
         - "Baú"
