@@ -67,6 +67,7 @@ body:
       description: "Opcional. Você pode selecionar várias raças/tipos."
       multiple: true
       options:
+        - "Abominação"
         - "Aldeão"
         - "Alien"
         - "Anão"
