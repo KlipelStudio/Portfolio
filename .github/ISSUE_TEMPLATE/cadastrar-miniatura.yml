@@ -162,6 +162,7 @@ body:
         - "Fornalha"
         - "Fungo"
         - "Mesa"
+        - "Relógio"
         - "Treino"
     validations:
       required: false
