@@ -35,25 +35,45 @@ const img = asset(mini.data.imagem);
       <div class="d-flex flex-wrap gap-1">
 
         {mini.data.classes?.map(c => (
-          <span class="badge badge-classe">
+          <span
+            class="badge badge-classe badge-tag"
+            data-filtro-tipo="classe"
+            data-filtro-valor={c}
+            title={`Filtrar por ${c}`}
+          >
             {c}
           </span>
         ))}
 
         {mini.data.racas?.map(r => (
-          <span class="badge badge-raca">
+          <span
+            class="badge badge-raca badge-tag"
+            data-filtro-tipo="raca"
+            data-filtro-valor={r}
+            title={`Filtrar por ${r}`}
+          >
             {r}
           </span>
         ))}
 
         {mini.data.sexo?.map(s => (
-          <span class="badge badge-sexo">
+          <span
+            class="badge badge-sexo badge-tag"
+            data-filtro-tipo="sexo"
+            data-filtro-valor={s}
+            title={`Filtrar por ${s}`}
+          >
             {s}
           </span>
         ))}
 
         {mini.data.cenarios?.map(c => (
-          <span class="badge badge-cenario">
+          <span
+            class="badge badge-cenario badge-tag"
+            data-filtro-tipo="cenario"
+            data-filtro-valor={c}
+            title={`Filtrar por ${c}`}
+          >
             {c}
           </span>
         ))}
@@ -95,6 +115,17 @@ const img = asset(mini.data.imagem);
   border:1px solid #dee2e6;
   font-size:.75rem;
   font-weight:600;
+}
+
+/* Etiqueta clicável: adiciona o filtro na barra da esquerda. */
+.badge-tag{
+  cursor:pointer;
+  transition:transform .12s ease, box-shadow .12s ease;
+}
+
+.badge-tag:hover{
+  transform:translateY(-1px);
+  box-shadow:0 0 0 2px rgba(0,0,0,.18);
 }
 
 </style>

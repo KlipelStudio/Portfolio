@@ -836,6 +836,95 @@ btn.classList.toggle(
 
 });
 
+/* Clicar numa etiqueta do card (ex.: "Dragão") liga/desliga o mesmo
+filtro da barra da esquerda, em vez de abrir a página da miniatura. */
+
+const listasPorTipo={
+
+classe:()=>classesAtivas,
+raca:()=>racasAtivas,
+sexo:()=>sexosAtivos,
+cenario:()=>cenariosAtivos
+
+};
+
+document
+.querySelector(
+"#grid"
+)
+.addEventListener(
+"click",
+evento=>{
+
+const etiqueta=
+evento.target.closest(
+"[data-filtro-tipo]"
+);
+
+if(!etiqueta){
+
+return;
+
+}
+
+evento.preventDefault();
+evento.stopPropagation();
+
+const tipo=
+etiqueta.dataset.filtroTipo;
+
+const valor=
+etiqueta.dataset.filtroValor;
+
+const lista=
+listasPorTipo[tipo]?.();
+
+if(!lista){
+
+return;
+
+}
+
+const botao=
+[
+...document.querySelectorAll(
+`.filtro-${tipo}`
+)
+].find(
+b=>b.dataset[tipo]===valor
+);
+
+if(botao){
+
+alternar(
+valor,
+lista,
+botao
+);
+
+}else{
+
+if(!lista.includes(valor)){
+
+lista.push(valor);
+
+}
+
+paginaAtual=1;
+
+atualizar();
+
+}
+
+window.scrollTo({
+top:0,
+behavior:"smooth"
+});
+
+},
+true
+);
+
 atualizar();
 
 </script>
