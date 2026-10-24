@@ -73,6 +73,35 @@ class="btn btn-warning sidebar-btn limpar-btn mb-3"
 Limpar / Exibir Todos
 </button>
 
+<div class="busca-filtro">
+
+<input
+id="busca-filtro"
+type="text"
+placeholder="Buscar filtro…"
+autocomplete="off"
+aria-label="Buscar filtro"
+/>
+
+<button
+id="limpar-busca-filtro"
+type="button"
+aria-label="Limpar busca"
+hidden
+>
+×
+</button>
+
+</div>
+
+<p
+id="busca-sem-resultado"
+class="busca-sem-resultado"
+hidden
+>
+Nenhum filtro encontrado.
+</p>
+
 <div id="filtros-ativos"></div>
 
 <div class="grupo-dropdown">
@@ -925,6 +954,240 @@ behavior:"smooth"
 true
 );
 
+/* Busca de filtros: mostra só as opções que combinam com o texto
+(ignorando acentos e maiúsculas) e abre os grupos onde elas estão.
+Ao apagar a busca, cada grupo volta a ficar aberto/fechado como antes. */
+
+const campoBusca=
+document.querySelector(
+"#busca-filtro"
+);
+
+const botaoLimparBusca=
+document.querySelector(
+"#limpar-busca-filtro"
+);
+
+const avisoSemResultado=
+document.querySelector(
+"#busca-sem-resultado"
+);
+
+const gruposFiltro=
+[
+...document.querySelectorAll(
+".grupo-dropdown"
+)
+];
+
+let estadoAntesDaBusca=null;
+
+function normalizarBusca(texto){
+
+return (texto||"")
+.normalize("NFD")
+.replace(/[̀-ͯ]/g,"")
+.toLowerCase()
+.trim();
+
+}
+
+function abrirGrupo(dropdown,aberto){
+
+const titulo=
+dropdown.querySelector(
+".titulo-filtro"
+);
+
+const grupo=
+dropdown.querySelector(
+".grupo"
+);
+
+grupo.classList.toggle(
+"grupo-aberto",
+aberto
+);
+
+titulo.classList.toggle(
+"fechado",
+!aberto
+);
+
+}
+
+function filtrarOpcoes(){
+
+const termo=
+normalizarBusca(
+campoBusca.value
+);
+
+botaoLimparBusca.hidden=
+!campoBusca.value;
+
+if(!termo){
+
+gruposFiltro.forEach(dropdown=>{
+
+dropdown.style.display="";
+
+dropdown
+.querySelectorAll(
+".grupo .btn"
+)
+.forEach(btn=>{
+
+btn.style.display="";
+
+});
+
+if(estadoAntesDaBusca){
+
+abrirGrupo(
+dropdown,
+estadoAntesDaBusca.get(dropdown)
+);
+
+}
+
+});
+
+estadoAntesDaBusca=null;
+
+avisoSemResultado.hidden=true;
+
+return;
+
+}
+
+if(!estadoAntesDaBusca){
+
+estadoAntesDaBusca=new Map(
+gruposFiltro.map(dropdown=>[
+dropdown,
+dropdown
+.querySelector(".grupo")
+.classList.contains("grupo-aberto")
+])
+);
+
+}
+
+let total=0;
+
+gruposFiltro.forEach(dropdown=>{
+
+let encontrados=0;
+
+dropdown
+.querySelectorAll(
+".grupo .btn"
+)
+.forEach(btn=>{
+
+const combina=
+normalizarBusca(
+btn.textContent
+).includes(termo);
+
+btn.style.display=
+combina?"":"none";
+
+if(combina){
+
+encontrados++;
+
+}
+
+});
+
+dropdown.style.display=
+encontrados?"":"none";
+
+if(encontrados){
+
+abrirGrupo(
+dropdown,
+true
+);
+
+}
+
+total+=encontrados;
+
+});
+
+avisoSemResultado.hidden=
+total>0;
+
+}
+
+campoBusca.addEventListener(
+"input",
+filtrarOpcoes
+);
+
+campoBusca.addEventListener(
+"keydown",
+evento=>{
+
+if(evento.key==="Escape"){
+
+campoBusca.value="";
+filtrarOpcoes();
+
+}
+
+if(evento.key==="Enter"){
+
+/* Se só sobrou uma opção, Enter liga/desliga esse filtro. */
+
+const visiveis=
+[
+...document.querySelectorAll(
+".grupo .btn"
+)
+].filter(
+btn=>btn.style.display!=="none"
+&& btn.closest(".grupo-dropdown").style.display!=="none"
+);
+
+if(visiveis.length===1){
+
+visiveis[0].click();
+
+}
+
+}
+
+}
+);
+
+botaoLimparBusca.onclick=()=>{
+
+campoBusca.value="";
+filtrarOpcoes();
+campoBusca.focus();
+
+};
+
+/* "Limpar / Exibir Todos" também limpa a busca. */
+
+document
+.querySelector(
+"#todos"
+)
+.addEventListener(
+"click",
+()=>{
+
+campoBusca.value="";
+filtrarOpcoes();
+
+}
+);
+
 atualizar();
 
 </script>
@@ -1079,6 +1342,80 @@ box-shadow:
 0 4px 12px rgba(0,0,0,.12);
 
 transition:.15s ease;
+
+}
+
+.busca-filtro{
+
+position:relative;
+
+margin-bottom:6px;
+
+}
+
+.busca-filtro input{
+
+width:100%;
+
+height:42px;
+
+padding:0 34px 0 12px;
+
+border:1px solid #ced4da;
+border-radius:.375rem;
+
+font-size:.95rem;
+
+}
+
+.busca-filtro input:focus{
+
+outline:none;
+
+border-color:#ffc107;
+
+box-shadow:0 0 0 3px rgba(255,193,7,.25);
+
+}
+
+.busca-filtro button{
+
+position:absolute;
+
+top:50%;
+right:6px;
+
+transform:translateY(-50%);
+
+width:26px;
+height:26px;
+
+border:none;
+border-radius:50%;
+
+background:#e9ecef;
+color:#212529;
+
+font-size:1rem;
+line-height:1;
+
+cursor:pointer;
+
+}
+
+.busca-filtro button:hover{
+
+background:#dee2e6;
+
+}
+
+.busca-sem-resultado{
+
+margin:6px 0 0;
+
+font-size:.85rem;
+
+color:#6c757d;
 
 }
 
