@@ -203,9 +203,9 @@ alt="${mini.titulo}"
 ${mini.titulo}
 </h3>
 
-<div class="d-flex flex-wrap gap-1">
+<div class="d-flex flex-wrap align-items-start gap-1">
 
-${mini.culturaPop ? '<span class="badge badge-home badge-pop">★ Cultura Pop</span>' : ""}
+${mini.culturaPop ? '<span class="badge badge-home badge-pop"><span class="pop-star">★</span> Cultura Pop</span>' : ""}
 ${criarBadges(mini.classes,"classe")}
 ${criarBadges(mini.racas,"raca")}
 ${criarBadges(mini.sexo,"sexo")}
@@ -485,44 +485,34 @@ border:1px solid #dee2e6;
 
 }
 
-/* Cultura Pop: balão de fala estilo quadrinho. */
+/* Cultura Pop: placa amarela com borda preta e base rosa. */
 
 :global(.badge-pop){
-
-position:relative;
-
-margin-bottom:6px;
-
-background:linear-gradient(135deg,#ff2e88 0%,#a33cf0 100%) !important;
-color:#fff !important;
-
-border:2px solid #111;
-border-radius:10px;
-
-font-weight:800;
-
-text-shadow:1px 1px 0 rgba(0,0,0,.35);
-
+  position:relative;
+  isolation:isolate;
+  display:inline-flex;
+  align-items:center;
+  gap:.3em;
+  padding:.3em .8em;
+  border:0;
+  border-radius:0;
+  background:#111;
+  color:#111;
+  font-weight:800;
+  clip-path:polygon(6px 0,calc(100% - 6px) 0,100% 50%,calc(100% - 6px) 100%,6px 100%,0 50%);
 }
 
-:global(.badge-pop::after){
+:global(.badge-pop::before){
+  content:"";
+  position:absolute;
+  inset:1.5px;
+  z-index:-1;
+  background:linear-gradient(180deg,#fff27a 0%,#ffd21f 74%,#ff2e88 74%);
+  clip-path:polygon(5px 0,calc(100% - 5px) 0,100% 50%,calc(100% - 5px) 100%,5px 100%,0 50%);
+}
 
-content:"";
-
-position:absolute;
-left:10px;
-bottom:-6px;
-
-width:8px;
-height:8px;
-
-background:#f8318f;
-
-border-right:2px solid #111;
-border-bottom:2px solid #111;
-
-transform:rotate(45deg);
-
+:global(.pop-star){
+  color:#ff2e88;
 }
 
 @media(max-width:768px){

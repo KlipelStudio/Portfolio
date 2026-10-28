@@ -32,7 +32,7 @@ const img = asset(mini.data.imagem);
         {mini.data.descricao}
       </p>
 
-      <div class="d-flex flex-wrap gap-1">
+      <div class="d-flex flex-wrap align-items-start gap-1">
 
         {mini.data.culturaPop && (
           <span
@@ -41,7 +41,7 @@ const img = asset(mini.data.imagem);
             data-filtro-valor="Cultura Pop"
             title="Filtrar por Cultura Pop"
           >
-            ★ Cultura Pop
+            <span class="pop-star">★</span> Cultura Pop
           </span>
         )}
 
@@ -128,32 +128,36 @@ const img = asset(mini.data.imagem);
   font-weight:600;
 }
 
-/* Cultura Pop: balão de fala estilo quadrinho (rosa → roxo, contorno preto). */
+/* Cultura Pop: placa amarela com borda preta e base rosa.
+   Mesma altura das outras etiquetas (sem borda nem margem extra). */
 .badge-pop{
   position:relative;
-  margin-bottom:6px;
-  padding:.32em .65em;
-  background:linear-gradient(135deg,#ff2e88 0%,#a33cf0 100%);
-  color:#fff;
-  border:2px solid #111;
-  border-radius:12px;
-  font-size:.75rem;
+  isolation:isolate;
+  display:inline-flex;
+  align-items:center;
+  gap:.3em;
+  padding:.35em .85em;
+  border:0;
+  border-radius:0;
+  background:#111;
+  color:#111;
   font-weight:800;
-  letter-spacing:.02em;
-  text-shadow:1px 1px 0 rgba(0,0,0,.35);
+  clip-path:polygon(7px 0,calc(100% - 7px) 0,100% 50%,calc(100% - 7px) 100%,7px 100%,0 50%);
+  font-size:.75rem;
+  line-height:1;
 }
 
-.badge-pop::after{
+.badge-pop::before{
   content:"";
   position:absolute;
-  left:12px;
-  bottom:-6px;
-  width:9px;
-  height:9px;
-  background:#f8318f;
-  border-right:2px solid #111;
-  border-bottom:2px solid #111;
-  transform:rotate(45deg);
+  inset:1.5px;
+  z-index:-1;
+  background:linear-gradient(180deg,#fff27a 0%,#ffd21f 74%,#ff2e88 74%);
+  clip-path:polygon(6px 0,calc(100% - 6px) 0,100% 50%,calc(100% - 6px) 100%,6px 100%,0 50%);
+}
+
+.pop-star{
+  color:#ff2e88;
 }
 
 /* Etiqueta clicável: adiciona o filtro na barra da esquerda. */

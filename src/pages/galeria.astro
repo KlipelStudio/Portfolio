@@ -114,8 +114,7 @@ class="filtro-pop-btn"
 type="button"
 title="Mostrar só miniaturas de Cultura Pop"
 >
-★ Cultura Pop
-<span class="filtro-pop-total">{totalCulturaPop}</span>
+<span class="pop-star">★</span> Cultura Pop
 </button>
 
 )
@@ -549,7 +548,7 @@ data-tipo="pop"
 data-valor="Cultura Pop"
 >
 
-★ Cultura Pop
+<span class="pop-star">★</span> Cultura Pop
 
 <span class="badge-x">
 ×
@@ -1435,116 +1434,82 @@ transform:rotate(0deg);
 
 }
 
-/* Botão "Cultura Pop" da barra lateral: mesmo balão de quadrinho do card. */
+/* Botão "Cultura Pop" da barra lateral: placa com borda preta.
+   Branca quando desligado; amarela com base rosa quando ligado. */
 
 .filtro-pop-btn{
-
-position:relative;
-
-width:100%;
-
-display:flex;
-align-items:center;
-justify-content:space-between;
-gap:6px;
-
-margin:14px 0 10px;
-padding:8px;
-
-background:#fff;
-color:#a33cf0;
-
-border:2px solid #111;
-border-radius:14px;
-
-font-size:.85rem;
-font-weight:800;
-white-space:nowrap;
-
-cursor:pointer;
-
-transition:.15s ease;
-
+  position:relative;
+  isolation:isolate;
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  margin:14px 0 10px;
+  padding:9px 14px;
+  border:0;
+  background:#111;
+  color:#111;
+  font-size:.9rem;
+  font-weight:800;
+  white-space:nowrap;
+  cursor:pointer;
+  clip-path:polygon(12px 0,calc(100% - 12px) 0,100% 50%,calc(100% - 12px) 100%,12px 100%,0 50%);
+  transition:transform .15s ease;
 }
 
-.filtro-pop-btn::after{
-
-content:"";
-
-position:absolute;
-left:18px;
-bottom:-7px;
-
-width:11px;
-height:11px;
-
-background:#fff;
-
-border-right:2px solid #111;
-border-bottom:2px solid #111;
-
-transform:rotate(45deg);
-
-transition:.15s ease;
-
+.filtro-pop-btn::before{
+  content:"";
+  position:absolute;
+  inset:2px;
+  z-index:-1;
+  background:#fff;
+  clip-path:polygon(11px 0,calc(100% - 11px) 0,100% 50%,calc(100% - 11px) 100%,11px 100%,0 50%);
 }
 
 .filtro-pop-btn:hover{
-
-transform:translateY(-1px);
-
-box-shadow:3px 3px 0 #111;
-
+  transform:translateY(-1px);
 }
 
-.filtro-pop-total{
-
-min-width:24px;
-
-padding:2px 7px;
-
-border-radius:999px;
-
-background:#f3e8ff;
-color:#7c2bd0;
-
-font-size:.75rem;
-
+.filtro-pop-btn:hover::before{
+  background:#fff7c2;
 }
 
-.filtro-pop-btn.filtro-pop-ativo{
-
-background:linear-gradient(135deg,#ff2e88 0%,#a33cf0 100%);
-color:#fff;
-
-text-shadow:1px 1px 0 rgba(0,0,0,.35);
-
-box-shadow:3px 3px 0 #111;
-
+.filtro-pop-btn.filtro-pop-ativo::before{
+  background:linear-gradient(180deg,#fff27a 0%,#ffd21f 74%,#ff2e88 74%);
 }
 
-.filtro-pop-btn.filtro-pop-ativo::after{
-
-background:#f8318f;
-
-}
-
-.filtro-pop-btn.filtro-pop-ativo .filtro-pop-total{
-
-background:rgba(255,255,255,.25);
-color:#fff;
-
-text-shadow:none;
-
-}
-
+/* Etiqueta do filtro ativo (com o ×). */
 :global(.badge-filtro.badge-pop){
+  position:relative;
+  isolation:isolate;
+  display:inline-flex;
+  align-items:center;
+  gap:.3em;
+  padding:4px 12px;
+  border:0;
+  border-radius:0;
+  background:#111;
+  color:#111;
+  font-weight:800;
+  clip-path:polygon(7px 0,calc(100% - 7px) 0,100% 50%,calc(100% - 7px) 100%,7px 100%,0 50%);
+}
 
-background:linear-gradient(135deg,#ff2e88 0%,#a33cf0 100%);
-color:#fff;
+:global(.badge-filtro.badge-pop::before){
+  content:"";
+  position:absolute;
+  inset:1.5px;
+  z-index:-1;
+  background:linear-gradient(180deg,#fff27a 0%,#ffd21f 74%,#ff2e88 74%);
+  clip-path:polygon(6px 0,calc(100% - 6px) 0,100% 50%,calc(100% - 6px) 100%,6px 100%,0 50%);
+}
 
-border:2px solid #111;
+:global(.pop-star){
+  color:#ff2e88;
+}
 
+:global(.badge-filtro.badge-pop .badge-x){
+  background:rgba(0,0,0,.15);
 }
 
 .grupo{
