@@ -62,21 +62,31 @@ class="overlay-filtros"
 Galeria
 </h4>
 
+<div class="acoes-galeria">
+
 <button
 id="recentes"
-class="btn btn-warning sidebar-btn recentes-btn mb-2"
+type="button"
+class="placa-btn recentes-btn"
+title="Mostrar as mais recentes primeiro"
 >
-Mais recentes
+<span class="badge-pop-in"><svg class="ico seta-desce" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6"/></svg><svg class="ico seta-sobe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg> Recentes</span>
 </button>
 
 <button
 id="todos"
-class="btn btn-warning sidebar-btn limpar-btn mb-3"
+type="button"
+class="placa-btn limpar-btn"
+title="Limpar filtros e exibir todas"
 >
-Limpar / Exibir Todos
+<span class="badge-pop-in"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg> Limpar</span>
 </button>
 
+</div>
+
 <div class="busca-filtro">
+
+<svg class="busca-lupa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4.5-4.5"/></svg>
 
 <input
 id="busca-filtro"
@@ -880,13 +890,8 @@ btnRecentes.onclick=()=>{
 ordemInvertida=!ordemInvertida;
 
 btnRecentes.classList.toggle(
-"btn-dark",
+"recentes-ativo",
 ordemInvertida
-);
-
-btnRecentes.classList.toggle(
-"btn-warning",
-!ordemInvertida
 );
 
 paginaAtual=1;
@@ -917,11 +922,7 @@ botaoPop.classList.remove(
 }
 
 btnRecentes.classList.remove(
-"btn-dark"
-);
-
-btnRecentes.classList.add(
-"btn-warning"
+"recentes-ativo"
 );
 
 document
@@ -1330,6 +1331,24 @@ display:none;
 
 }
 
+/* Barra lateral com 200px de conteúdo no computador
+   (230px = 200 + espaçamento da coluna + rolagem). */
+@media(min-width:992px){
+
+.row > .sidebar{
+
+width:230px;
+
+}
+
+.row > .col-lg-10{
+
+width:calc(100% - 230px);
+
+}
+
+}
+
 .sidebar-sticky{
 
 position:sticky;
@@ -1340,40 +1359,6 @@ overflow-y:auto;
 overflow-x:hidden;
 
 padding-right:6px;
-
-}
-
-.sidebar-btn{
-
-height:46px;
-
-display:flex;
-align-items:center;
-justify-content:flex-start;
-
-padding-left:16px;
-padding-right:12px;
-
-font-size:1rem;
-font-weight:400;
-line-height:1;
-
-white-space:nowrap;
-text-align:left;
-
-}
-
-.recentes-btn{
-
-width:max-content;
-min-width:50%;
-max-width:100%;
-
-}
-
-.limpar-btn{
-
-width:100%;
 
 }
 
@@ -1478,7 +1463,25 @@ transition:.15s ease;
 
 position:relative;
 
-margin-bottom:6px;
+margin-bottom:10px;
+
+}
+
+.busca-lupa{
+
+position:absolute;
+
+top:50%;
+left:12px;
+
+transform:translateY(-50%);
+
+width:16px;
+height:16px;
+
+color:#8a9097;
+
+pointer-events:none;
 
 }
 
@@ -1486,14 +1489,16 @@ margin-bottom:6px;
 
 width:100%;
 
-height:42px;
+height:44px;
 
-padding:0 34px 0 12px;
+padding:0 36px 0 36px;
 
-border:1px solid #ced4da;
-border-radius:.375rem;
+background:#fff;
 
-font-size:.95rem;
+border:2.5px solid #111;
+border-radius:10px;
+
+font-size:1rem;
 
 }
 
@@ -1501,9 +1506,7 @@ font-size:.95rem;
 
 outline:none;
 
-border-color:#ffc107;
-
-box-shadow:0 0 0 3px rgba(255,193,7,.25);
+box-shadow:0 0 0 3px rgba(255,193,7,.45);
 
 }
 
@@ -1512,7 +1515,7 @@ box-shadow:0 0 0 3px rgba(255,193,7,.25);
 position:absolute;
 
 top:50%;
-right:6px;
+right:8px;
 
 transform:translateY(-50%);
 
@@ -1864,13 +1867,72 @@ width:50%;
   align-items:center;
 }
 
+/* Recentes e Limpar: mesma placa da Cultura Pop, lado a lado.
+   Amarelas; "Recentes" ligado fica escuro e a seta vira para cima. */
+.acoes-galeria{
+  display:flex;
+  gap:4px;
+  margin-bottom:10px;
+}
+
+.placa-btn{
+  flex:1 1 auto;
+  display:flex;
+  padding:0;
+  border:0;
+  background:none;
+  cursor:pointer;
+  transition:transform .15s ease;
+}
+
+.placa-btn:hover{
+  transform:translateY(-1px);
+}
+
+.placa-btn .badge-pop-in{
+  --b:3px;
+  --h:calc(1rem * 2.5);
+  width:100%;
+  padding:0 calc(var(--b) * 1.2806 + 8px);
+  gap:.3em;
+  font-size:.85rem;
+  color:#212529;
+}
+
+.placa-btn .badge-pop-in::before{
+  background:#ffc107;
+}
+
+.placa-btn .ico{
+  width:1em;
+  height:1em;
+  flex:none;
+}
+
+.recentes-btn .seta-sobe,
+.recentes-btn.recentes-ativo .seta-desce{
+  display:none;
+}
+
+.recentes-btn.recentes-ativo .seta-sobe{
+  display:block;
+}
+
+.recentes-btn.recentes-ativo .badge-pop-in{
+  color:#ffc107;
+}
+
+.recentes-btn.recentes-ativo .badge-pop-in::before{
+  background:#212529;
+}
+
 /* Botão "Cultura Pop" da barra lateral (borda mais grossa: é o maior).
    Desligado: placa pastel, sem sombra. Ligado: degradê forte + sombra rosa. */
 .filtro-pop-btn{
   --s:3px;
   width:100%;
   display:flex;
-  margin:14px 0 12px;
+  margin:0 0 12px;
   padding:0;
   border:0;
   background:none;
@@ -1885,9 +1947,9 @@ width:50%;
 
 .filtro-pop-btn .badge-pop-in{
   --b:3px;
-  --h:2.4em;
+  --h:calc(1rem * 2.5);
   width:100%;
-  font-size:.95rem;
+  font-size:1.05rem;
   color:#3a2a4d;
 }
 
