@@ -15,6 +15,7 @@ const minis = defineCollection({
     cenarios: z.array(z.string()).optional(),
 
     destaque: z.boolean().optional(),
+    culturaPop: z.boolean().optional(),   // categoria à parte: personagens de filmes, séries, games...
     galeria: z.array(z.string()).optional(),
   }),
 });

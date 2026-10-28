@@ -29,6 +29,9 @@ const cenarios = [
   )
 ].sort();
 
+// Categoria à parte (sim/não), como o destaque.
+const totalCulturaPop = minis.filter(m => m.data.culturaPop).length;
+
 const POR_PAGINA=100;
 ---
 
@@ -101,6 +104,22 @@ hidden
 >
 Nenhum filtro encontrado.
 </p>
+
+{
+totalCulturaPop>0 && (
+
+<button
+id="filtro-pop"
+class="filtro-pop-btn"
+type="button"
+title="Mostrar só miniaturas de Cultura Pop"
+>
+★ Cultura Pop
+<span class="filtro-pop-total">{totalCulturaPop}</span>
+</button>
+
+)
+}
 
 <div id="filtros-ativos"></div>
 
@@ -270,6 +289,8 @@ m.data.sexo||[]
 data-cenarios={JSON.stringify(
 m.data.cenarios||[]
 )}
+
+data-pop={m.data.culturaPop ? "true" : "false"}
 >
 
 <MiniCard mini={m}/>
@@ -303,6 +324,37 @@ let classesAtivas=[];
 let racasAtivas=[];
 let sexosAtivos=[];
 let cenariosAtivos=[];
+let popAtivo=false;
+
+const botaoPop=
+document.querySelector(
+"#filtro-pop"
+);
+
+/* Liga/desliga o filtro Cultura Pop (botão da esquerda, etiqueta e balão do card). */
+function alternarPop(ligar){
+
+popAtivo=
+typeof ligar==="boolean"
+?
+ligar
+:
+!popAtivo;
+
+if(botaoPop){
+
+botaoPop.classList.toggle(
+"filtro-pop-ativo",
+popAtivo
+);
+
+}
+
+paginaAtual=1;
+
+atualizar();
+
+}
 
 const minis=[
 ...document.querySelectorAll(
@@ -411,11 +463,16 @@ cenariosAtivos.some(
 c=>cenarios.includes(c)
 );
 
+const popOk=
+!popAtivo ||
+el.dataset.pop==="true";
+
 return(
 classeOk &&
 racaOk &&
 sexoOk &&
-cenarioOk
+cenarioOk &&
+popOk
 );
 
 });
@@ -473,6 +530,40 @@ ordenados.length
 function renderizarTags(){
 
 filtrosContainer.innerHTML="";
+
+if(popAtivo){
+
+const div=
+document.createElement(
+"div"
+);
+
+div.className=
+"tag-wrapper";
+
+div.innerHTML=`
+
+<button
+class="badge-filtro badge-pop"
+data-tipo="pop"
+data-valor="Cultura Pop"
+>
+
+★ Cultura Pop
+
+<span class="badge-x">
+×
+</span>
+
+</button>
+
+`;
+
+filtrosContainer.append(
+div
+);
+
+}
 
 function criarBadge(
 lista,
@@ -548,6 +639,14 @@ btn.dataset.tipo;
 
 const valor=
 btn.dataset.valor;
+
+if(tipo==="pop"){
+
+alternarPop(false);
+
+return;
+
+}
 
 const mapa={
 
@@ -809,6 +908,15 @@ racasAtivas=[];
 sexosAtivos=[];
 cenariosAtivos=[];
 ordemInvertida=false;
+popAtivo=false;
+
+if(botaoPop){
+
+botaoPop.classList.remove(
+"filtro-pop-ativo"
+);
+
+}
 
 btnRecentes.classList.remove(
 "btn-dark"
@@ -865,6 +973,16 @@ btn.classList.toggle(
 
 });
 
+if(botaoPop){
+
+botaoPop.onclick=()=>{
+
+alternarPop();
+
+};
+
+}
+
 /* Clicar numa etiqueta do card (ex.: "Dragão") liga/desliga o mesmo
 filtro da barra da esquerda, em vez de abrir a página da miniatura. */
 
@@ -904,6 +1022,19 @@ etiqueta.dataset.filtroTipo;
 
 const valor=
 etiqueta.dataset.filtroValor;
+
+if(tipo==="pop"){
+
+alternarPop();
+
+window.scrollTo({
+top:0,
+behavior:"smooth"
+});
+
+return;
+
+}
 
 const lista=
 listasPorTipo[tipo]?.();
@@ -1301,6 +1432,118 @@ flex-shrink:0;
 .titulo-filtro.fechado .seta{
 
 transform:rotate(0deg);
+
+}
+
+/* Botão "Cultura Pop" da barra lateral: mesmo balão de quadrinho do card. */
+
+.filtro-pop-btn{
+
+position:relative;
+
+width:100%;
+
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:6px;
+
+margin:14px 0 10px;
+padding:8px;
+
+background:#fff;
+color:#a33cf0;
+
+border:2px solid #111;
+border-radius:14px;
+
+font-size:.85rem;
+font-weight:800;
+white-space:nowrap;
+
+cursor:pointer;
+
+transition:.15s ease;
+
+}
+
+.filtro-pop-btn::after{
+
+content:"";
+
+position:absolute;
+left:18px;
+bottom:-7px;
+
+width:11px;
+height:11px;
+
+background:#fff;
+
+border-right:2px solid #111;
+border-bottom:2px solid #111;
+
+transform:rotate(45deg);
+
+transition:.15s ease;
+
+}
+
+.filtro-pop-btn:hover{
+
+transform:translateY(-1px);
+
+box-shadow:3px 3px 0 #111;
+
+}
+
+.filtro-pop-total{
+
+min-width:24px;
+
+padding:2px 7px;
+
+border-radius:999px;
+
+background:#f3e8ff;
+color:#7c2bd0;
+
+font-size:.75rem;
+
+}
+
+.filtro-pop-btn.filtro-pop-ativo{
+
+background:linear-gradient(135deg,#ff2e88 0%,#a33cf0 100%);
+color:#fff;
+
+text-shadow:1px 1px 0 rgba(0,0,0,.35);
+
+box-shadow:3px 3px 0 #111;
+
+}
+
+.filtro-pop-btn.filtro-pop-ativo::after{
+
+background:#f8318f;
+
+}
+
+.filtro-pop-btn.filtro-pop-ativo .filtro-pop-total{
+
+background:rgba(255,255,255,.25);
+color:#fff;
+
+text-shadow:none;
+
+}
+
+:global(.badge-filtro.badge-pop){
+
+background:linear-gradient(135deg,#ff2e88 0%,#a33cf0 100%);
+color:#fff;
+
+border:2px solid #111;
 
 }
 

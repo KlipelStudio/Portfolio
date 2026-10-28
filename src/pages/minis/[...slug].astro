@@ -53,6 +53,12 @@ const imagens = [
 
         <div class="d-flex flex-wrap gap-2 mb-4">
 
+          {mini.data.culturaPop && (
+            <span class="badge fs-6 badge-pop">
+              ★ Cultura Pop
+            </span>
+          )}
+
           {mini.data.classes?.map((c) => (
             <span class="badge text-bg-dark fs-6">
               {c}
@@ -172,6 +178,31 @@ const imagens = [
   </script>
 
   <style>
+
+  /* Cultura Pop: balão de fala estilo quadrinho (igual ao da galeria). */
+  .badge-pop{
+    position:relative;
+    margin-bottom:6px;
+    background:linear-gradient(135deg,#ff2e88 0%,#a33cf0 100%);
+    color:#fff;
+    border:2px solid #111;
+    border-radius:12px;
+    font-weight:800;
+    text-shadow:1px 1px 0 rgba(0,0,0,.35);
+  }
+
+  .badge-pop::after{
+    content:"";
+    position:absolute;
+    left:14px;
+    bottom:-7px;
+    width:10px;
+    height:10px;
+    background:#f8318f;
+    border-right:2px solid #111;
+    border-bottom:2px solid #111;
+    transform:rotate(45deg);
+  }
 
   .imagem-principal{
     max-height:75vh;

@@ -34,6 +34,17 @@ const img = asset(mini.data.imagem);
 
       <div class="d-flex flex-wrap gap-1">
 
+        {mini.data.culturaPop && (
+          <span
+            class="badge badge-pop badge-tag"
+            data-filtro-tipo="pop"
+            data-filtro-valor="Cultura Pop"
+            title="Filtrar por Cultura Pop"
+          >
+            ★ Cultura Pop
+          </span>
+        )}
+
         {mini.data.classes?.map(c => (
           <span
             class="badge badge-classe badge-tag"
@@ -115,6 +126,34 @@ const img = asset(mini.data.imagem);
   border:1px solid #dee2e6;
   font-size:.75rem;
   font-weight:600;
+}
+
+/* Cultura Pop: balão de fala estilo quadrinho (rosa → roxo, contorno preto). */
+.badge-pop{
+  position:relative;
+  margin-bottom:6px;
+  padding:.32em .65em;
+  background:linear-gradient(135deg,#ff2e88 0%,#a33cf0 100%);
+  color:#fff;
+  border:2px solid #111;
+  border-radius:12px;
+  font-size:.75rem;
+  font-weight:800;
+  letter-spacing:.02em;
+  text-shadow:1px 1px 0 rgba(0,0,0,.35);
+}
+
+.badge-pop::after{
+  content:"";
+  position:absolute;
+  left:12px;
+  bottom:-6px;
+  width:9px;
+  height:9px;
+  background:#f8318f;
+  border-right:2px solid #111;
+  border-bottom:2px solid #111;
+  transform:rotate(45deg);
 }
 
 /* Etiqueta clicável: adiciona o filtro na barra da esquerda. */
