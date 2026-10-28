@@ -54,8 +54,8 @@ const imagens = [
         <div class="d-flex flex-wrap align-items-start gap-2 mb-4">
 
           {mini.data.culturaPop && (
-            <span class="badge fs-6 badge-pop">
-              <span class="pop-star">★</span> Cultura Pop
+            <span class="badge-pop badge-pop-pagina">
+              <span class="badge-pop-in"><span class="pop-star">★</span> Cultura Pop</span>
             </span>
           )}
 
@@ -179,35 +179,6 @@ const imagens = [
 
   <style>
 
-  /* Cultura Pop: placa amarela com borda preta e base rosa (igual à galeria). */
-.badge-pop{
-  position:relative;
-  isolation:isolate;
-  display:inline-flex;
-  align-items:center;
-  gap:.3em;
-  padding:.35em 1em;
-  border:0;
-  border-radius:0;
-  background:#111;
-  color:#111;
-  font-weight:800;
-  clip-path:polygon(9px 0,calc(100% - 9px) 0,100% 50%,calc(100% - 9px) 100%,9px 100%,0 50%);
-}
-
-.badge-pop::before{
-  content:"";
-  position:absolute;
-  inset:1.5px;
-  z-index:-1;
-  background:linear-gradient(180deg,#fff27a 0%,#ffd21f 74%,#ff2e88 74%);
-  clip-path:polygon(8px 0,calc(100% - 8px) 0,100% 50%,calc(100% - 8px) 100%,8px 100%,0 50%);
-}
-
-.pop-star{
-  color:#ff2e88;
-}
-
   .imagem-principal{
     max-height:75vh;
     max-width:100%;
@@ -294,3 +265,73 @@ const imagens = [
 
   </style>
 </Layout>
+
+<style is:global>
+
+/* Cultura Pop: placa hexagonal amarelo → rosa → roxo, borda preta e sombra rosa.
+   .badge-pop          : só a sombra rosa
+   .badge-pop-in       : placa preta (a borda), altura fixa --h, recortada em hexágono
+   .badge-pop-in::before: miolo colorido recuado --b, com as diagonais paralelas às de fora
+   Ponta = 0,4 × altura; recuo lateral = --b × 1,2806; ponta do miolo = ponta − 0,8 × --b. */
+
+.badge-pop{
+  --s:2px;
+  display:inline-flex;
+  vertical-align:middle;
+  filter:drop-shadow(var(--s) var(--s) 0 #ff2e88);
+}
+
+.badge-pop-in{
+  --b:1.5px;
+  --h:1.7em;
+  --p:calc(var(--h) * .4);
+  position:relative;
+  isolation:isolate;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:.35em;
+  height:var(--h);
+  padding:0 calc(var(--p) + .45em);
+  font-size:.75rem;
+  font-weight:800;
+  line-height:1;
+  color:#1a1a1a;
+  white-space:nowrap;
+  background:#111;
+  clip-path:polygon(var(--p) 0,calc(100% - var(--p)) 0,100% 50%,calc(100% - var(--p)) 100%,var(--p) 100%,0 50%);
+}
+
+.badge-pop-in::before{
+  --pi:calc(var(--p) - var(--b) * .8);
+  content:"";
+  position:absolute;
+  z-index:-1;
+  top:var(--b);
+  bottom:var(--b);
+  left:calc(var(--b) * 1.2806);
+  right:calc(var(--b) * 1.2806);
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.55) 0%,rgba(255,255,255,0) 48%),
+    linear-gradient(100deg,#fff36b 0%,#ffd21f 38%,#ff7eb3 72%,#ff2e88 86%,#a33cf0 100%);
+  clip-path:polygon(var(--pi) 0,calc(100% - var(--pi)) 0,100% 50%,calc(100% - var(--pi)) 100%,var(--pi) 100%,0 50%);
+}
+
+.pop-star{
+  color:#ff2e88;
+  height:1em;
+  display:inline-flex;
+  align-items:center;
+}
+
+/* Mesmo tamanho das etiquetas fs-6 da página; borda um pouco mais grossa. */
+.badge-pop-pagina{
+  --s:2.5px;
+}
+
+.badge-pop-pagina .badge-pop-in{
+  --b:2px;
+  font-size:1rem;
+}
+
+</style>

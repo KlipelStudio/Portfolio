@@ -205,7 +205,7 @@ ${mini.titulo}
 
 <div class="d-flex flex-wrap align-items-start gap-1">
 
-${mini.culturaPop ? '<span class="badge badge-home badge-pop"><span class="pop-star">★</span> Cultura Pop</span>' : ""}
+${mini.culturaPop ? '<span class="badge-pop badge-pop-home"><span class="badge-pop-in"><span class="pop-star">★</span> Cultura Pop</span></span>' : ""}
 ${criarBadges(mini.classes,"classe")}
 ${criarBadges(mini.racas,"raca")}
 ${criarBadges(mini.sexo,"sexo")}
@@ -485,36 +485,6 @@ border:1px solid #dee2e6;
 
 }
 
-/* Cultura Pop: placa amarela com borda preta e base rosa. */
-
-:global(.badge-pop){
-  position:relative;
-  isolation:isolate;
-  display:inline-flex;
-  align-items:center;
-  gap:.3em;
-  padding:.3em .8em;
-  border:0;
-  border-radius:0;
-  background:#111;
-  color:#111;
-  font-weight:800;
-  clip-path:polygon(6px 0,calc(100% - 6px) 0,100% 50%,calc(100% - 6px) 100%,6px 100%,0 50%);
-}
-
-:global(.badge-pop::before){
-  content:"";
-  position:absolute;
-  inset:1.5px;
-  z-index:-1;
-  background:linear-gradient(180deg,#fff27a 0%,#ffd21f 74%,#ff2e88 74%);
-  clip-path:polygon(5px 0,calc(100% - 5px) 0,100% 50%,calc(100% - 5px) 100%,5px 100%,0 50%);
-}
-
-:global(.pop-star){
-  color:#ff2e88;
-}
-
 @media(max-width:768px){
 
 .hero-home{
@@ -613,3 +583,78 @@ font-size:.6rem;
 </style>
 
 </Layout>
+
+<style is:global>
+
+/* Cultura Pop: placa hexagonal amarelo → rosa → roxo, borda preta e sombra rosa.
+   .badge-pop          : só a sombra rosa
+   .badge-pop-in       : placa preta (a borda), altura fixa --h, recortada em hexágono
+   .badge-pop-in::before: miolo colorido recuado --b, com as diagonais paralelas às de fora
+   Ponta = 0,4 × altura; recuo lateral = --b × 1,2806; ponta do miolo = ponta − 0,8 × --b. */
+
+.badge-pop{
+  --s:2px;
+  display:inline-flex;
+  vertical-align:middle;
+  filter:drop-shadow(var(--s) var(--s) 0 #ff2e88);
+}
+
+.badge-pop-in{
+  --b:1.5px;
+  --h:1.7em;
+  --p:calc(var(--h) * .4);
+  position:relative;
+  isolation:isolate;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:.35em;
+  height:var(--h);
+  padding:0 calc(var(--p) + .45em);
+  font-size:.75rem;
+  font-weight:800;
+  line-height:1;
+  color:#1a1a1a;
+  white-space:nowrap;
+  background:#111;
+  clip-path:polygon(var(--p) 0,calc(100% - var(--p)) 0,100% 50%,calc(100% - var(--p)) 100%,var(--p) 100%,0 50%);
+}
+
+.badge-pop-in::before{
+  --pi:calc(var(--p) - var(--b) * .8);
+  content:"";
+  position:absolute;
+  z-index:-1;
+  top:var(--b);
+  bottom:var(--b);
+  left:calc(var(--b) * 1.2806);
+  right:calc(var(--b) * 1.2806);
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.55) 0%,rgba(255,255,255,0) 48%),
+    linear-gradient(100deg,#fff36b 0%,#ffd21f 38%,#ff7eb3 72%,#ff2e88 86%,#a33cf0 100%);
+  clip-path:polygon(var(--pi) 0,calc(100% - var(--pi)) 0,100% 50%,calc(100% - var(--pi)) 100%,var(--pi) 100%,0 50%);
+}
+
+.pop-star{
+  color:#ff2e88;
+  height:1em;
+  display:inline-flex;
+  align-items:center;
+}
+
+/* Mesmo tamanho das etiquetas da home (.badge-home). */
+.badge-pop-home .badge-pop-in{
+  --h:1.6em;
+  font-size:.68rem;
+}
+
+@media(max-width:768px){
+
+  .badge-pop-home .badge-pop-in{
+    --h:1.56em;
+    font-size:.62rem;
+  }
+
+}
+
+</style>

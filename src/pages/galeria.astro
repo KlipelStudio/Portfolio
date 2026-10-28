@@ -114,7 +114,7 @@ class="filtro-pop-btn"
 type="button"
 title="Mostrar só miniaturas de Cultura Pop"
 >
-<span class="pop-star">★</span> Cultura Pop
+<span class="badge-pop-in"><span class="pop-star">★</span> Cultura Pop</span>
 </button>
 
 )
@@ -543,15 +543,14 @@ div.className=
 div.innerHTML=`
 
 <button
-class="badge-filtro badge-pop"
+class="badge-filtro badge-pop badge-pop-chip"
 data-tipo="pop"
 data-valor="Cultura Pop"
 >
 
+<span class="badge-pop-in">
 <span class="pop-star">★</span> Cultura Pop
-
-<span class="badge-x">
-×
+<span class="badge-x">×</span>
 </span>
 
 </button>
@@ -1434,84 +1433,6 @@ transform:rotate(0deg);
 
 }
 
-/* Botão "Cultura Pop" da barra lateral: placa com borda preta.
-   Branca quando desligado; amarela com base rosa quando ligado. */
-
-.filtro-pop-btn{
-  position:relative;
-  isolation:isolate;
-  width:100%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:6px;
-  margin:14px 0 10px;
-  padding:9px 14px;
-  border:0;
-  background:#111;
-  color:#111;
-  font-size:.9rem;
-  font-weight:800;
-  white-space:nowrap;
-  cursor:pointer;
-  clip-path:polygon(12px 0,calc(100% - 12px) 0,100% 50%,calc(100% - 12px) 100%,12px 100%,0 50%);
-  transition:transform .15s ease;
-}
-
-.filtro-pop-btn::before{
-  content:"";
-  position:absolute;
-  inset:2px;
-  z-index:-1;
-  background:#fff;
-  clip-path:polygon(11px 0,calc(100% - 11px) 0,100% 50%,calc(100% - 11px) 100%,11px 100%,0 50%);
-}
-
-.filtro-pop-btn:hover{
-  transform:translateY(-1px);
-}
-
-.filtro-pop-btn:hover::before{
-  background:#fff7c2;
-}
-
-.filtro-pop-btn.filtro-pop-ativo::before{
-  background:linear-gradient(180deg,#fff27a 0%,#ffd21f 74%,#ff2e88 74%);
-}
-
-/* Etiqueta do filtro ativo (com o ×). */
-:global(.badge-filtro.badge-pop){
-  position:relative;
-  isolation:isolate;
-  display:inline-flex;
-  align-items:center;
-  gap:.3em;
-  padding:4px 12px;
-  border:0;
-  border-radius:0;
-  background:#111;
-  color:#111;
-  font-weight:800;
-  clip-path:polygon(7px 0,calc(100% - 7px) 0,100% 50%,calc(100% - 7px) 100%,7px 100%,0 50%);
-}
-
-:global(.badge-filtro.badge-pop::before){
-  content:"";
-  position:absolute;
-  inset:1.5px;
-  z-index:-1;
-  background:linear-gradient(180deg,#fff27a 0%,#ffd21f 74%,#ff2e88 74%);
-  clip-path:polygon(6px 0,calc(100% - 6px) 0,100% 50%,calc(100% - 6px) 100%,6px 100%,0 50%);
-}
-
-:global(.pop-star){
-  color:#ff2e88;
-}
-
-:global(.badge-filtro.badge-pop .badge-x){
-  background:rgba(0,0,0,.15);
-}
-
 .grupo{
 
 display:none;
@@ -1884,3 +1805,127 @@ width:50%;
 </style>
 
 </Layout>
+
+<style is:global>
+
+/* Cultura Pop: placa hexagonal amarelo → rosa → roxo, borda preta e sombra rosa.
+   .badge-pop          : só a sombra rosa
+   .badge-pop-in       : placa preta (a borda), altura fixa --h, recortada em hexágono
+   .badge-pop-in::before: miolo colorido recuado --b, com as diagonais paralelas às de fora
+   Ponta = 0,4 × altura; recuo lateral = --b × 1,2806; ponta do miolo = ponta − 0,8 × --b. */
+
+.badge-pop{
+  --s:2px;
+  display:inline-flex;
+  vertical-align:middle;
+  filter:drop-shadow(var(--s) var(--s) 0 #ff2e88);
+}
+
+.badge-pop-in{
+  --b:1.5px;
+  --h:1.7em;
+  --p:calc(var(--h) * .4);
+  position:relative;
+  isolation:isolate;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:.35em;
+  height:var(--h);
+  padding:0 calc(var(--p) + .45em);
+  font-size:.75rem;
+  font-weight:800;
+  line-height:1;
+  color:#1a1a1a;
+  white-space:nowrap;
+  background:#111;
+  clip-path:polygon(var(--p) 0,calc(100% - var(--p)) 0,100% 50%,calc(100% - var(--p)) 100%,var(--p) 100%,0 50%);
+}
+
+.badge-pop-in::before{
+  --pi:calc(var(--p) - var(--b) * .8);
+  content:"";
+  position:absolute;
+  z-index:-1;
+  top:var(--b);
+  bottom:var(--b);
+  left:calc(var(--b) * 1.2806);
+  right:calc(var(--b) * 1.2806);
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.55) 0%,rgba(255,255,255,0) 48%),
+    linear-gradient(100deg,#fff36b 0%,#ffd21f 38%,#ff7eb3 72%,#ff2e88 86%,#a33cf0 100%);
+  clip-path:polygon(var(--pi) 0,calc(100% - var(--pi)) 0,100% 50%,calc(100% - var(--pi)) 100%,var(--pi) 100%,0 50%);
+}
+
+.pop-star{
+  color:#ff2e88;
+  height:1em;
+  display:inline-flex;
+  align-items:center;
+}
+
+/* Botão "Cultura Pop" da barra lateral (borda mais grossa: é o maior).
+   Desligado: placa pastel, sem sombra. Ligado: degradê forte + sombra rosa. */
+.filtro-pop-btn{
+  --s:3px;
+  width:100%;
+  display:flex;
+  margin:14px 0 12px;
+  padding:0;
+  border:0;
+  background:none;
+  cursor:pointer;
+  filter:none;
+  transition:transform .15s ease;
+}
+
+.filtro-pop-btn:hover{
+  transform:translateY(-1px);
+}
+
+.filtro-pop-btn .badge-pop-in{
+  --b:3px;
+  --h:2.4em;
+  width:100%;
+  font-size:.95rem;
+  color:#3a2a4d;
+}
+
+.filtro-pop-btn .badge-pop-in::before{
+  background:linear-gradient(100deg,#fffbe0 0%,#fff1a8 38%,#ffd6e8 72%,#f3dcff 100%);
+}
+
+.filtro-pop-btn.filtro-pop-ativo{
+  filter:drop-shadow(var(--s) var(--s) 0 #ff2e88);
+}
+
+.filtro-pop-btn.filtro-pop-ativo .badge-pop-in{
+  color:#1a1a1a;
+}
+
+.filtro-pop-btn.filtro-pop-ativo .badge-pop-in::before{
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.55) 0%,rgba(255,255,255,0) 48%),
+    linear-gradient(100deg,#fff36b 0%,#ffd21f 38%,#ff7eb3 72%,#ff2e88 86%,#a33cf0 100%);
+}
+
+/* Etiqueta do filtro ativo (com o ×). */
+.badge-filtro.badge-pop-chip{
+  padding:0;
+  border-radius:0;
+  background:none;
+  --s:2.5px;
+}
+
+.badge-pop-chip .badge-pop-in{
+  --b:2px;
+  --h:calc(1em + 8px);
+  font-size:.8rem;
+}
+
+.badge-pop-chip .badge-x{
+  margin-left:.15em;
+  background:rgba(0,0,0,.15);
+}
+
+</style>
