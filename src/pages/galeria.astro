@@ -335,6 +335,58 @@ let sexosAtivos=[];
 let cenariosAtivos=[];
 let popAtivo=false;
 
+/* Estatísticas: só envia se o visitante aceitou os cookies (ver Layout). */
+let origemFiltro="barra";
+let ultimaBusca="";
+let esperaBusca=null;
+
+function registrar(nome,dados){
+
+if(typeof window.klEvento==="function"){
+
+window.klEvento(nome,dados);
+
+}
+
+}
+
+function tipoDaLista(lista){
+
+if(lista===classesAtivas) return "classe";
+if(lista===racasAtivas) return "raca";
+if(lista===sexosAtivos) return "sexo";
+if(lista===cenariosAtivos) return "cenario";
+return "outro";
+
+}
+
+/* Busca de filtros: registra o termo depois de 1,5 s sem digitar. */
+function agendarBusca(termo,total){
+
+clearTimeout(esperaBusca);
+
+if(termo.length<2){
+
+return;
+
+}
+
+esperaBusca=setTimeout(()=>{
+
+if(termo===ultimaBusca){
+
+return;
+
+}
+
+ultimaBusca=termo;
+
+registrar("busca_filtro",{termo,resultados:total});
+
+},1500);
+
+}
+
 const botaoPop=
 document.querySelector(
 "#filtro-pop"
@@ -349,6 +401,12 @@ typeof ligar==="boolean"
 ligar
 :
 !popAtivo;
+
+if(popAtivo){
+
+registrar("filtro",{tipo:"cultura_pop",valor:"Cultura Pop",origem:origemFiltro});
+
+}
 
 if(botaoPop){
 
@@ -753,6 +811,8 @@ btn.onclick=()=>{
 
 paginaAtual=i;
 
+registrar("pagina_galeria",{pagina:i});
+
 atualizar();
 
 window.scrollTo({
@@ -796,6 +856,8 @@ botao.classList.add(
 }else{
 
 lista.push(valor);
+
+registrar("filtro",{tipo:tipoDaLista(lista),valor,origem:origemFiltro});
 
 botao.classList.remove(
 "btn-outline-dark"
@@ -889,6 +951,8 @@ btnRecentes.onclick=()=>{
 
 ordemInvertida=!ordemInvertida;
 
+registrar("ordenar_recentes",{ligado:ordemInvertida?"sim":"nao"});
+
 btnRecentes.classList.toggle(
 "recentes-ativo",
 ordemInvertida
@@ -905,6 +969,8 @@ document
 "#todos"
 )
 .onclick=()=>{
+
+registrar("limpar_filtros",{});
 
 classesAtivas=[];
 racasAtivas=[];
@@ -1022,6 +1088,10 @@ etiqueta.dataset.filtroTipo;
 const valor=
 etiqueta.dataset.filtroValor;
 
+/* Marca que o filtro veio da etiqueta do card (volta para "barra" logo depois). */
+origemFiltro="card";
+queueMicrotask(()=>{ origemFiltro="barra"; });
+
 if(tipo==="pop"){
 
 alternarPop();
@@ -1066,6 +1136,8 @@ botao
 if(!lista.includes(valor)){
 
 lista.push(valor);
+
+registrar("filtro",{tipo,valor,origem:"card"});
 
 }
 
@@ -1250,6 +1322,8 @@ total+=encontrados;
 
 avisoSemResultado.hidden=
 total>0;
+
+agendarBusca(termo,total);
 
 }
 

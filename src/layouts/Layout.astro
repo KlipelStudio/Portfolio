@@ -77,5 +77,205 @@ Galeria
 <slot/>
 </main>
 
+<!-- Aviso de cookies: as estatísticas só ligam depois de "Aceitar". -->
+<div
+id="kl-cookies"
+class="kl-cookies"
+role="dialog"
+aria-live="polite"
+aria-label="Aviso de cookies"
+hidden
+>
+
+<p class="kl-cookies-texto">
+Usamos cookies do Google Analytics e do Microsoft Clarity para entender, de forma
+anônima, como o site é usado (páginas vistas, filtros e buscas).
+<a href={url('/privacidade') + '#estatisticas'}>Saiba mais</a>
+</p>
+
+<div class="kl-cookies-botoes">
+<button type="button" class="kl-cookies-recusar" data-cookies="recusado">
+Recusar
+</button>
+<button type="button" class="kl-cookies-aceitar" data-cookies="aceito">
+Aceitar
+</button>
+</div>
+
+</div>
+
+<script is:inline define:vars={{ GA_ID: "G-6W594PX3WH", CLARITY_ID: "z81civsyg3" }}>
+(function(){
+
+var CHAVE="kl-consentimento";
+var ligado=false;
+var aviso=document.getElementById("kl-cookies");
+
+function ler(){
+try{ return localStorage.getItem(CHAVE); }catch(e){ return null; }
+}
+
+function salvar(valor){
+try{ localStorage.setItem(CHAVE,valor); }catch(e){}
+}
+
+/* Eventos do site (filtros, busca...). Só envia se as estatísticas estiverem ligadas. */
+window.klEvento=function(nome,dados){
+if(!ligado){ return; }
+dados=dados||{};
+try{
+if(window.gtag){ window.gtag("event",nome,dados); }
+if(window.clarity){
+window.clarity("event",nome);
+if(dados.valor){ window.clarity("set",nome,String(dados.valor)); }
+if(dados.termo){ window.clarity("set",nome,String(dados.termo)); }
+}
+}catch(e){}
+};
+
+function carregar(){
+if(ligado){ return; }
+ligado=true;
+
+/* Google Analytics 4 */
+window.dataLayer=window.dataLayer||[];
+window.gtag=function(){ window.dataLayer.push(arguments); };
+window.gtag("js",new Date());
+window.gtag("config",GA_ID);
+var ga=document.createElement("script");
+ga.async=true;
+ga.src="https://www.googletagmanager.com/gtag/js?id="+GA_ID;
+document.head.appendChild(ga);
+
+/* Microsoft Clarity */
+(function(c,l,a,r,i,t,y){
+c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+})(window,document,"clarity","script",CLARITY_ID);
+window.clarity("consent");
+}
+
+function apagarCookies(){
+document.cookie.split(";").forEach(function(item){
+var nome=item.split("=")[0].trim();
+if(/^(_ga|_gid|_gat|_clck|_clsk|CLID|MUID)/.test(nome)){
+var dominios=["",location.hostname,"."+location.hostname];
+dominios.forEach(function(d){
+document.cookie=nome+"=; Max-Age=0; path=/"+(d?"; domain="+d:"");
+});
+}
+});
+}
+
+function mostrar(){ if(aviso){ aviso.hidden=false; } }
+function esconder(){ if(aviso){ aviso.hidden=true; } }
+
+/* Página de privacidade: botão "Alterar minha escolha". */
+window.klCookies=mostrar;
+
+if(aviso){
+aviso.addEventListener("click",function(evento){
+var botao=evento.target.closest("[data-cookies]");
+if(!botao){ return; }
+var escolha=botao.getAttribute("data-cookies");
+var antes=ler();
+salvar(escolha);
+esconder();
+if(escolha==="aceito"){
+carregar();
+}else if(antes==="aceito"){
+/* Desligou: apaga os cookies e recarrega para parar os scripts. */
+apagarCookies();
+location.reload();
+}
+});
+}
+
+var escolha=ler();
+if(escolha==="aceito"){
+carregar();
+}else if(escolha!=="recusado"){
+mostrar();
+}
+
+})();
+</script>
+
+<style>
+
+.kl-cookies{
+position:fixed;
+left:16px;
+right:16px;
+bottom:16px;
+z-index:2000;
+max-width:760px;
+margin:0 auto;
+display:flex;
+align-items:center;
+gap:16px;
+padding:14px 16px;
+background:var(--kl-dark);
+color:#f1ece4;
+border:2px solid var(--kl-gold);
+border-radius:12px;
+box-shadow:0 10px 30px rgba(0,0,0,.35);
+}
+
+.kl-cookies[hidden]{
+display:none;
+}
+
+.kl-cookies-texto{
+margin:0;
+font-size:.9rem;
+line-height:1.45;
+}
+
+.kl-cookies-texto a{
+color:var(--kl-gold);
+}
+
+.kl-cookies-botoes{
+display:flex;
+gap:8px;
+flex:none;
+}
+
+.kl-cookies-botoes button{
+padding:8px 16px;
+border-radius:8px;
+font-weight:700;
+cursor:pointer;
+}
+
+.kl-cookies-recusar{
+background:transparent;
+color:#f1ece4;
+border:1.5px solid rgba(241,236,228,.55);
+}
+
+.kl-cookies-aceitar{
+background:#ffc107;
+color:#111;
+border:1.5px solid #ffc107;
+}
+
+@media(max-width:576px){
+
+.kl-cookies{
+flex-direction:column;
+align-items:stretch;
+}
+
+.kl-cookies-botoes button{
+flex:1;
+}
+
+}
+
+</style>
+
 </body>
 </html>
