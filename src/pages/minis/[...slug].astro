@@ -187,6 +187,33 @@ const imagens = [
     });
   </script>
 
+  <script is:inline>
+  /* Dica (toda vez que a página abre, por 10 s): mostra que clicar numa
+  etiqueta leva para a galeria com esse filtro ligado. */
+  window.addEventListener("load",function(){
+
+    if(typeof window.klDica!=="function"){ return; }
+
+    var alvo=
+      document.querySelector('a.etiqueta-link[href*="?raca="]')||
+      document.querySelector("a.etiqueta-link");
+
+    if(!alvo){ return; }
+
+    setTimeout(function(){
+      window.klDica(alvo,{
+        nome:alvo.textContent.trim(),
+        frase:"Clique na etiqueta {nome} para ver na galeria todas as miniaturas com ela.",
+        duracao:10000,
+        aoFechar:function(acao){
+          if(window.klEvento){ window.klEvento("dica_etiqueta_miniatura",{acao:acao}); }
+        }
+      });
+    },1200);
+
+  });
+  </script>
+
   <style>
 
   /* Etiquetas clicáveis: levam para a galeria com o filtro ligado. */

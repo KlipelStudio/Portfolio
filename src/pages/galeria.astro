@@ -1539,29 +1539,18 @@ origemFiltro="barra";
 }
 );
 
-/* Dica animada (só na 1ª visita): uma mão aponta para a etiqueta "Dragão"
-de um card, mostrando que clicar nela liga o filtro. Some ao clicar numa
-etiqueta, em "Entendi" ou sozinha depois de 15 s. */
+/* Dica animada (toda vez que a galeria abre, por 10 s): uma mão aponta para
+a etiqueta "Dragão" de um card, mostrando que clicar nela liga o filtro.
+Não aparece quando a galeria já abre com um filtro vindo de um link. */
 window.addEventListener(
 "load",
 ()=>{
 
-const CHAVE="kl-dica-etiqueta";
-
-let jaViu=null;
-
-try{ jaViu=localStorage.getItem(CHAVE); }catch(e){}
-
-if(jaViu||location.search){
+if(location.search||typeof window.klDica!=="function"){
 
 return;
 
 }
-
-let alvo=null;
-let caixa=null;
-let fechada=false;
-let timerFechar=null;
 
 function acharAlvo(){
 
@@ -1586,74 +1575,9 @@ b=>b.dataset.filtroValor==="Dragão"
 
 }
 
-function posicionar(){
-
-if(!alvo||!caixa){
-
-return;
-
-}
-
-const r=alvo.getBoundingClientRect();
-
-const anel=caixa.querySelector(".kl-dica-anel");
-anel.style.left=(r.left-6)+"px";
-anel.style.top=(r.top-6)+"px";
-anel.style.width=(r.width+12)+"px";
-anel.style.height=(r.height+12)+"px";
-
-const mao=caixa.querySelector(".kl-dica-mao");
-mao.style.left=(r.left+r.width/2-6)+"px";
-mao.style.top=(r.top+r.height/2-2)+"px";
-
-const balao=caixa.querySelector(".kl-dica-balao");
-const largura=Math.min(280,innerWidth-24);
-balao.style.width=largura+"px";
-
-let esquerda=r.left+r.width/2-largura/2;
-esquerda=Math.max(12,Math.min(esquerda,innerWidth-largura-12));
-
-balao.style.left=esquerda+"px";
-balao.style.top=(r.bottom+46)+"px";
-
-balao.style.setProperty(
-"--seta",
-(r.left+r.width/2-esquerda)+"px"
-);
-
-}
-
-function fechar(acao){
-
-if(fechada){
-
-return;
-
-}
-
-fechada=true;
-
-clearTimeout(timerFechar);
-
-try{ localStorage.setItem(CHAVE,"vista"); }catch(e){}
-
-registrar("dica_etiqueta",{acao});
-
-if(caixa){
-
-caixa.classList.add("kl-dica-saindo");
-setTimeout(()=>caixa.remove(),250);
-
-}
-
-removeEventListener("scroll",posicionar);
-removeEventListener("resize",posicionar);
-
-}
-
 function mostrar(){
 
-alvo=acharAlvo();
+const alvo=acharAlvo();
 
 if(!alvo){
 
@@ -1663,31 +1587,12 @@ return;
 
 }
 
-const nome=alvo.dataset.filtroValor;
-
-caixa=document.createElement("div");
-caixa.className="kl-dica";
-caixa.innerHTML=`
-<div class="kl-dica-anel"></div>
-<div class="kl-dica-mao" aria-hidden="true">
-<svg viewBox="0 0 24 24"><path d="M9 11V5.5a1.5 1.5 0 0 1 3 0V10m0-.5V4.5a1.5 1.5 0 0 1 3 0V10m0-1a1.5 1.5 0 0 1 3 0v4.5c0 3.6-2.4 6.5-6 6.5h-.6a6 6 0 0 1-4.6-2.2L4.4 14.7a1.5 1.5 0 0 1 2.3-1.9L9 15V11"/></svg>
-</div>
-<div class="kl-dica-balao" role="status">
-<strong>Dica</strong>
-Clique na etiqueta <b>“${nome}”</b> para ativar o filtro.
-<button type="button">Entendi</button>
-</div>`;
-
-document.body.append(caixa);
-
-caixa.querySelector("button").onclick=()=>fechar("entendi");
-
-posicionar();
-
-addEventListener("scroll",posicionar,{passive:true});
-addEventListener("resize",posicionar);
-
-timerFechar=setTimeout(()=>fechar("sumiu_sozinha"),15000);
+window.klDica(alvo,{
+nome:alvo.dataset.filtroValor,
+frase:"Clique na etiqueta {nome} para ativar o filtro.",
+duracao:10000,
+aoFechar:acao=>registrar("dica_etiqueta",{acao})
+});
 
 }
 
@@ -1701,21 +1606,6 @@ mostrar();
 }
 
 }
-
-/* Clicou em qualquer etiqueta: a dica cumpriu o papel. */
-document.addEventListener(
-"click",
-evento=>{
-
-if(evento.target.closest("[data-filtro-tipo]")){
-
-fechar("clicou_etiqueta");
-
-}
-
-},
-true
-);
 
 setTimeout(mostrar,1200);
 
@@ -2396,122 +2286,5 @@ width:50%;
 }
 
 
-/* Dica animada da galeria (mão apontando para a etiqueta do card). */
-.kl-dica{
-  position:fixed;
-  inset:0;
-  z-index:1500;
-  pointer-events:none;
-  animation:kl-dica-entra .3s ease;
-}
-
-.kl-dica-saindo{
-  opacity:0;
-  transition:opacity .25s ease;
-}
-
-.kl-dica-anel{
-  position:fixed;
-  border-radius:10px;
-  border:3px solid #ffc107;
-  animation:kl-dica-pulso 1.4s ease-out infinite;
-}
-
-.kl-dica-mao{
-  position:fixed;
-  width:44px;
-  height:44px;
-  animation:kl-dica-toque 1.4s ease-in-out infinite;
-  transform-origin:12px 6px;
-}
-
-.kl-dica-mao svg{
-  width:100%;
-  height:100%;
-  fill:#fff;
-  stroke:#111;
-  stroke-width:1.6;
-  stroke-linejoin:round;
-  filter:drop-shadow(2px 3px 2px rgba(0,0,0,.45));
-}
-
-.kl-dica-balao{
-  --seta:50%;
-  position:fixed;
-  pointer-events:auto;
-  padding:12px 14px;
-  background:#1a1410;
-  color:#f1ece4;
-  border:2px solid #ffc107;
-  border-radius:12px;
-  box-shadow:0 10px 26px rgba(0,0,0,.35);
-  font-size:.9rem;
-  line-height:1.4;
-}
-
-.kl-dica-balao::before{
-  content:"";
-  position:absolute;
-  top:-9px;
-  left:calc(var(--seta) - 8px);
-  width:14px;
-  height:14px;
-  background:#1a1410;
-  border-left:2px solid #ffc107;
-  border-top:2px solid #ffc107;
-  transform:rotate(45deg);
-}
-
-.kl-dica-balao strong{
-  display:block;
-  margin-bottom:2px;
-  color:#ffc107;
-  font-size:.75rem;
-  letter-spacing:.08em;
-  text-transform:uppercase;
-}
-
-.kl-dica-balao b{
-  color:#ffc107;
-}
-
-.kl-dica-balao button{
-  display:block;
-  margin:10px 0 0 auto;
-  padding:6px 14px;
-  border:0;
-  border-radius:8px;
-  background:#ffc107;
-  color:#111;
-  font-weight:800;
-  cursor:pointer;
-}
-
-@keyframes kl-dica-entra{
-  from{ opacity:0; }
-  to{ opacity:1; }
-}
-
-@keyframes kl-dica-pulso{
-  0%{ box-shadow:0 0 0 0 rgba(255,193,7,.7); }
-  100%{ box-shadow:0 0 0 14px rgba(255,193,7,0); }
-}
-
-/* A mão vem de baixo e "toca" a etiqueta. */
-@keyframes kl-dica-toque{
-  0%{ transform:translate(26px,34px); opacity:0; }
-  25%{ transform:translate(0,0); opacity:1; }
-  40%{ transform:translate(0,0) scale(.85); }
-  55%{ transform:translate(0,0) scale(1); }
-  85%{ transform:translate(0,0); opacity:1; }
-  100%{ transform:translate(26px,34px); opacity:0; }
-}
-
-@media(prefers-reduced-motion:reduce){
-  .kl-dica-mao,
-  .kl-dica-anel{
-    animation:none;
-  }
-}
 
 </style>
