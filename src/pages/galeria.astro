@@ -360,30 +360,77 @@ return "outro";
 
 }
 
-/* Busca de filtros: registra o termo depois de 1,5 s sem digitar. */
+/* Busca de filtros: registra o que a pessoa procurou, inclusive o que ela
+digitou rápido, não achou e apagou (para saber o que falta no catálogo).
+- Registra depois de 0,7 s sem digitar.
+- Se ela começa a apagar ou troca o texto, registra NA HORA o que estava escrito.
+- Ao sair do campo ou da página, registra o que ficou pendente.
+Busca sem nenhum resultado também gera o evento "busca_sem_resultado". */
+let buscaPendente=null;
+let ultimoDigitado="";
+
+function enviarBusca(){
+
+clearTimeout(esperaBusca);
+
+const busca=buscaPendente;
+buscaPendente=null;
+
+if(!busca||busca.termo.length<2||busca.termo===ultimaBusca){
+
+return;
+
+}
+
+ultimaBusca=busca.termo;
+
+registrar("busca_filtro",{termo:busca.termo,resultados:busca.total});
+
+if(busca.total===0){
+
+registrar("busca_sem_resultado",{termo:busca.termo});
+
+}
+
+}
+
 function agendarBusca(termo,total){
+
+const apagando=
+termo.length<ultimoDigitado.length &&
+ultimoDigitado.startsWith(termo);
+
+ultimoDigitado=termo;
+
+/* Apagando: registra o texto completo de antes e não registra os pedaços. */
+if(apagando){
+
+enviarBusca();
+
+return;
+
+}
+
+/* Trocou por outro texto: registra o anterior antes de seguir. */
+if(buscaPendente&&!termo.startsWith(buscaPendente.termo)){
+
+enviarBusca();
+
+}
 
 clearTimeout(esperaBusca);
 
 if(termo.length<2){
 
-return;
-
-}
-
-esperaBusca=setTimeout(()=>{
-
-if(termo===ultimaBusca){
+buscaPendente=null;
 
 return;
 
 }
 
-ultimaBusca=termo;
+buscaPendente={termo,total};
 
-registrar("busca_filtro",{termo,resultados:total});
-
-},1500);
+esperaBusca=setTimeout(enviarBusca,700);
 
 }
 
@@ -1259,6 +1306,8 @@ estadoAntesDaBusca=null;
 
 avisoSemResultado.hidden=true;
 
+agendarBusca("",0);
+
 return;
 
 }
@@ -1330,6 +1379,29 @@ agendarBusca(termo,total);
 campoBusca.addEventListener(
 "input",
 filtrarOpcoes
+);
+
+campoBusca.addEventListener(
+"blur",
+enviarBusca
+);
+
+window.addEventListener(
+"pagehide",
+enviarBusca
+);
+
+document.addEventListener(
+"visibilitychange",
+()=>{
+
+if(document.visibilityState==="hidden"){
+
+enviarBusca();
+
+}
+
+}
 );
 
 campoBusca.addEventListener(
