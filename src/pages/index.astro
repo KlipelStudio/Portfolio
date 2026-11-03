@@ -145,12 +145,11 @@ class="row g-3"
 
 <div class="text-center mt-4">
 
-<a
-href={url('/galeria')}
-class="btn btn-dark"
->
-Ver todas as miniaturas
+<span class="placa-sombra">
+<a class="placa" href={url('/galeria')}>
+VER TODAS AS MINIATURAS <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
 </a>
+</span>
 
 </div>
 
@@ -272,13 +271,47 @@ ${criarBadges(mini.cenarios,"cenario")}
 
 }
 
+const sorteadasTopo =
+embaralhar(dados);
+
+document
+.querySelectorAll(
+".hero-vitrine .carta"
+)
+.forEach((carta,i)=>{
+
+const mini=
+sorteadasTopo[i];
+
+if(!mini){
+
+return;
+
+}
+
+carta.href=mini.href;
+carta.title=mini.titulo;
+
+const img=
+carta.querySelector("img");
+
+img.src=asset(mini.imagem);
+img.alt=mini.titulo;
+
+});
+
 if(
 container
 ){
 
+/* Sorteia uma vez: as 3 primeiras vão para os cards do topo e as
+6 seguintes para os Destaques (assim nenhuma aparece repetida). */
+const sorteadas =
+sorteadasTopo;
+
 container.innerHTML =
-embaralhar(dados)
-.slice(0,6)
+sorteadas
+.slice(3,9)
 .map(criarCard)
 .join("");
 
@@ -293,9 +326,12 @@ embaralhar(dados)
 position:relative;
 overflow:hidden;
 
+/* Preto predominante, com brilho de brasa vermelho e laranja atrás dos cards. */
 background:
-radial-gradient(50% 70% at 78% 40%,rgba(201,164,92,.2),transparent 70%),
-var(--kl-dark);
+radial-gradient(55% 75% at 85% 100%,rgba(255,110,20,.42) 0%,rgba(255,110,20,0) 62%),
+radial-gradient(45% 65% at 72% 55%,rgba(190,25,15,.34) 0%,rgba(190,25,15,0) 70%),
+radial-gradient(35% 45% at 8% 0%,rgba(190,25,15,.16) 0%,rgba(190,25,15,0) 70%),
+linear-gradient(180deg,#0c0907 0%,#080605 100%);
 color:#f1ece4;
 
 }
@@ -681,8 +717,8 @@ animation:none;
 
 padding:16px;
 
-background:#120e0b;
-border-top:1px solid #3a312a;
+background:#070504;
+border-top:1px solid rgba(255,110,20,.25);
 
 text-align:center;
 font-size:.95rem;
