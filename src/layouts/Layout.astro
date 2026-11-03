@@ -13,6 +13,12 @@ const path = Astro.url.pathname;
 <meta name="robots" content="noindex, nofollow"/>
 <meta name="googlebot" content="noindex, nofollow"/>
 <title>{titulo}</title>
+
+<!-- Ícone do site (aba do navegador, favoritos e tela inicial do celular) -->
+<link rel="icon" href={url('/favicon.ico')} sizes="48x48"/>
+<link rel="icon" type="image/png" sizes="32x32" href={url('/favicon-32.png')}/>
+<link rel="icon" type="image/png" sizes="192x192" href={url('/favicon-192.png')}/>
+<link rel="apple-touch-icon" href={url('/apple-touch-icon.png')}/>
 <meta name="description" content={descricao}/>
 
 <link
