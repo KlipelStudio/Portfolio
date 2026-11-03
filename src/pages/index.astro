@@ -24,48 +24,95 @@ const miniaturas = minis
   cenarios:m.data.cenarios || [],
   culturaPop:m.data.culturaPop === true
 }));
+
+const asset = (p) =>
+/^https?:\/\//.test(p) ? p : url(p);
+
+/* Topo: total arredondado ("550+") e as 3 miniaturas em destaque mais recentes. */
+const totalTexto = `${Math.floor(minis.length / 10) * 10}+`;
+
+const vitrine = [...miniaturas]
+.sort((a,b) => b.slug.localeCompare(a.slug))
+.slice(0,3);
 ---
 
 <Layout titulo="Klipel Studio — Miniaturas para Aventureiros">
 
 <section class="hero-home">
 
-<div class="container text-center hero-conteudo">
+<div class="hero-grade">
+
+<div class="hero-texto">
+
+<span class="hero-selo">⚒ Miniaturas para seu RPG e jogos de tabuleiro</span>
 
 <h1>
-Miniaturas para suas aventuras
+Perfeitas para suas aventuras!
 </h1>
 
 <p>
-Heróis, vilões, monstros e cenários para dar vida às suas mesas de RPG.
+Heróis, vilões, monstros e cenários para dar vida às suas jogatinas.
 </p>
 
-<a
-href={url('/galeria')}
-class="btn btn-warning btn-lg px-5"
->
-VER PORTFÓLIO
+<span class="placa-sombra">
+<a class="placa" href={url('/galeria')}>
+VER PORTFÓLIO <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
 </a>
-
-</div>
-
-<div class="faixas-aviso" aria-label="Avisos do site">
-
-<div class="faixa faixa-principal">
-<span>
-Atualizações semanais 🔥
 </span>
+
+<div class="hero-numeros">
+<div><b>{totalTexto}</b>miniaturas</div>
+<div><b>Toda semana</b>novidades</div>
 </div>
 
-<div class="faixa faixa-secundaria">
-<span>
-Não encontrou o que procura? Entre em contato com a gente!
-</span>
 </div>
 
+{vitrine.length > 0 && (
+<div class="hero-vitrine">
+{vitrine.map(m => (
+<a class="carta" href={m.href} title={m.titulo}>
+<img src={asset(m.imagem)} alt={m.titulo} loading="eager"/>
+</a>
+))}
+</div>
+)}
+
+</div>
+
+<!-- Fitas de isolamento cruzadas, rolando em sentidos opostos (param com o mouse em cima). -->
+<div class="fitas" aria-label="Atualizações semanais. Heróis, vilões, monstros e cenários.">
+
+<div class="fita fita-amarela" aria-hidden="true"><div class="trilho">
+<span class="item">Atualizações semanais 🔥<i class="sep"></i>Novas miniaturas toda semana<i class="sep"></i></span>
+<span class="item">Atualizações semanais 🔥<i class="sep"></i>Novas miniaturas toda semana<i class="sep"></i></span>
+<span class="item">Atualizações semanais 🔥<i class="sep"></i>Novas miniaturas toda semana<i class="sep"></i></span>
+<span class="item">Atualizações semanais 🔥<i class="sep"></i>Novas miniaturas toda semana<i class="sep"></i></span>
+</div></div>
+
+<div class="fita fita-preta" aria-hidden="true"><div class="trilho">
+<span class="item">Heróis<i class="sep"></i>Vilões<i class="sep"></i>Monstros<i class="sep"></i>Cenários<i class="sep"></i></span>
+<span class="item">Heróis<i class="sep"></i>Vilões<i class="sep"></i>Monstros<i class="sep"></i>Cenários<i class="sep"></i></span>
+<span class="item">Heróis<i class="sep"></i>Vilões<i class="sep"></i>Monstros<i class="sep"></i>Cenários<i class="sep"></i></span>
+<span class="item">Heróis<i class="sep"></i>Vilões<i class="sep"></i>Monstros<i class="sep"></i>Cenários<i class="sep"></i></span>
+</div></div>
+
+</div>
+
+<div class="hero-contato">
+Não encontrou o que procura? <strong>Entre em contato com a gente!</strong>
 </div>
 
 </section>
+
+<script is:inline>
+/* Fitas: repete o texto até cobrir 2x a largura, para o loop não deixar buraco. */
+document.querySelectorAll(".hero-home .trilho").forEach(trilho=>{
+const base=[...trilho.children].map(el=>el.cloneNode(true));
+const largura=trilho.parentElement.getBoundingClientRect().width;
+while(trilho.scrollWidth<largura*2.2){ base.forEach(el=>trilho.append(el.cloneNode(true))); }
+if(trilho.children.length % (base.length*2)){ base.forEach(el=>trilho.append(el.cloneNode(true))); }
+});
+</script>
 
 <section class="container py-4">
 
@@ -243,145 +290,410 @@ embaralhar(dados)
 
 .hero-home{
 
-background:var(--kl-dark);
-color:#fff;
-
-padding:58px 0 0;
-
 position:relative;
 overflow:hidden;
 
+background:
+radial-gradient(50% 70% at 78% 40%,rgba(201,164,92,.2),transparent 70%),
+var(--kl-dark);
+color:#f1ece4;
+
 }
 
-.hero-conteudo{
+.hero-grade{
 
-position:relative;
-z-index:2;
+max-width:1140px;
+margin:0 auto;
+padding:56px 24px 36px;
 
-padding-bottom:44px;
+display:grid;
+grid-template-columns:.9fr 1.1fr;
+gap:28px;
+align-items:center;
+
+}
+
+.hero-selo{
+
+color:#ffc107;
+
+font-weight:800;
+font-size:.85rem;
+letter-spacing:.08em;
+text-transform:uppercase;
 
 }
 
 .hero-home h1{
 
+margin:12px 0 14px;
+
+font-size:clamp(2.1rem,4.4vw,3.6rem);
+font-weight:900;
+line-height:1.05;
+
 color:var(--kl-gold);
-
-font-size:clamp(2.1rem,4vw,3.4rem);
-font-weight:800;
-
-margin-bottom:12px;
 
 }
 
 .hero-home p{
 
-max-width:620px;
+margin:0 0 28px;
+max-width:480px;
 
-margin:0 auto 24px;
+font-size:1.08rem;
+line-height:1.5;
 
-font-size:1.05rem;
-color:rgba(255,255,255,.82);
+color:rgba(241,236,228,.82);
 
 }
 
-.faixas-aviso{
+/* Botão em placa (mesma forma da barra lateral da galeria). */
+.placa-sombra{
 
-width:100%;
+display:inline-flex;
 
-display:flex;
-flex-direction:column;
-gap:12px;
+filter:drop-shadow(4px 4px 0 #b8860b);
 
-padding:0 0 32px;
+transition:transform .12s ease;
+
+}
+
+.placa-sombra:hover{
+
+transform:translateY(-2px);
+
+}
+
+.placa{
+
+--b:3px;
+--h:56px;
+--p:calc(var(--h) * .4);
 
 position:relative;
-z-index:2;
+isolation:isolate;
 
-pointer-events:none;
+display:inline-flex;
+align-items:center;
+justify-content:center;
+gap:.5em;
+
+height:var(--h);
+padding:0 calc(var(--p) + 22px);
+
+background:#000;
+color:#111;
+
+font-weight:900;
+font-size:1.05rem;
+white-space:nowrap;
+text-decoration:none;
+
+clip-path:polygon(var(--p) 0,calc(100% - var(--p)) 0,100% 50%,calc(100% - var(--p)) 100%,var(--p) 100%,0 50%);
 
 }
 
-.faixa{
+.placa::before{
+
+--pi:calc(var(--p) - var(--b) * .8);
+
+content:"";
+
+position:absolute;
+z-index:-1;
+
+top:var(--b);
+bottom:var(--b);
+left:calc(var(--b) * 1.2806);
+right:calc(var(--b) * 1.2806);
+
+background:#ffc107;
+
+clip-path:polygon(var(--pi) 0,calc(100% - var(--pi)) 0,100% 50%,calc(100% - var(--pi)) 100%,var(--pi) 100%,0 50%);
+
+}
+
+.placa:hover{
+
+color:#111;
+
+}
+
+.ico{
+
+width:1em;
+height:1em;
+flex:none;
+
+}
+
+.hero-numeros{
+
+display:flex;
+gap:28px;
+
+margin-top:28px;
+
+font-size:.85rem;
+color:rgba(241,236,228,.7);
+
+}
+
+.hero-numeros b{
+
+display:block;
+
+font-size:1.5rem;
+color:#fff;
+
+}
+
+/* Três miniaturas em leque. */
+/* Os cards crescem junto com a coluna (até 300 x 375 px). */
+.hero-vitrine{
+
+position:relative;
 
 width:100%;
+aspect-ratio:5/4;
+max-height:490px;
+
+}
+
+.carta{
+
+position:absolute;
+
+width:min(300px,51%);
+aspect-ratio:4/5;
+
+border-radius:16px;
+border:4px solid #111;
+overflow:hidden;
+
+background:#333;
+
+box-shadow:0 18px 40px rgba(0,0,0,.55);
+
+transition:transform .2s ease;
+
+}
+
+.carta img{
+
+width:100%;
+height:100%;
+
+object-fit:cover;
+
+}
+
+.carta:nth-child(1){
+
+left:0;
+top:12%;
+
+transform:rotate(-8deg);
+
+}
+
+.carta:nth-child(2){
+
+left:25%;
+top:0;
+z-index:2;
+
+transform:rotate(2deg);
+
+}
+
+.carta:nth-child(3){
+
+left:49%;
+top:16%;
+
+transform:rotate(9deg);
+
+}
+
+.carta:hover{
+
+z-index:3;
+
+transform:rotate(0) scale(1.05);
+
+}
+
+/* Fitas de isolamento. */
+.fitas{
+
+position:relative;
+
+height:150px;
+
+}
+
+.fita{
+
+position:absolute;
+left:-6%;
+right:-6%;
+
+height:58px;
+
+display:flex;
+align-items:center;
+
+overflow:hidden;
+
+box-shadow:0 10px 18px rgba(0,0,0,.45);
+
+}
+
+.fita::before,
+.fita::after{
+
+content:"";
+
+position:absolute;
+left:0;
+right:0;
+
+height:9px;
+
+background:repeating-linear-gradient(-45deg,#111 0 10px,#ffc107 10px 20px);
+
+}
+
+.fita::before{
+
+top:0;
+
+}
+
+.fita::after{
+
+bottom:0;
+
+}
+
+.fita-amarela{
+
+top:22px;
+z-index:2;
 
 background:#ffc107;
 color:#111;
 
-border-top:4px solid #000;
-border-bottom:4px solid #000;
+transform:rotate(-2.5deg);
 
-box-shadow:0 7px 0 rgba(0,0,0,.55);
+}
 
-font-weight:900;
-text-align:center;
-line-height:1;
+.fita-preta{
+
+top:78px;
+
+background:#141110;
+color:#ffc107;
+
+transform:rotate(1.8deg);
+
+}
+
+.fita-preta::before,
+.fita-preta::after{
+
+background:repeating-linear-gradient(-45deg,#ffc107 0 10px,#141110 10px 20px);
+
+}
+
+.trilho{
+
+display:inline-flex;
 
 white-space:nowrap;
-overflow:hidden;
 
-animation:faixaFlutuar 3.8s ease-in-out infinite;
-
-}
-
-.faixa span{
-
-display:block;
-
-padding:12px 18px;
+animation:rolar 40s linear infinite;
 
 }
 
-.faixa-principal{
+.fita-preta .trilho{
 
-font-size:1.12rem;
-
-background:
-repeating-linear-gradient(
--45deg,
-#111 0 12px,
-#111 12px,
-#ffc107 12px 28px
-);
+animation-direction:reverse;
+animation-duration:48s;
 
 }
 
-.faixa-principal span{
+.fita:hover .trilho{
 
-background:#ffc107;
-
-display:inline-block;
-
-padding:12px 34px;
-
-border-left:4px solid #000;
-border-right:4px solid #000;
+animation-play-state:paused;
 
 }
 
-.faixa-secundaria{
+.item{
 
-font-size:.82rem;
+display:inline-flex;
+align-items:center;
+gap:18px;
 
-animation-delay:.4s;
+padding:0 18px;
+
+font-weight:900;
+font-size:1.05rem;
+letter-spacing:.06em;
+text-transform:uppercase;
 
 }
 
-.faixa-secundaria span{
+.sep{
 
-padding:10px 18px;
+width:12px;
+height:12px;
+
+background:currentColor;
+
+transform:rotate(45deg);
 
 }
 
-@keyframes faixaFlutuar{
+@keyframes rolar{
 
-0%,100%{
-transform:translateY(0);
+from{
+transform:translateX(0);
 }
 
-50%{
-transform:translateY(-4px);
+to{
+transform:translateX(-50%);
 }
+
+}
+
+@media(prefers-reduced-motion:reduce){
+
+.trilho{
+animation:none;
+}
+
+}
+
+.hero-contato{
+
+padding:16px;
+
+background:#120e0b;
+border-top:1px solid #3a312a;
+
+text-align:center;
+font-size:.95rem;
+
+color:rgba(241,236,228,.85);
+
+}
+
+.hero-contato strong{
+
+color:#ffc107;
 
 }
 
@@ -487,57 +799,48 @@ border:1px solid #dee2e6;
 
 @media(max-width:768px){
 
-.hero-home{
+.hero-grade{
 
-padding-top:58px;
+grid-template-columns:1fr;
 
-}
+padding-top:44px;
 
-.hero-conteudo{
-
-padding-bottom:38px;
+text-align:center;
 
 }
 
 .hero-home p{
 
+margin-left:auto;
+margin-right:auto;
+
 font-size:1rem;
 
 }
 
-.faixas-aviso{
+.hero-numeros{
 
-gap:10px;
-
-padding-bottom:28px;
+justify-content:center;
 
 }
 
-.faixa-principal{
+.hero-vitrine{
 
-font-size:.98rem;
+max-width:440px;
 
-}
-
-.faixa-principal span{
-
-padding:11px 26px;
+margin:0 auto;
 
 }
 
-.faixa-secundaria{
+.item{
 
-font-size:.68rem;
-
-}
-
-.faixa-secundaria span{
-
-padding:9px 14px;
+font-size:.9rem;
 
 }
 
 .card-home img{
+
+aspect-ratio:1/1;.card-home img{
 
 aspect-ratio:1/1;
 
@@ -559,22 +862,6 @@ font-size:.9rem;
 
 font-size:.62rem;
 padding:.28em .42em;
-
-}
-
-}
-
-@media(max-width:430px){
-
-.faixa-principal{
-
-font-size:.9rem;
-
-}
-
-.faixa-secundaria{
-
-font-size:.6rem;
 
 }
 

@@ -16,6 +16,10 @@ const { Content } = await render(mini);
 
 const base = import.meta.env.BASE_URL;
 
+/* Etiqueta -> galeria com o filtro já ligado (ex.: /galeria/?raca=Dragão). */
+const filtroLink = (tipo, valor) =>
+  `${base}/galeria/?${tipo}=${encodeURIComponent(valor)}`.replace(/\/{2,}/g, '/');
+
 const asset = (p) =>
   /^https?:\/\//.test(p)
     ? p
@@ -54,42 +58,48 @@ const imagens = [
         <div class="d-flex flex-wrap align-items-start gap-2 mb-4">
 
           {mini.data.culturaPop && (
-            <span class="badge-pop badge-pop-pagina">
+            <a class="badge-pop badge-pop-pagina etiqueta-link" href={filtroLink('pop', '1')} title="Ver todas de Cultura Pop">
               <span class="badge-pop-in"><span class="pop-star">★</span> Cultura Pop</span>
-            </span>
+            </a>
           )}
 
           {mini.data.classes?.map((c) => (
-            <span class="badge text-bg-dark fs-6">
+            <a class="badge text-bg-dark fs-6 etiqueta-link" href={filtroLink('classe', c)} title={`Ver todas: ${c}`}>
               {c}
-            </span>
+            </a>
           ))}
 
           {mini.data.racas?.map((r) => (
-            <span
-              class="badge fs-6"
+            <a
+              class="badge fs-6 etiqueta-link"
               style="background:#ffc107;color:#000;"
+              href={filtroLink('raca', r)}
+              title={`Ver todas: ${r}`}
             >
               {r}
-            </span>
+            </a>
           ))}
 
           {mini.data.sexo?.map((s) => (
-            <span
-              class="badge fs-6"
+            <a
+              class="badge fs-6 etiqueta-link"
               style="background:#b23a48;color:#fff;"
+              href={filtroLink('sexo', s)}
+              title={`Ver todas: ${s}`}
             >
               {s}
-            </span>
+            </a>
           ))}
 
           {mini.data.cenarios?.map((c) => (
-            <span
-              class="badge fs-6 border"
+            <a
+              class="badge fs-6 border etiqueta-link"
               style="background:#fff;color:#000;border-color:#ced4da;"
+              href={filtroLink('cenario', c)}
+              title={`Ver todas: ${c}`}
             >
               {c}
-            </span>
+            </a>
           ))}
 
         </div>
@@ -178,6 +188,21 @@ const imagens = [
   </script>
 
   <style>
+
+  /* Etiquetas clicáveis: levam para a galeria com o filtro ligado. */
+  .etiqueta-link{
+    text-decoration:none;
+    transition:transform .12s ease, box-shadow .12s ease;
+  }
+
+  .etiqueta-link:hover{
+    transform:translateY(-1px);
+    box-shadow:0 0 0 2px rgba(0,0,0,.18);
+  }
+
+  .badge-pop.etiqueta-link:hover{
+    box-shadow:none;
+  }
 
   .imagem-principal{
     max-height:75vh;

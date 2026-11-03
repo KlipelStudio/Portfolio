@@ -1466,6 +1466,79 @@ filtrarOpcoes();
 
 atualizar();
 
+/* Filtros vindos de um link (ex.: etiqueta "Dragão" na página da miniatura
+leva para /galeria/?raca=Dragão). Espera a página toda para as estatísticas
+já estarem prontas. */
+window.addEventListener(
+"DOMContentLoaded",
+()=>{
+
+const doLink=
+new URLSearchParams(
+location.search
+);
+
+if(![...doLink.keys()].length){
+
+return;
+
+}
+
+origemFiltro="pagina_miniatura";
+
+Object.keys(listasPorTipo).forEach(tipo=>{
+
+doLink.getAll(tipo).forEach(valor=>{
+
+const lista=
+listasPorTipo[tipo]();
+
+if(lista.includes(valor)){
+
+return;
+
+}
+
+const botao=
+[
+...document.querySelectorAll(
+`.filtro-${tipo}`
+)
+].find(
+b=>b.dataset[tipo]===valor
+);
+
+if(botao){
+
+alternar(
+valor,
+lista,
+botao
+);
+
+}else{
+
+lista.push(valor);
+paginaAtual=1;
+atualizar();
+
+}
+
+});
+
+});
+
+if(doLink.get("pop")==="1"&&!popAtivo){
+
+alternarPop(true);
+
+}
+
+origemFiltro="barra";
+
+}
+);
+
 </script>
 
 <style>
