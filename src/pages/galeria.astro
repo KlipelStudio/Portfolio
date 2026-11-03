@@ -1674,7 +1674,7 @@ caixa.innerHTML=`
 </div>
 <div class="kl-dica-balao" role="status">
 <strong>Dica</strong>
-Clique na etiqueta <b>“${nome}”</b> para ver só essas miniaturas.
+Clique na etiqueta <b>“${nome}”</b> para ativar o filtro.
 <button type="button">Entendi</button>
 </div>`;
 
@@ -2284,11 +2284,13 @@ width:50%;
   border:0;
   background:none;
   cursor:pointer;
-  transition:transform .15s ease;
+  /* Efeito 3D igual ao botão da página inicial. */
+  filter:drop-shadow(4px 4px 0 #b8860b);
+  transition:transform .12s ease;
 }
 
 .placa-btn:hover{
-  transform:translateY(-1px);
+  transform:translateY(-2px);
 }
 
 .placa-btn .badge-pop-in{
@@ -2331,7 +2333,7 @@ width:50%;
 /* Botão "Cultura Pop" da barra lateral (borda mais grossa: é o maior).
    Desligado: placa pastel, sem sombra. Ligado: degradê forte + sombra rosa. */
 .filtro-pop-btn{
-  --s:3px;
+  --s:4px;
   width:100%;
   display:flex;
   margin:0 0 12px;
@@ -2339,12 +2341,13 @@ width:50%;
   border:0;
   background:none;
   cursor:pointer;
-  filter:none;
-  transition:transform .15s ease;
+  /* Efeito 3D igual ao botão da página inicial (ligado, a sombra fica rosa). */
+  filter:drop-shadow(var(--s) var(--s) 0 #b8860b);
+  transition:transform .12s ease;
 }
 
 .filtro-pop-btn:hover{
-  transform:translateY(-1px);
+  transform:translateY(-2px);
 }
 
 .filtro-pop-btn .badge-pop-in{
