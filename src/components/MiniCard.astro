@@ -1,4 +1,6 @@
 ---
+import { versao } from '../lib/imagens.js';
+
 const { mini } = Astro.props;
 
 const base = import.meta.env.BASE_URL;
@@ -9,7 +11,7 @@ const asset = (p) =>
     : `${base}${p}`.replace(/\/{2,}/g,'/');
 
 const href = asset(`/minis/${mini.id}/`);
-const img = asset(mini.data.imagem);
+const img = asset(versao(mini.data.imagem, 480));
 ---
 
 <a href={href} class="text-decoration-none text-reset">
@@ -20,6 +22,8 @@ const img = asset(mini.data.imagem);
       src={img}
       class="card-img-top"
       alt={mini.data.titulo}
+      loading="lazy"
+      decoding="async"
     />
 
     <div class="card-body">
@@ -98,6 +102,13 @@ const img = asset(mini.data.imagem);
 </a>
 
 <style>
+
+/* Espaço da foto reservado (4:3) enquanto ela carrega: os cards não "pulam". */
+.card-img-top{
+  aspect-ratio:4/3;
+  object-fit:cover;
+  background:rgba(127,127,127,.15);
+}
 
 .badge-classe{
   background:#212529;

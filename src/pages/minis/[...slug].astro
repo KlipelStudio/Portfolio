@@ -1,6 +1,7 @@
 ---
 import { getCollection, render } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
+import { versao } from '../../lib/imagens.js';
 
 export async function getStaticPaths() {
   const minis = await getCollection('minis');
@@ -120,7 +121,7 @@ const imagens = [
 
         <img
           id="imagem-principal"
-          src={asset(imagens[0])}
+          src={asset(versao(imagens[0], 1400))}
           alt={mini.data.titulo}
           class="rounded shadow-sm imagem-principal"
         />
@@ -132,10 +133,12 @@ const imagens = [
               <button
                 class={`thumb-btn ${index === 0 ? 'thumb-ativa' : ''}`}
                 type="button"
-                data-img={asset(img)}
+                data-img={asset(versao(img, 1400))}
               >
                 <img
-                  src={asset(img)}
+                  src={asset(versao(img, 200))}
+                  loading="lazy"
+                  decoding="async"
                   alt={`${mini.data.titulo} imagem ${index + 1}`}
                 />
               </button>

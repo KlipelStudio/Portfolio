@@ -18,6 +18,8 @@ const miniaturas = minis
   href:url(`/minis/${m.id}/`),
   titulo:m.data.titulo,
   imagem:m.data.imagem,
+  /* Página inicial: foto na qualidade original (a galeria usa versões menores). */
+  foto:m.data.imagem,
   classes:m.data.classes || [],
   racas:m.data.racas || [],
   sexo:m.data.sexo || [],
@@ -77,7 +79,7 @@ VER PORTFÓLIO <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentC
 <div class="hero-vitrine" data-base={base}>
 {vitrine.map(m => (
 <a class="carta" href={m.href} title={m.titulo}>
-<img data-src={asset(m.imagem)} alt={m.titulo} loading="eager"/>
+<img data-src={asset(m.foto)} alt={m.titulo} loading="eager"/>
 </a>
 ))}
 </div>
@@ -114,9 +116,9 @@ if(mini){
 carta.href=mini.href;
 carta.title=mini.titulo;
 img.alt=mini.titulo;
-img.src=/^https?:\/\//.test(mini.imagem)
-? mini.imagem
-: (base+"/"+mini.imagem).replace(/\/{2,}/g,"/");
+img.src=/^https?:\/\//.test(mini.foto)
+? mini.foto
+: (base+"/"+mini.foto).replace(/\/{2,}/g,"/");
 }else{
 img.src=img.getAttribute("data-src");
 }
@@ -270,7 +272,7 @@ const href =
 mini.href;
 
 const img =
-asset(mini.imagem);
+asset(mini.foto||mini.imagem);
 
 return `
 
@@ -284,6 +286,8 @@ return `
 src="${img}"
 class="card-img-top"
 alt="${mini.titulo}"
+loading="lazy"
+decoding="async"
 />
 
 <div class="card-body">
