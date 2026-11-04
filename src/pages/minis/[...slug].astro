@@ -190,7 +190,7 @@ const imagens = [
   <script is:inline>
   /* Dica (toda vez que a página abre, por 10 s): mostra que clicar numa
   etiqueta leva para a galeria com esse filtro ligado. */
-  window.addEventListener("load",function(){
+  window.addEventListener("DOMContentLoaded",function(){
 
     if(typeof window.klDica!=="function"){ return; }
 
@@ -209,7 +209,7 @@ const imagens = [
           if(window.klEvento){ window.klEvento("dica_etiqueta_miniatura",{acao:acao}); }
         }
       });
-    },1200);
+    },400);
 
   });
   </script>

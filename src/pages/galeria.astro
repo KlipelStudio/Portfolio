@@ -1541,9 +1541,11 @@ origemFiltro="barra";
 
 /* Dica animada (toda vez que a galeria abre, por 10 s): uma mão aponta para
 a etiqueta "Dragão" de um card, mostrando que clicar nela liga o filtro.
-Não aparece quando a galeria já abre com um filtro vindo de um link. */
+Aparece logo (sem esperar as imagens) e, se a pessoa rolar, passa para
+outra etiqueta visível. Não aparece quando a galeria já abre com um filtro
+vindo de um link. */
 window.addEventListener(
-"load",
+"DOMContentLoaded",
 ()=>{
 
 if(location.search||typeof window.klDica!=="function"){
@@ -1587,12 +1589,40 @@ return;
 
 }
 
-window.klDica(alvo,{
+const dica=window.klDica(alvo,{
 nome:alvo.dataset.filtroValor,
 frase:"Clique na etiqueta {nome} para ativar o filtro.",
 duracao:10000,
-aoFechar:acao=>registrar("dica_etiqueta",{acao})
+aoFechar:acao=>{
+
+removeEventListener("scroll",seguir);
+registrar("dica_etiqueta",{acao});
+
+}
 });
+
+/* Rolou e a etiqueta saiu da área visível: aponta para outra. */
+function seguir(){
+
+const r=dica.alvo().getBoundingClientRect();
+
+if(r.top>80&&r.bottom<innerHeight-140){
+
+return;
+
+}
+
+const novo=acharAlvo();
+
+if(novo&&novo!==dica.alvo()){
+
+dica.trocar(novo,novo.dataset.filtroValor);
+
+}
+
+}
+
+addEventListener("scroll",seguir,{passive:true});
 
 }
 
@@ -1607,7 +1637,7 @@ mostrar();
 
 }
 
-setTimeout(mostrar,1200);
+setTimeout(mostrar,400);
 
 }
 );

@@ -6,9 +6,18 @@ const path = Astro.url.pathname;
 ---
 
 <!doctype html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-bs-theme="dark">
 <head>
 <meta charset="utf-8"/>
+
+<!-- Tema (lua = escuro, padrão; sol = claro). Roda antes de pintar a página. -->
+<script is:inline>
+try{
+if(localStorage.getItem("kl-tema")==="claro"){
+document.documentElement.setAttribute("data-bs-theme","light");
+}
+}catch(e){}
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <meta name="robots" content="noindex, nofollow"/>
 <meta name="googlebot" content="noindex, nofollow"/>
@@ -67,13 +76,19 @@ href={url('/')}
 Klipel Studio
 </a>
 
-<div class="ms-auto">
+<div class="ms-auto d-flex align-items-center gap-3">
 <a
 class:list={["nav-link text-light",{active:path==="/galeria/"}]}
 href={url('/galeria')}
 >
 Galeria
 </a>
+
+<!-- Sol = tema claro; lua = tema escuro (padrão). -->
+<div class="kl-tema" role="group" aria-label="Tema do site">
+<button type="button" class="kl-tema-btn" data-tema="claro" title="Tema claro" aria-label="Tema claro"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></svg></button>
+<button type="button" class="kl-tema-btn" data-tema="escuro" title="Tema escuro" aria-label="Tema escuro"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.6A8.5 8.5 0 0 1 9.4 3.5a8.5 8.5 0 1 0 11.1 11.1z"/></svg></button>
+</div>
 </div>
 
 </div>
@@ -82,6 +97,219 @@ Galeria
 <main class="flex-grow-1">
 <slot/>
 </main>
+
+
+<script is:inline>
+/* Troca de tema pelo sol/lua da barra de cima (fica lembrado no navegador). */
+document.querySelectorAll(".kl-tema-btn").forEach(function(botao){
+botao.addEventListener("click",function(){
+var tema=botao.getAttribute("data-tema");
+document.documentElement.setAttribute("data-bs-theme",tema==="claro"?"light":"dark");
+try{ localStorage.setItem("kl-tema",tema); }catch(e){}
+if(window.klEvento){ window.klEvento("tema",{tema:tema}); }
+});
+});
+</script>
+
+<!-- Chat de recados: sugestões, pedidos, reclamações... (vai para o WhatsApp do Klipel Studio). -->
+<div id="kl-chat" class="kl-chat">
+
+<div id="kl-chat-painel" class="kl-chat-painel" role="dialog" aria-label="Fale com a gente" hidden>
+
+<div class="kl-chat-topo">
+<div>
+<strong>Fale com a gente</strong>
+<small>Sugestões, pedidos, reclamações ou o que quiser.</small>
+</div>
+<button type="button" class="kl-chat-fechar" aria-label="Fechar">×</button>
+</div>
+
+<form class="kl-chat-form" novalidate>
+
+<div class="kl-chat-tipos" role="radiogroup" aria-label="Assunto (opcional)">
+<label><input type="radio" name="tipo" value="Sugestão"/><span>Sugestão</span></label>
+<label><input type="radio" name="tipo" value="Pedido"/><span>Pedido</span></label>
+<label><input type="radio" name="tipo" value="Reclamação"/><span>Reclamação</span></label>
+<label><input type="radio" name="tipo" value="Outro"/><span>Outro</span></label>
+</div>
+
+<label class="kl-chat-campo">
+Sua mensagem *
+<textarea name="mensagem" rows="4" maxlength="1500" required placeholder="Ex.: Queria uma miniatura de um mago anão..."></textarea>
+</label>
+<span class="kl-chat-erro" hidden></span>
+
+<label class="kl-chat-campo">
+Contato <small>(opcional, para a gente responder)</small>
+<input name="contato" maxlength="120" autocomplete="off" placeholder="WhatsApp, e-mail ou Instagram"/>
+</label>
+
+<!-- Armadilha para robôs: pessoas não veem este campo. -->
+<input type="text" name="site" class="kl-chat-armadilha" tabindex="-1" autocomplete="off" aria-hidden="true"/>
+
+<button type="submit" class="kl-chat-enviar">Enviar</button>
+
+<p class="kl-chat-aviso">
+Sua mensagem vai direto para a equipe do Klipel Studio.
+<a href={url('/privacidade') + '#chat'}>Privacidade</a>
+</p>
+
+</form>
+
+<div class="kl-chat-ok" hidden>
+<strong>Recebemos! 🙌</strong>
+<p>Obrigado pela mensagem. Se você deixou um contato, a gente responde por lá.</p>
+<button type="button" class="kl-chat-outra">Enviar outra mensagem</button>
+</div>
+
+</div>
+
+<button type="button" class="kl-chat-botao" aria-expanded="false" aria-controls="kl-chat-painel" title="Fale com a gente">
+<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v8a2.5 2.5 0 0 1-2.5 2.5H10l-4.2 3.6c-.6.5-1.3.1-1.3-.6V16A2.5 2.5 0 0 1 4 13.5z"/><path d="M8 8.5h8M8 11.5h5"/></svg>
+<span class="kl-chat-rotulo">Fale com a gente</span>
+</button>
+
+</div>
+
+<script is:inline define:vars={{ CHAT_URL: "" }}>
+(function(){
+
+var raiz=document.getElementById("kl-chat");
+if(!raiz){ return; }
+
+/* Sem o endereço do backend, o chat não aparece e "Entre em contato" vira texto. */
+if(!CHAT_URL){
+raiz.remove();
+document.querySelectorAll("[data-abrir-chat]").forEach(function(el){
+var texto=document.createElement("strong");
+texto.textContent=el.textContent;
+el.replaceWith(texto);
+});
+return;
+}
+
+var painel=raiz.querySelector(".kl-chat-painel");
+var botao=raiz.querySelector(".kl-chat-botao");
+var form=raiz.querySelector(".kl-chat-form");
+var texto=form.querySelector("textarea");
+var erro=form.querySelector(".kl-chat-erro");
+var enviar=form.querySelector(".kl-chat-enviar");
+var ok=raiz.querySelector(".kl-chat-ok");
+
+function evento(nome,dados){
+if(window.klEvento){ window.klEvento(nome,dados||{}); }
+}
+
+function abrir(opcoes){
+opcoes=opcoes||{};
+painel.hidden=false;
+raiz.classList.add("aberto");
+botao.setAttribute("aria-expanded","true");
+if(opcoes.piscar){
+/* Pisca para chamar atenção (ex.: clicou em "Entre em contato"). */
+painel.classList.remove("piscar");
+void painel.offsetWidth;
+painel.classList.add("piscar");
+}
+setTimeout(function(){ if(!ok.hidden){ return; } texto.focus(); },60);
+evento("chat_aberto",{origem:opcoes.origem||"botao"});
+}
+
+function fechar(){
+painel.hidden=true;
+raiz.classList.remove("aberto");
+botao.setAttribute("aria-expanded","false");
+}
+
+function mostrarErro(mensagem){
+erro.textContent=mensagem;
+erro.hidden=!mensagem;
+}
+
+window.klChatAbrir=abrir;
+
+botao.addEventListener("click",function(){
+if(painel.hidden){ abrir({origem:"botao"}); }else{ fechar(); }
+});
+
+raiz.querySelector(".kl-chat-fechar").addEventListener("click",fechar);
+
+document.addEventListener("keydown",function(e){
+if(e.key==="Escape"&&!painel.hidden){ fechar(); }
+});
+
+/* Qualquer elemento com data-abrir-chat abre o chat piscando. */
+document.addEventListener("click",function(e){
+var gatilho=e.target.closest("[data-abrir-chat]");
+if(!gatilho){ return; }
+e.preventDefault();
+abrir({piscar:true,origem:gatilho.getAttribute("data-abrir-chat")||"contato"});
+});
+
+texto.addEventListener("input",function(){ mostrarErro(""); });
+
+form.addEventListener("submit",function(e){
+
+e.preventDefault();
+
+var mensagem=texto.value.trim();
+if(mensagem.length<3){
+mostrarErro("Escreva sua mensagem.");
+texto.focus();
+return;
+}
+
+var marcado=form.querySelector('input[name="tipo"]:checked');
+
+var dados={
+mensagem:mensagem,
+contato:form.contato.value.trim(),
+tipo:marcado?marcado.value:"",
+pagina:location.pathname+location.search,
+site:form.site.value
+};
+
+if(!CHAT_URL){
+mostrarErro("O chat ainda está sendo configurado. Tente de novo mais tarde.");
+return;
+}
+
+enviar.disabled=true;
+enviar.textContent="Enviando...";
+mostrarErro("");
+
+/* text/plain evita a checagem extra do navegador (o Apps Script aceita assim). */
+fetch(CHAT_URL,{method:"POST",body:JSON.stringify(dados)})
+.then(function(resposta){ return resposta.json(); })
+.then(function(resultado){
+if(!resultado||!resultado.ok){
+throw new Error(resultado&&resultado.erro||"falhou");
+}
+form.reset();
+form.hidden=true;
+ok.hidden=false;
+evento("chat_enviado",{tipo:dados.tipo||"sem_tipo"});
+})
+.catch(function(falha){
+mostrarErro(String(falha.message)==="limite"
+? "Muitas mensagens agora. Tente de novo em alguns minutos."
+: "Não foi possível enviar agora. Tente de novo em instantes.");
+})
+.finally(function(){
+enviar.disabled=false;
+enviar.textContent="Enviar";
+});
+
+});
+
+raiz.querySelector(".kl-chat-outra").addEventListener("click",function(){
+ok.hidden=true;
+form.hidden=false;
+texto.focus();
+});
+
+})();
+</script>
 
 <!-- Aviso de cookies: as estatísticas só ligam depois de "Aceitar". -->
 <div
@@ -174,8 +402,13 @@ document.cookie=nome+"=; Max-Age=0; path=/"+(d?"; domain="+d:"");
 });
 }
 
-function mostrar(){ if(aviso){ aviso.hidden=false; } }
-function esconder(){ if(aviso){ aviso.hidden=true; } }
+function ajustarChat(){
+var altura=(aviso&&!aviso.hidden)?aviso.offsetHeight+16:0;
+document.documentElement.style.setProperty("--kl-aviso",altura+"px");
+}
+function mostrar(){ if(aviso){ aviso.hidden=false; } ajustarChat(); }
+function esconder(){ if(aviso){ aviso.hidden=true; } ajustarChat(); }
+window.addEventListener("resize",ajustarChat);
 
 /* Página de privacidade: botão "Alterar minha escolha". */
 window.klCookies=mostrar;
@@ -299,22 +532,27 @@ return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c];
 });
 }
 
-var frase=String(opcoes.frase||"").replace(
+function montarFrase(nome){
+return String(opcoes.frase||"").replace(
 "{nome}",
-"<b>“"+escapar(opcoes.nome||"")+"”</b>"
+"<b>“"+escapar(nome||"")+"”</b>"
 );
+}
 
 var caixa=document.createElement("div");
 caixa.className="kl-dica";
 caixa.innerHTML=
 '<div class="kl-dica-anel"></div>'+
-'<div class="kl-dica-mao" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 11V5.5a1.5 1.5 0 0 1 3 0V10m0-.5V4.5a1.5 1.5 0 0 1 3 0V10m0-1a1.5 1.5 0 0 1 3 0v4.5c0 3.6-2.4 6.5-6 6.5h-.6a6 6 0 0 1-4.6-2.2L4.4 14.7a1.5 1.5 0 0 1 2.3-1.9L9 15V11"/></svg></div>'+
-'<div class="kl-dica-balao" role="status"><strong>Dica</strong>'+frase+
+'<div class="kl-dica-mao" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 11.24V7.5C9 6.12 10.12 5 11.5 5S14 6.12 14 7.5v3.74c1.21-.81 2-2.18 2-3.74C16 5.01 13.99 3 11.5 3S7 5.01 7 7.5c0 1.56.79 2.93 2 3.74zm9.84 4.63l-4.54-2.26c-.17-.07-.35-.11-.54-.11H13v-6c0-.83-.67-1.5-1.5-1.5S10 6.67 10 7.5v10.74l-3.43-.72c-.08-.01-.15-.03-.24-.03-.31 0-.59.13-.79.33l-.79.8 4.94 4.94c.27.27.65.44 1.06.44h6.79c.75 0 1.33-.55 1.44-1.28l.75-5.27c.01-.07.02-.14.02-.2 0-.62-.38-1.16-.91-1.38z"/></svg></div>'+
+'<div class="kl-dica-balao" role="status"><strong>Dica</strong><span class="kl-dica-frase">'+montarFrase(opcoes.nome)+'</span>'+
 '<button type="button">Entendi</button></div>';
 
 function posicionar(){
 
 var r=alvo.getBoundingClientRect();
+
+/* Etiqueta fora da tela: esconde a dica até ela voltar (ou trocar de alvo). */
+caixa.style.visibility=(r.bottom<0||r.top>innerHeight)?"hidden":"";
 
 var anel=caixa.querySelector(".kl-dica-anel");
 anel.style.left=(r.left-6)+"px";
@@ -323,8 +561,8 @@ anel.style.width=(r.width+12)+"px";
 anel.style.height=(r.height+12)+"px";
 
 var mao=caixa.querySelector(".kl-dica-mao");
-mao.style.left=(r.left+r.width/2-6)+"px";
-mao.style.top=(r.top+r.height/2-2)+"px";
+mao.style.left=(r.left+r.width/2-21)+"px";
+mao.style.top=(r.top+r.height/2-12)+"px";
 
 var balao=caixa.querySelector(".kl-dica-balao");
 var largura=Math.min(280,innerWidth-24);
@@ -376,7 +614,16 @@ document.addEventListener("click",aoClicar,true);
 
 timer=setTimeout(function(){ fechar("sumiu_sozinha"); },opcoes.duracao||10000);
 
-return { fechar:fechar };
+return {
+fechar:fechar,
+alvo:function(){ return alvo; },
+/* Aponta para outra etiqueta (ex.: a pessoa rolou a página). */
+trocar:function(novoAlvo,novoNome){
+alvo=novoAlvo;
+caixa.querySelector(".kl-dica-frase").innerHTML=montarFrase(novoNome);
+posicionar();
+}
+};
 
 };
 </script>
@@ -409,7 +656,7 @@ return { fechar:fechar };
   width:44px;
   height:44px;
   animation:kl-dica-toque 1.4s ease-in-out infinite;
-  transform-origin:12px 6px;
+  transform-origin:21px 12px;
 }
 
 .kl-dica-mao svg{
@@ -417,7 +664,7 @@ return { fechar:fechar };
   height:100%;
   fill:#fff;
   stroke:#111;
-  stroke-width:1.6;
+  stroke-width:.9;
   stroke-linejoin:round;
   filter:drop-shadow(2px 3px 2px rgba(0,0,0,.45));
 }
@@ -499,6 +746,372 @@ return { fechar:fechar };
   .kl-dica-anel{
     animation:none;
   }
+}
+
+
+/* Chat de recados (canto da tela). */
+.kl-chat{
+  position:fixed;
+  right:20px;
+  bottom:calc(20px + var(--kl-aviso, 0px));
+  z-index:1900;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  gap:12px;
+  font-family:system-ui,sans-serif;
+  transition:bottom .2s ease;
+}
+
+.kl-chat-botao{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  height:56px;
+  padding:0 16px;
+  border:3px solid #111;
+  border-radius:999px;
+  background:#ffc107;
+  color:#111;
+  font-weight:800;
+  cursor:pointer;
+  filter:drop-shadow(4px 4px 0 #b8860b);
+  transition:transform .12s ease;
+}
+
+.kl-chat-botao:hover{
+  transform:translateY(-2px);
+}
+
+.kl-chat-botao svg{
+  width:26px;
+  height:26px;
+  fill:none;
+  stroke:#111;
+  stroke-width:2.2;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+
+/* Minimizado no celular: só o ícone. */
+@media(max-width:576px){
+  .kl-chat{ right:14px; }
+  .kl-chat-botao{ width:56px; padding:0; justify-content:center; }
+  .kl-chat-rotulo{ display:none; }
+}
+
+.kl-chat-painel{
+  width:min(340px, calc(100vw - 28px));
+  max-height:calc(100vh - 120px - var(--kl-aviso, 0px));
+  overflow:auto;
+  background:#1a1410;
+  color:#f1ece4;
+  border:2px solid #ffc107;
+  border-radius:16px;
+  box-shadow:0 18px 40px rgba(0,0,0,.4);
+}
+
+.kl-chat-painel[hidden]{
+  display:none;
+}
+
+.kl-chat-painel.piscar{
+  animation:kl-chat-piscar .45s ease-in-out 4;
+}
+
+@keyframes kl-chat-piscar{
+  0%,100%{ box-shadow:0 18px 40px rgba(0,0,0,.4); border-color:#ffc107; }
+  50%{ box-shadow:0 0 0 6px rgba(255,193,7,.55),0 18px 40px rgba(0,0,0,.4); border-color:#fff3b0; }
+}
+
+.kl-chat-topo{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:10px;
+  padding:14px 16px 10px;
+  border-bottom:1px solid rgba(255,193,7,.25);
+}
+
+.kl-chat-topo strong{
+  display:block;
+  color:#ffc107;
+  font-size:1.05rem;
+}
+
+.kl-chat-topo small{
+  color:rgba(241,236,228,.75);
+}
+
+.kl-chat-fechar{
+  border:0;
+  background:none;
+  color:#f1ece4;
+  font-size:1.6rem;
+  line-height:1;
+  cursor:pointer;
+}
+
+.kl-chat-form,
+.kl-chat-ok{
+  padding:12px 16px 16px;
+}
+
+.kl-chat-form[hidden],
+.kl-chat-ok[hidden]{
+  display:none;
+}
+
+.kl-chat-tipos{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  margin-bottom:10px;
+}
+
+.kl-chat-tipos input{
+  position:absolute;
+  opacity:0;
+  pointer-events:none;
+}
+
+.kl-chat-tipos span{
+  display:inline-block;
+  padding:5px 10px;
+  border:1.5px solid rgba(241,236,228,.4);
+  border-radius:999px;
+  font-size:.8rem;
+  cursor:pointer;
+}
+
+.kl-chat-tipos input:checked + span{
+  background:#ffc107;
+  border-color:#ffc107;
+  color:#111;
+  font-weight:700;
+}
+
+.kl-chat-tipos input:focus-visible + span{
+  outline:2px solid #fff;
+}
+
+.kl-chat-campo{
+  display:block;
+  margin-bottom:10px;
+  font-size:.85rem;
+  font-weight:700;
+}
+
+.kl-chat-campo small{
+  font-weight:400;
+  color:rgba(241,236,228,.7);
+}
+
+.kl-chat-campo textarea,
+.kl-chat-campo input{
+  display:block;
+  width:100%;
+  margin-top:4px;
+  padding:9px 10px;
+  border:2px solid #3a312a;
+  border-radius:10px;
+  background:#0f0c0a;
+  color:#fff;
+  font:inherit;
+  font-weight:400;
+  resize:vertical;
+}
+
+.kl-chat-campo textarea:focus,
+.kl-chat-campo input:focus{
+  outline:none;
+  border-color:#ffc107;
+}
+
+.kl-chat-armadilha{
+  position:absolute;
+  left:-9999px;
+  width:1px;
+  height:1px;
+  opacity:0;
+}
+
+.kl-chat-erro{
+  display:block;
+  margin:-4px 0 10px;
+  color:#ff8a7a;
+  font-size:.82rem;
+}
+
+.kl-chat-enviar,
+.kl-chat-outra{
+  width:100%;
+  padding:10px;
+  border:2px solid #111;
+  border-radius:10px;
+  background:#ffc107;
+  color:#111;
+  font-weight:800;
+  cursor:pointer;
+}
+
+.kl-chat-enviar:disabled{
+  opacity:.65;
+  cursor:wait;
+}
+
+.kl-chat-aviso{
+  margin:8px 0 0;
+  font-size:.72rem;
+  color:rgba(241,236,228,.6);
+}
+
+.kl-chat-aviso a{
+  color:rgba(241,236,228,.85);
+}
+
+.kl-chat-ok strong{
+  display:block;
+  margin-bottom:6px;
+  color:#ffc107;
+  font-size:1.05rem;
+}
+
+.kl-chat-ok p{
+  font-size:.9rem;
+}
+
+@media(prefers-reduced-motion:reduce){
+  .kl-chat-painel.piscar{ animation:none; }
+}
+
+
+/* Sol e lua na barra de cima. */
+.kl-tema{
+  display:flex;
+  gap:2px;
+  padding:3px;
+  border:1px solid rgba(255,255,255,.25);
+  border-radius:999px;
+}
+
+.kl-tema-btn{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:30px;
+  height:30px;
+  padding:0;
+  border:0;
+  border-radius:50%;
+  background:transparent;
+  cursor:pointer;
+  opacity:.55;
+  transition:background .15s ease,opacity .15s ease;
+}
+
+.kl-tema-btn svg{
+  width:18px;
+  height:18px;
+  fill:none;
+  stroke:#fff;
+  stroke-width:2;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+
+.kl-tema-btn[data-tema="escuro"] svg{
+  fill:#fff;
+  stroke:none;
+}
+
+.kl-tema-btn:hover{
+  opacity:.85;
+}
+
+[data-bs-theme="light"] .kl-tema-btn[data-tema="claro"],
+[data-bs-theme="dark"] .kl-tema-btn[data-tema="escuro"]{
+  background:rgba(255,255,255,.18);
+  opacity:1;
+}
+
+/* ===== Tema escuro (lua): fundo preto no resto do site ===== */
+[data-bs-theme="dark"]{
+  --bs-body-bg:#0e0b09;
+  --bs-body-color:#ece6dc;
+  --bs-secondary-color:rgba(236,230,220,.68);
+  --bs-tertiary-bg:#1a1512;
+  --bs-border-color:#3a312a;
+}
+
+[data-bs-theme="dark"] .card{
+  --bs-card-bg:#1a1512;
+  --bs-card-border-color:#2c2520;
+}
+
+[data-bs-theme="dark"] .text-muted{
+  color:var(--bs-secondary-color) !important;
+}
+
+[data-bs-theme="dark"] .btn-outline-dark{
+  --bs-btn-color:#ece6dc;
+  --bs-btn-border-color:#5a4f46;
+  --bs-btn-hover-bg:#ece6dc;
+  --bs-btn-hover-color:#111;
+  --bs-btn-hover-border-color:#ece6dc;
+  --bs-btn-active-bg:#ece6dc;
+  --bs-btn-active-color:#111;
+  --bs-btn-active-border-color:#ece6dc;
+}
+
+[data-bs-theme="dark"] .filtro-ativo,
+[data-bs-theme="dark"] .filtro-ativo:hover{
+  background:#ffc107 !important;
+  border-color:#ffc107 !important;
+  color:#111 !important;
+}
+
+/* Os estilos das páginas são mais específicos: por isso o !important. */
+[data-bs-theme="dark"] .titulo-filtro{
+  color:#ece6dc !important;
+}
+
+[data-bs-theme="dark"] .busca-filtro input{
+  background:#1a1512 !important;
+  color:#ece6dc !important;
+  border-color:#5a4f46 !important;
+}
+
+[data-bs-theme="dark"] .busca-filtro input::placeholder{
+  color:rgba(236,230,220,.5) !important;
+}
+
+[data-bs-theme="dark"] .busca-filtro button{
+  background:#2c2520 !important;
+  color:#ece6dc !important;
+}
+
+[data-bs-theme="dark"] .busca-sem-resultado,
+[data-bs-theme="dark"] .destaques-topo p{
+  color:var(--bs-secondary-color) !important;
+}
+
+[data-bs-theme="dark"] .sidebar{
+  background:var(--bs-body-bg) !important;
+}
+
+[data-bs-theme="dark"] .thumb-btn{
+  background:#1a1512 !important;
+}
+
+[data-bs-theme="dark"] .thumb-btn.thumb-ativa{
+  border-color:#ffc107 !important;
+}
+
+/* Etiquetas escuras (classe) ganham um contorno para não sumir no fundo preto. */
+[data-bs-theme="dark"] .badge.text-bg-dark,
+[data-bs-theme="dark"] .badge-classe{
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.3);
 }
 
 </style>

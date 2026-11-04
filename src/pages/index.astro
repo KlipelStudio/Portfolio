@@ -38,6 +38,12 @@ const vitrine = [...miniaturas]
 
 <Layout titulo="Klipel Studio — Miniaturas para Aventureiros">
 
+<script
+type="application/json"
+id="miniaturas-data"
+set:html={JSON.stringify(miniaturas)}
+/>
+
 <section class="hero-home">
 
 <div class="hero-grade">
@@ -68,16 +74,59 @@ VER PORTFÓLIO <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentC
 </div>
 
 {vitrine.length > 0 && (
-<div class="hero-vitrine">
+<div class="hero-vitrine" data-base={base}>
 {vitrine.map(m => (
 <a class="carta" href={m.href} title={m.titulo}>
-<img src={asset(m.imagem)} alt={m.titulo} loading="eager"/>
+<img data-src={asset(m.imagem)} alt={m.titulo} loading="eager"/>
 </a>
 ))}
 </div>
 )}
 
 </div>
+
+<script is:inline>
+/* Sorteia os 3 cards do topo ANTES de aparecerem (assim não mostram as
+mesmas miniaturas e trocam depois). O sorteio fica guardado para os
+Destaques lá embaixo não repetirem essas 3. */
+(function(){
+
+var dados=[];
+
+try{ dados=JSON.parse(document.getElementById("miniaturas-data").textContent); }catch(e){}
+
+var sorteio=dados.slice().sort(function(){ return Math.random()-.5; });
+
+window.klSorteio=sorteio;
+
+var vitrine=document.querySelector(".hero-vitrine");
+
+if(!vitrine){ return; }
+
+var base=vitrine.getAttribute("data-base")||"/";
+
+vitrine.querySelectorAll(".carta").forEach(function(carta,i){
+
+var img=carta.querySelector("img");
+var mini=sorteio[i];
+
+if(mini){
+carta.href=mini.href;
+carta.title=mini.titulo;
+img.alt=mini.titulo;
+img.src=/^https?:\/\//.test(mini.imagem)
+? mini.imagem
+: (base+"/"+mini.imagem).replace(/\/{2,}/g,"/");
+}else{
+img.src=img.getAttribute("data-src");
+}
+
+});
+
+vitrine.classList.add("pronta");
+
+})();
+</script>
 
 <!-- Fitas de isolamento cruzadas, rolando em sentidos opostos (param com o mouse em cima). -->
 <div class="fitas" aria-label="Atualizações semanais. Heróis, vilões, monstros e cenários.">
@@ -99,7 +148,7 @@ VER PORTFÓLIO <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentC
 </div>
 
 <div class="hero-contato">
-Não encontrou o que procura? <strong>Entre em contato com a gente!</strong>
+Não encontrou o que procura? <button type="button" class="link-contato" data-abrir-chat="contato_inicio">Entre em contato com a gente!</button>
 </div>
 
 </section>
@@ -154,12 +203,6 @@ VER TODAS AS MINIATURAS <svg class="ico" viewBox="0 0 24 24" fill="none" stroke=
 </div>
 
 </section>
-
-<script
-type="application/json"
-id="miniaturas-data"
-set:html={JSON.stringify(miniaturas)}
-/>
 
 <script is:inline>
 
@@ -272,33 +315,7 @@ ${criarBadges(mini.cenarios,"cenario")}
 }
 
 const sorteadasTopo =
-embaralhar(dados);
-
-document
-.querySelectorAll(
-".hero-vitrine .carta"
-)
-.forEach((carta,i)=>{
-
-const mini=
-sorteadasTopo[i];
-
-if(!mini){
-
-return;
-
-}
-
-carta.href=mini.href;
-carta.title=mini.titulo;
-
-const img=
-carta.querySelector("img");
-
-img.src=asset(mini.imagem);
-img.alt=mini.titulo;
-
-});
+window.klSorteio || embaralhar(dados);
 
 if(
 container
@@ -485,11 +502,20 @@ color:#fff;
 
 }
 
+.hero-vitrine.pronta{
+
+opacity:1;
+
+}
+
 /* Três miniaturas em leque. */
 /* Os cards crescem junto com a coluna (até 300 x 375 px). */
 .hero-vitrine{
 
 position:relative;
+
+opacity:0;
+transition:opacity .35s ease;
 
 width:100%;
 aspect-ratio:5/4;
@@ -727,9 +753,27 @@ color:rgba(241,236,228,.85);
 
 }
 
-.hero-contato strong{
+/* "Entre em contato": abre o chat do canto e faz ele piscar. */
+.link-contato{
+
+padding:0;
+
+border:0;
+background:none;
 
 color:#ffc107;
+font:inherit;
+font-weight:800;
+text-decoration:underline;
+text-underline-offset:3px;
+
+cursor:pointer;
+
+}
+
+.link-contato:hover{
+
+color:#ffe08a;
 
 }
 
